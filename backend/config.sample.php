@@ -1,6 +1,7 @@
 <?php
 
 const DEBUG_MODE = false;
+const ACCESS_CONTROL_ALLOW_ORIGIN = '*';
 
 // Sae KVDB
 // DbProvider::setDb(new DbSaeKV());

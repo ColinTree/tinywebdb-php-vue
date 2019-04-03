@@ -44,6 +44,9 @@ abstract class Api {
     }
     http_response_code($http_code);
     header('Content-Type: application/json');
+    if (defined('ACCESS_CONTROL_ALLOW_ORIGIN')) {
+      header('Access-Control-Allow-Origin: ' . ACCESS_CONTROL_ALLOW_ORIGIN);
+    }
     echo json_encode([
       'state' => $state,
       'result' => $message
