@@ -1,14 +1,12 @@
 <template>
-  <manage-base>
+  <BaseCard>
     Hello! this is file.
-  </manage-base>
+  </BaseCard>
 </template>
 
 <script>
-import Base from './Base'
 export default {
-  name: 'ManageFile',
-  components: { 'manage-base': Base }
+  name: 'ManageFile'
 }
 </script>
 

@@ -10,7 +10,7 @@
             <b-nav-item to="/manage/backup">备份/恢复</b-nav-item>
             <b-nav-item to="/manage/file">文件目录</b-nav-item>
             <b-nav-item to="/manage/setting">设置</b-nav-item>
-            <b-nav-item v-if="update_available" :href="update_pageUrl">管理系统有更新！</b-nav-item>
+            <b-nav-item v-if="update_available" :href="update_pageUrl" target="_blank">管理系统有更新！</b-nav-item>
           </b-navbar-nav>
           <b-navbar-nav class="ml-auto">
             <b-nav-item to="/manage/logout">登出后台</b-nav-item>
@@ -20,15 +20,9 @@
     </div>
 
     <div class="app-width">
-      <b-card style="margin-top:5px">
-        <h6 slot="header" style="margin:0">
-          <slot name="header" />
-        </h6>
-        <slot/>
-        <template slot="footer">
-          <slot name="footer" />
-        </template>
-      </b-card>
+      <div style="margin-top:5px">
+        <router-view/>
+      </div>
 
       <div id="footer">
         TinyWebDB MANAGE System By <b-link target="_blank" href="http://github.com/Colintree">Colintree</b-link>.
@@ -44,17 +38,15 @@
 
 <script>
 export default {
-  name: 'ManageBase',
+  name: 'ManageFrame',
   props: {
-    update_available: {
-      type: Boolean,
-      default: false
-    },
-    update_pageUrl: String
+    action: String
   },
   data () {
     return {
-      version: '20190322_1'
+      version: '20190322_1',
+      update_available: false,
+      update_pageUrl: undefined
     }
   }
 }
@@ -64,12 +56,6 @@ export default {
 .app-width {
   width: 900px;
   margin: 0 auto;
-}
-.card-header {
-  padding: 10px 15px;
-}
-.card-footer {
-  padding: 0;
 }
 #footer {
   margin-top: 20px;

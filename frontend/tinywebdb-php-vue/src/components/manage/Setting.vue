@@ -1,14 +1,12 @@
 <template>
-  <manage-base>
+  <BaseCard>
     Hello! this is setting.
-  </manage-base>
+  </BaseCard>
 </template>
 
 <script>
-import Base from './Base'
 export default {
-  name: 'ManageSetting',
-  components: { 'manage-base': Base }
+  name: 'ManageSetting'
 }
 </script>
 

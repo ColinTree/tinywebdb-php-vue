@@ -1,14 +1,12 @@
 <template>
-  <manage-base>
+  <BaseCard>
     Hello! this is logout.
-  </manage-base>
+  </BaseCard>
 </template>
 
 <script>
-import Base from './Base'
 export default {
-  name: 'ManageLogout',
-  components: { 'manage-base': Base }
+  name: 'ManageLogout'
 }
 </script>
 
