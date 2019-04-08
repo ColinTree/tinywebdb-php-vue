@@ -4,7 +4,7 @@ class ApiError extends Api {
 
   private $message;
 
-  function __construct(String $message = 'Internal Error') {
+  function __construct(string $message = 'Internal Error') {
     $this->message = $message;
     parent::__construct();
   }

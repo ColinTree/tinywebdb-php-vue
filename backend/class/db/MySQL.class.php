@@ -12,8 +12,8 @@ class DbMySQL extends DbBase {
   private $table;
   private $timeout;
 
-  function __construct(String $host = '', String $user = '', String $password = '', String $database = '',
-        int $port = 3306, String $socket = '') {
+  function __construct(string $host = '', string $user = '', string $password = '', string $database = '',
+        int $port = 3306, string $socket = '') {
     $this->host = $host;
     $this->user = $user;
     $this->password = $password;
@@ -24,7 +24,7 @@ class DbMySQL extends DbBase {
     $this->table = 'tpv';
     $this->timeout = 3;
   }
-  function setTable(String $table) {
+  function setTable(string $table) {
     $this->table = $table;
   }
   /**
@@ -44,7 +44,7 @@ class DbMySQL extends DbBase {
     return $link;
   }
 
-  function delete(String $key) {
+  function delete(string $key) {
     $mysqli = $this->mysqli();
     $stmt = $mysqli->prepare("DELETE FROM `{$this->table}` WHERE `key` = ?");
     if ($stmt === false) {
@@ -61,7 +61,7 @@ class DbMySQL extends DbBase {
     return $result;
   }
 
-  function set(String $key, String $value) {
+  function set(string $key, string $value) {
     $mysqli = $this->mysqli();
     $stmt = $mysqli->prepare("INSERT INTO `{$this->table}` (`key`,`value`) VALUES (?, ?)");
     if ($stmt === false) {
@@ -78,7 +78,7 @@ class DbMySQL extends DbBase {
     return $result;
   }
 
-  function get(String $key) {
+  function get(string $key) {
     $mysqli = $this->mysqli();
     $stmt = $mysqli->prepare("SELECT `value` FROM `{$this->table}` WHERE `key` = ? LIMIT 1");
     if ($stmt === false) {
@@ -101,7 +101,7 @@ class DbMySQL extends DbBase {
     return $rtn;
   }
 
-  function getPage(int $page = 1, int $perPage = 100, String $prefix = '') {
+  function getPage(int $page = 1, int $perPage = 100, string $prefix = '') {
     $mysqli = $this->mysqli();
     $stmt = $mysqli->prepare("SELECT * FROM `{$this->table}` WHERE `key` LIKE ? LIMIT ?, ?");
     if ($stmt === false) {

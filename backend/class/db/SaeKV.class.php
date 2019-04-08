@@ -16,19 +16,19 @@ class DbSaeKV extends DbBase {
     }
   }
 
-  function delete(String $key) {
+  function delete(string $key) {
     return $this->kv->delete($key);
   }
 
-  function set(String $key, String $value) {
+  function set(string $key, string $value) {
     return $this->kv->set($key, $value);
   }
 
-  function get(String $key) {
+  function get(string $key) {
     return $this->kv->get($key);
   }
 
-  function getPage(int $page = 1, int $perPage = 100, String $prefix = '') {
+  function getPage(int $page = 1, int $perPage = 100, string $prefix = '') {
     $start_key = '';
     $currPage = 0;
     while ($currPage < $page) {

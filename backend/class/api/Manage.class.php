@@ -8,7 +8,7 @@ class ApiManage extends Api {
       $args[] = '';
     }
     $action = strtolower($args[0]);
-    $key = (String) $args[1];
+    $key = (string) $args[1];
     switch ($action) {
       case 'get': {
         $ret = DbProvider::getDb()->get($key);

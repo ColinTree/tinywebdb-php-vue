@@ -8,7 +8,7 @@ abstract class DbBase {
    * @param string $key
    * @return bool succeed or not
    */
-  abstract function delete(String $key);
+  abstract function delete(string $key);
 
   /**
    * add / update value of the key
@@ -17,7 +17,7 @@ abstract class DbBase {
    * @param string $value
    * @return bool succeed or not
    */
-  abstract function set(String $key, String $value);
+  abstract function set(string $key, string $value);
 
   /**
    * get value of the key
@@ -25,7 +25,7 @@ abstract class DbBase {
    * @param string $key
    * @return string|bool value when succeed OR false when there is no such key
    */
-  abstract function get(String $key);
+  abstract function get(string $key);
 
   /**
    * get list of values
@@ -33,6 +33,6 @@ abstract class DbBase {
    * @param int $perPage default to 100, should between 1-100
    * @param string $prefix default to empty (get all keys)
    */
-  abstract function getPage(int $page = 1, int $perPage = 100, String $prefix = '');
+  abstract function getPage(int $page = 1, int $perPage = 100, string $prefix = '');
 
 }

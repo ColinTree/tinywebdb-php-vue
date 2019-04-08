@@ -30,7 +30,7 @@ try {
   }
   $a = explode('/', $a, 2);
   $api = 'Api'.$a[0];
-  $args = isset($a[1]) ? (String) $a[1] : '';
+  $args = isset($a[1]) ? (string) $a[1] : '';
   unset($a);
 } catch (Throwable $e) {
   new ApiError(DEBUG_MODE === true ? $e->__toString() : $e->getMessage());
