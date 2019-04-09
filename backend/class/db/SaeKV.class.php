@@ -16,12 +16,40 @@ class DbSaeKV extends DbBase {
     }
   }
 
+  function has(string $key) {
+    return $this->get($key) !== false;
+  }
+
+  function count(string $prefix = '') {
+    $count = 0;
+    $start_key = '';
+    while (true) {
+      $ret = $this->kv->pkrget($prefix, 100, $start_key);
+      if ($ret == false) {
+        return false;
+      }
+      $count += ($c = count($ret));
+      if ($c < 100) break;
+      end($ret);
+      $start_key = key($ret);
+    }
+    return $count;
+  }
+
   function delete(string $key) {
     return $this->kv->delete($key);
   }
 
   function set(string $key, string $value) {
     return $this->kv->set($key, $value);
+  }
+
+  function add(string $key, string $value) {
+    return $this->kv->add($key, $value);
+  }
+
+  function update(string $key, string $value) {
+    return $this->kv->replace($key, $value);
   }
 
   function get(string $key) {

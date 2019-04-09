@@ -8,14 +8,15 @@
 
 Defined in `Api.class.php`
 
-state name            | category | code | http code | description
-----------------------|----------|:----:|:---------:|-------------
-STATE_SUCCEED         | general  |  0   |    200    | api execute succeed, the result is its returning value of succeed message
-STATE_API_NOT_FOUND   | general  |  1   |    404    | api cannot be found
-STATE_API_FAILED      | general  |  2   |    200    | api can be found but failed executing
-STATE_INTERNAL_ERROR  | general  |  3   |    500    | unexpected error occured
-STATE_KEY_NOT_FOUNT   | any get  |  10  |    200    | key cannot be found in the database
-STATE_UNACCEPTED_LIMIT| getPage  |  20  |    200    | limit should between 1-100
+state name | category | code | http code | description
+-----------|----------|:----:|:---------:|------------
+STATE_SUCCEED | general | 0 | 200 | api execute succeed, the result is its returning value of succeed message
+STATE_API_NOT_FOUND | general | 1 | 404 | api cannot be found
+STATE_API_FAILED | general | 2 | 200 | api can be found but failed executing
+STATE_INTERNAL_ERROR | general | 3 | 500 | unexpected error occured
+STATE_KEY_NOT_FOUNT | any key-related | 10 | 200 | key cannot be found in the database
+STATE_UNACCEPTED_LIMIT | getPage | 20 | 200 | limit should between 1-100
+STATE_KEY_ALREADY_EXIST | any add | 30 | 200 | key already exist
 
 ## production
 

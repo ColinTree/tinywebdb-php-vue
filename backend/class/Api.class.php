@@ -6,6 +6,7 @@ const STATE_API_FAILED = 2;     // with http code 503
 const STATE_INTERNAL_ERROR = 3; // with http code 500
 const STATE_KEY_NOT_FOUNT = 10;
 const STATE_UNACCEPTED_LIMIT = 20;
+const STATE_KEY_ALREADY_EXIST = 30;
 
 const ARG_SEPERATOR = ';;';
 

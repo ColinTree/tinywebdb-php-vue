@@ -3,6 +3,21 @@
 abstract class DbBase {
 
   /**
+   * check if key exists
+   *
+   * @param string $key
+   * @return bool key exists or not
+   */
+  abstract function has(string $key);
+
+  /**
+   * get count of keys with specified prefix in database
+   *
+   * @return int|boolean count of keys in database, or false when failed
+   */
+  abstract function count(string $prefix = '');
+
+  /**
    * delete key-value
    *
    * @param string $key
@@ -18,6 +33,24 @@ abstract class DbBase {
    * @return bool succeed or not
    */
   abstract function set(string $key, string $value);
+
+  /**
+   * add value to the key
+   *
+   * @param string $key
+   * @param string $value
+   * @return bool succeed or not
+   */
+  abstract function add(string $key, string $value);
+
+  /**
+   * update value of the key
+   *
+   * @param string $key
+   * @param string $value
+   * @return bool succeed or not
+   */
+  abstract function update(string $key, string $value);
 
   /**
    * get value of the key
