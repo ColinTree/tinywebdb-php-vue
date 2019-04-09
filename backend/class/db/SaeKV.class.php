@@ -63,10 +63,18 @@ class DbSaeKV extends DbBase {
       $currPage++;
       $ret = $this->kv->pkrget($prefix, $perPage, $start_key);
       if (count($ret) < $perPage) {
-        return $currPage < $page ? [] : $ret;
+        return $currPage < $page ? [] : self::obj2arr($ret);
       }
       end($ret);
       $start_key = key($ret);
+    }
+    return self::obj2arr($ret);
+  }
+
+  private static function obj2arr($obj) {
+    $ret = [];
+    foreach ($obj as $key => $value) {
+      $ret[] = [ 'key' => $key, 'value' => $value ];
     }
     return $ret;
   }
