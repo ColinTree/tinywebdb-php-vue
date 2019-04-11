@@ -14,6 +14,8 @@
           <option :value="50">50</option>
           <option :value="100">100</option>
         </select>
+        &nbsp;
+        <b-link @click="loadItems">刷新</b-link>
       </span>
     </template>
 
