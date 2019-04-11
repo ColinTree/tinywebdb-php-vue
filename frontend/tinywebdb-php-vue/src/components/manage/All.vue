@@ -75,18 +75,18 @@
 
     <ConfirmModal ref="confirmModal" />
     <InfoModal ref="infoModal" />
-
-    <div id="text-width-tester" class="item-value" style="position:absolute;visibility:hidden;height:auto;width:auto;white-space:nowrap"/>
+    <TextWidthTester ref="textWidthTester" />
   </BaseCard>
 </template>
 
 <script>
 import ConfirmModal from '@/components/ConfirmModal'
 import InfoModal from '@/components/InfoModal'
+import TextWidthTester from '@/components/TextWidthTester'
 
 export default {
   name: 'ManageAll',
-  components: { ConfirmModal, InfoModal },
+  components: { ConfirmModal, InfoModal, TextWidthTester },
   data () {
     return {
       currentCategory: 'all',
@@ -137,22 +137,15 @@ export default {
       const ACCEPTED_WIDTH = 530
       let item = this.items[index]
       let val = item.value.toString()
-      if (val.length > 100 || this.determineTextWidth(val) > ACCEPTED_WIDTH) {
+      if (val.length > 100 || this.testTextWidth(val) > ACCEPTED_WIDTH) {
         let pointer = 1
-        while (this.determineTextWidth(val.substring(0, pointer)) < ACCEPTED_WIDTH) {
+        while (this.testTextWidth(val.substring(0, pointer)) < ACCEPTED_WIDTH) {
           pointer++
         }
         return `${item.key}<br/><div class="item-value">${val.substring(0, pointer - 1) + '……'}</div>`
       } else {
         return `${item.key}<br/><div class="item-value">${val}</div>`
       }
-    },
-    determineTextWidth (text) {
-      let test = document.getElementById('text-width-tester')
-      test.innerText = text
-      let width = test.clientWidth
-      test.innerText = ''
-      return width
     },
     onSelectAll (val) {
       this.items.forEach(item => (item.selected = val))
@@ -191,6 +184,9 @@ export default {
     },
     showInfo (title, content) {
       this.$refs.infoModal.show(title, content)
+    },
+    testTextWidth (text) {
+      return this.$refs.textWidthTester.test(text)
     }
   }
 }
