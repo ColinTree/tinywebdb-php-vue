@@ -120,7 +120,7 @@ export default {
   methods: {
     async loadItems () {
       this.isLoading = true
-      let fetchCurrPage = this.$parent.service.get('/page/' + this.currentPage + ';;' + this.perPage + ';;' + '')
+      let fetchCurrPage = this.$parent.service.get(`/page/${this.currentPage};;${this.perPage};;` /* TODO: prefix */)
       let fetchCount = this.$parent.service.get('/count')
       try {
         let result = await Promise.all([ fetchCurrPage, fetchCount ])
@@ -128,7 +128,7 @@ export default {
         this.itemCount = result[1].data.state === 0 ? Number.parseInt(result[1].data.result) : 0
       } catch (e) {
         console.error(e)
-        this.showInfo('加载失败', '数据拉取失败, 错误信息见console')
+        this.showInfo('', '数据拉取失败, 错误信息见console')
       } finally {
         this.isLoading = false
       }
@@ -142,7 +142,7 @@ export default {
         while (this.testTextWidth(val.substring(0, pointer)) < ACCEPTED_WIDTH) {
           pointer++
         }
-        return `${item.key}<br/><div class="item-value">${val.substring(0, pointer - 1) + '……'}</div>`
+        return `${item.key}<br/><div class="item-value">${val.substring(0, pointer - 1)}……</div>`
       } else {
         return `${item.key}<br/><div class="item-value">${val}</div>`
       }
@@ -177,17 +177,17 @@ export default {
       // TODO:
     },
     onDelete (item, index, event) {
-      this.showConfirm('确认删除', `确认要删除${item.key}吗`, async result => {
+      this.showConfirm('', `确认要删除${item.key}吗`, async result => {
         if (result) {
-          let rst = await this.$parent.service.get('/delete/' + item.key)
+          let rst = await this.$parent.service.get(`/delete/${item.key}`)
           switch (rst.data.state) {
             case 0: {
-              this.showInfo('删除完成', '删除完成')
+              this.showInfo('', '删除完成')
               this.loadItems()
               break
             }
             default: {
-              this.showInfo('删除失败', '删除失败，错误码' + rst.data.state)
+              this.showInfo('', `删除失败，错误码${rst.data.state}`)
             }
           }
         }
