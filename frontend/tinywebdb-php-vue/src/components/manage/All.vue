@@ -73,10 +73,7 @@
         v-model="currentPage"
         align="center" />
 
-    <!-- Info modal -->
-    <b-modal id="showModalInfo" @hide="onShowModalClosed" :title="showModalInfo.title" ok-only>
-      <pre v-text="showModalInfo.content" />
-    </b-modal>
+    <InfoModal ref="infoModal" />
 
     <div id="text-width-tester" class="item-value" style="position:absolute;visibility:hidden;height:auto;width:auto;white-space:nowrap"/>
   </BaseCard>
@@ -85,8 +82,11 @@
 <script>
 import axios from 'axios'
 
+import InfoModal from '@/components/InfoModal'
+
 export default {
   name: 'ManageAll',
+  components: { InfoModal },
   data () {
     return {
       currentCategory: 'all',
@@ -102,8 +102,7 @@ export default {
       items: [],
       itemCount: 0,
       anyItemSelected: false,
-      selectAll: false,
-      showModalInfo: { title: '', content: '' }
+      selectAll: false
     }
   },
   watch: {
@@ -174,15 +173,9 @@ export default {
       this.onShow(item, index, event)
     },
     onShow (item, index, event) {
-      this.showModalInfo.title = `Row index: ${index}`
       item = { ...item }
       delete item.selected
-      this.showModalInfo.content = JSON.stringify(item, null, 2)
-      this.$root.$emit('bv::show::modal', 'showModalInfo', event.target)
-    },
-    onShowModalClosed () {
-      this.showModalInfo.title = ''
-      this.showModalInfo.content = ''
+      this.showInfo('查看标签', JSON.stringify(item, null, 2))
     },
     onCreate () {
       // TODO:
@@ -192,6 +185,9 @@ export default {
     },
     onDelete (item, index, event) {
       // TODO:
+    },
+    showInfo (title, content) {
+      this.$refs.infoModal.show(title, content)
     }
   }
 }
