@@ -43,7 +43,7 @@ class ApiManage extends Api {
       case 'delete': {
         return (DbProvider::getDb()->delete($key))
             ? 'Key (' . $key . ') deleted'
-            : [ 'code' => STATE_KEY_NOT_FOUNT, 'message' => 'Key not found: ' . $key ];
+            : [ 'code' => STATE_API_FAILED, 'message' => 'Failed deleting key: ' . $key ];
       }
       case 'page': {
         $args = explode(ARG_SEPERATOR, $key, 3);

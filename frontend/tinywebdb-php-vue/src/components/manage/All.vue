@@ -120,8 +120,8 @@ export default {
   methods: {
     async loadItems () {
       this.isLoading = true
-      let fetchCurrPage = this.$parent.service.get('http://1.tpv0.applinzi.com/Manage/page/' + this.currentPage + ';;' + this.perPage + ';;' + '')
-      let fetchCount = this.$parent.service.get('http://1.tpv0.applinzi.com/Manage/count')
+      let fetchCurrPage = this.$parent.service.get('/page/' + this.currentPage + ';;' + this.perPage + ';;' + '')
+      let fetchCount = this.$parent.service.get('/count')
       try {
         let result = await Promise.all([ fetchCurrPage, fetchCount ])
         this.items = result[0].data.state === 0 ? JSON.parse(result[0].data.result) : []
@@ -177,7 +177,21 @@ export default {
       // TODO:
     },
     onDelete (item, index, event) {
-      // TODO:
+      this.showConfirm('确认删除', `确认要删除${item.key}吗`, async result => {
+        if (result) {
+          let rst = await this.$parent.service.get('/delete/' + item.key)
+          switch (rst.data.state) {
+            case 0: {
+              this.showInfo('删除完成', '删除完成')
+              this.loadItems()
+              break
+            }
+            default: {
+              this.showInfo('删除失败', '删除失败，错误码' + rst.data.state)
+            }
+          }
+        }
+      })
     },
     showConfirm (title, content, callback) {
       this.$refs.confirmModal.show(title, content, callback)
