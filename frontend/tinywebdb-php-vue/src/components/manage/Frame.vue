@@ -27,10 +27,13 @@
       <div id="footer">
         TinyWebDB MANAGE System By <b-link target="_blank" href="http://github.com/Colintree">Colintree</b-link>.
         VERSION: {{ version }}
-        <br>
-        <b-link target="_blank" href="http://tsp.colintree.cn/使用手册">需要帮助？</b-link>
-        &nbsp;
-        <b-link target="_blank" href="http://tsp.colintree.cn/意见反馈">意见反馈</b-link>
+        <label :style="{ float: 'right' }">
+          <b-link target="_blank" href="http://tsp.colintree.cn/使用手册">需要帮助？</b-link>
+          &nbsp;
+          <b-link target="_blank" href="http://tsp.colintree.cn/意见反馈">意见反馈</b-link>
+          &nbsp;
+          <b-link target="_blank" href="https://github.com/ColinTree/tinywebdb-php-vue">查看TPV源码</b-link>
+        </label>
       </div>
     </div>
   </div>
