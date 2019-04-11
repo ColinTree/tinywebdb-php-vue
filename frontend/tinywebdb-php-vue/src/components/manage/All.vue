@@ -73,6 +73,7 @@
         v-model="currentPage"
         align="center" />
 
+    <ConfirmModal ref="confirmModal" />
     <InfoModal ref="infoModal" />
 
     <div id="text-width-tester" class="item-value" style="position:absolute;visibility:hidden;height:auto;width:auto;white-space:nowrap"/>
@@ -82,11 +83,12 @@
 <script>
 import axios from 'axios'
 
+import ConfirmModal from '@/components/ConfirmModal'
 import InfoModal from '@/components/InfoModal'
 
 export default {
   name: 'ManageAll',
-  components: { InfoModal },
+  components: { ConfirmModal, InfoModal },
   data () {
     return {
       currentCategory: 'all',
@@ -185,6 +187,9 @@ export default {
     },
     onDelete (item, index, event) {
       // TODO:
+    },
+    showConfirm (title, content, callback) {
+      this.$refs.confirmModal.show(title, content, callback)
     },
     showInfo (title, content) {
       this.$refs.infoModal.show(title, content)
