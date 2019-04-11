@@ -81,8 +81,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 import ConfirmModal from '@/components/ConfirmModal'
 import InfoModal from '@/components/InfoModal'
 
@@ -122,18 +120,18 @@ export default {
   methods: {
     async loadItems () {
       this.isLoading = true
-      let fetchCurrPage = axios.get('http://1.tpv0.applinzi.com/Manage/page/' + this.currentPage + ';;' + this.perPage + ';;' + '')
-      let fetchCount = axios.get('http://1.tpv0.applinzi.com/Manage/count')
-      let result = [ { data: { state: -1 } }, { data: { state: -1 } } ]
+      let fetchCurrPage = this.$parent.service.get('http://1.tpv0.applinzi.com/Manage/page/' + this.currentPage + ';;' + this.perPage + ';;' + '')
+      let fetchCount = this.$parent.service.get('http://1.tpv0.applinzi.com/Manage/count')
       try {
-        result[0] = await fetchCurrPage
-      } catch (e) { console.error(e) }
-      try {
-        result[1] = await fetchCount
-      } catch (e) { console.error(e) }
-      this.items = result[0].data.state === 0 ? JSON.parse(result[0].data.result) : []
-      this.itemCount = result[1].data.state === 0 ? Number.parseInt(result[1].data.result) : 0
-      this.isLoading = false
+        let result = await Promise.all([ fetchCurrPage, fetchCount ])
+        this.items = result[0].data.state === 0 ? JSON.parse(result[0].data.result) : []
+        this.itemCount = result[1].data.state === 0 ? Number.parseInt(result[1].data.result) : 0
+      } catch (e) {
+        console.error(e)
+        this.showInfo('加载失败', '数据拉取失败, 错误信息见console')
+      } finally {
+        this.isLoading = false
+      }
     },
     itemToHtml (index) {
       const ACCEPTED_WIDTH = 530

@@ -37,17 +37,29 @@
 </template>
 
 <script>
+import axios from 'axios'
+import qs from 'qs'
+
 export default {
   name: 'ManageFrame',
-  props: {
-    action: String
-  },
   data () {
     return {
       version: '20190322_1',
       update_available: false,
-      update_pageUrl: undefined
+      update_pageUrl: undefined,
+      service: null
     }
+  },
+  mounted () {
+    axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
+    this.service = axios.create({
+      baseURL: 'http://1.tpv0.applinzi.com/Manage/'
+    })
+    this.service.interceptors.request.use(config => {
+      // TODO: add auth data
+      config.data = qs.stringify(config.data)
+      return config
+    })
   }
 }
 </script>
