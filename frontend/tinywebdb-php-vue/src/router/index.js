@@ -16,12 +16,10 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
       component: HelloWorld
     },
     {
       path: '/manage',
-      name: 'manage',
       component: ManageFrame,
       children: [
         { path: '', redirect: 'all' },
@@ -35,7 +33,6 @@ export default new Router({
     },
     {
       path: '*',
-      name: '404',
       component: { template: '<div>Page not found</div>' }
     }
   ]
