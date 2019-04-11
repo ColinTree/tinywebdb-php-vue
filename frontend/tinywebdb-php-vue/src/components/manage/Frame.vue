@@ -53,7 +53,7 @@ export default {
       service: null
     }
   },
-  mounted () {
+  created () {
     axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
     this.service = axios.create({
       baseURL: 'http://1.tpv0.applinzi.com/Manage/'
