@@ -54,7 +54,7 @@
       </template>
 
       <template slot="checkbox" slot-scope="row">
-        <b-checkbox v-model="row.item.selected" />
+        <b-checkbox v-if="!row.item.deleted" v-model="row.item.selected" />
       </template>
 
       <template slot="keyNVal" slot-scope="row">
@@ -62,9 +62,13 @@
       </template>
 
       <template slot="operations" slot-scope="row">
-        <b-button variant="primary" @click="onShow(row.item, row.index, $event)">查看</b-button>
-        <b-button variant="primary" @click="onEdit(row.item, row.index, $event)">修改</b-button>
-        <b-button variant="danger"  @click="onDelete(row.item, row.index, $event)">删除</b-button>
+        <b-button v-if="!row.item.deleted" variant="primary" @click="onShow(row.item, row.index, $event)">查看</b-button>
+        <b-button v-if="!row.item.deleted" variant="primary" @click="onEdit(row.item, row.index, $event)">修改</b-button>
+        <b-button
+            :disabled="row.item.deleted"
+            :variant="row.item.deleted ? 'success' : 'danger'"
+            v-text="row.item.deleted ? '已删除' : '删除'"
+            @click="onDelete(row.item, row.index, $event)" />
       </template>
     </b-table>
 
@@ -109,7 +113,7 @@ export default {
   computed: {
     anyItemSelected () {
       for (let index in this.items) {
-        if (this.items[index].selected === true) {
+        if (this.items[index].deleted !== true && this.items[index].selected === true) {
           return true
         }
       }
@@ -120,7 +124,7 @@ export default {
         return false
       }
       for (let index in this.items) {
-        if (this.items[index].selected !== true) {
+        if (this.items[index].deleted !== true && this.items[index].selected !== true) {
           return false
         }
       }
@@ -150,7 +154,7 @@ export default {
       try {
         let result = await Promise.all([ fetchCurrPage, fetchCount ])
         let pageItems = result[0].data.state === 0 ? JSON.parse(result[0].data.result) : []
-        pageItems.forEach(item => { item.selected = false })
+        pageItems.forEach(item => { item.selected = false; item.deleted = false })
         this.items = pageItems
         this.itemCount = result[1].data.state === 0 ? Number.parseInt(result[1].data.result) : 0
       } catch (e) {
@@ -184,6 +188,7 @@ export default {
     onShow (item, index, event) {
       item = { ...item }
       delete item.selected
+      delete item.deleted
       this.showInfo('查看标签', JSON.stringify(item, null, 2))
     },
     onCreate () {
@@ -193,13 +198,12 @@ export default {
       // TODO:
     },
     onDelete (item, index, event) {
-      this.showConfirm('', `确认要删除${item.key}吗`, async result => {
+      this.showConfirm('', `确认要删除\`${item.key}\`吗`, async result => {
         if (result) {
           let rst = await this.$parent.service.get(`/delete/${item.key}`)
           switch (rst.data.state) {
             case 0: {
-              this.showInfo('', '删除完成')
-              this.loadItems()
+              item.deleted = true
               break
             }
             default: {
