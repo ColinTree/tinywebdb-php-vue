@@ -34,7 +34,8 @@
         :busy="isLoading"
         :show-empty="true" empty-text="没有数据"
         :fields="fields" :items="items"
-        @row-clicked="onRowClicked"
+        @head-clicked="onSelectAll(!selectAll)"
+        @row-clicked="(item, index) => { item.selected = !item.selected }"
         :per-page="perPage">
       <template slot="top-row">
         <td />
@@ -124,7 +125,9 @@ export default {
       let fetchCount = this.$parent.service.get('/count')
       try {
         let result = await Promise.all([ fetchCurrPage, fetchCount ])
-        this.items = result[0].data.state === 0 ? JSON.parse(result[0].data.result) : []
+        let pageItems = result[0].data.state === 0 ? JSON.parse(result[0].data.result) : []
+        pageItems.forEach(item => { item.selected = false })
+        this.items = pageItems
         this.itemCount = result[1].data.state === 0 ? Number.parseInt(result[1].data.result) : 0
       } catch (e) {
         console.error(e)
