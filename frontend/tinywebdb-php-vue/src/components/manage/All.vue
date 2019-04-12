@@ -31,6 +31,7 @@
 
     <b-table
         ref="table"
+        class="unselectable"
         :busy="isLoading"
         :show-empty="true" empty-text="没有数据"
         :fields="fields" :items="items"
