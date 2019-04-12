@@ -89,7 +89,6 @@
         id="editModal" ref="editModal"
         size="lg"
         centered
-        :title="editModal.isCreate ? '创建标签' : '编辑标签'"
         hide-header-close
         :ok-variant="editModal.okVariant"
         cancel-title="取消"
@@ -115,6 +114,16 @@
             @keydown.enter="e => (e.ctrlKey) ? onEditSubmit() : null" />
         </b-form-group>
       </b-form>
+
+      <template slot="modal-header">
+        <h5 class="modal-title" v-text="editModal.isCreate ? '创建标签' : '编辑标签'" />
+        <b-button
+            variant="text"
+            size="sm"
+            style="color:lightgray"
+            v-text="editModal.isCreate ? '切换至编辑模式' : '切换至创建模式'"
+            @click="editModal.isCreate = !editModal.isCreate" />
+      </template>
 
       <template slot="modal-ok">
         <b-spinner v-if="editModal.inProgress" small />
