@@ -99,17 +99,17 @@
         :no-close-on-backdrop="editModal.inProgress"
         :no-close-on-esc="editModal.inProgress"
         @ok.prevent="onEditSubmit"
-        @shown="$refs.ediModal_value.focus()"
+        @shown="$refs.editModal_value.focus()"
         @hidden="editModal.key = ''"
         lazy>
     <b-form ref="editModal_form" @submit.prevent="onEditSubmit">
-      <b-form-group label="标签" label-for="ediModal_key">
-        <b-input id="ediModal_key" v-model="editModal.key" :disabled="!editModal.isCreate" />
+      <b-form-group label="标签" label-for="editModal_key">
+        <b-input id="editModal_key" ref="editModal_key" v-model="editModal.key" :disabled="!editModal.isCreate" />
       </b-form-group>
-      <b-form-group label="值" label-for="ediModal_value">
+      <b-form-group label="值" label-for="editModal_value">
         <b-textarea
-            id="ediModal_value"
-            ref="ediModal_value"
+            id="editModal_value"
+            ref="editModal_value"
             v-model="editModal.value"
             rows="8"
             no-resize
@@ -266,12 +266,12 @@ export default {
           break
         }
         case 10: {
-          this.showInfo('', '编辑失败，目标标签不存在，自动切换为创建标签模式')
+          this.showInfo('', '编辑失败，目标标签不存在，自动切换为创建标签模式', () => this.$refs.editModal_key.focus())
           this.editModal.isCreate = true
           break
         }
         case 30: {
-          this.showInfo('', '创建失败，目标标签已存在，自动切换为编辑标签模式')
+          this.showInfo('', '创建失败，目标标签已存在，自动切换为编辑标签模式', () => this.$refs.editModal_value.focus())
           this.editModal.isCreate = false
           break
         }
@@ -300,8 +300,8 @@ export default {
     showConfirm (title, content, callback) {
       this.$refs.confirmModal.show(title, content, callback)
     },
-    showInfo (title, content) {
-      this.$refs.infoModal.show(title, content)
+    showInfo (title, content, hiddenCallback = null) {
+      this.$refs.infoModal.show(title, content, hiddenCallback)
     },
     testTextWidth (text) {
       return this.$refs.textWidthTester.test(text)

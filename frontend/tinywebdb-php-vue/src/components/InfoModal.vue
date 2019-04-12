@@ -2,9 +2,13 @@
   <b-modal
       :id="id"
       :title="title"
+      @shown="onShown"
       @hidden="onHidden"
-      ok-only centered lazy>
+      centered lazy>
     <pre v-text="content" />
+    <template slot="modal-footer">
+      <b-button ref="ok" variant="primary" @click="onOk">好的</b-button>
+    </template>
   </b-modal>
 </template>
 
@@ -17,18 +21,29 @@ export default {
   data () {
     return {
       title: '',
-      content: ''
+      content: '',
+      hiddenCallback: null
     }
   },
   methods: {
-    show (title, content) {
+    show (title, content, hiddenCallback = null) {
       this.title = title
       this.content = content
+      this.hiddenCallback = hiddenCallback
       this.$children[0].show()
+    },
+    onShown () {
+      setTimeout(() => this.$refs.ok.focus(), 100)
     },
     onHidden () {
       this.title = ''
       this.content = ''
+      if (typeof this.hiddenCallback === 'function') {
+        this.hiddenCallback()
+      }
+    },
+    onOk () {
+      this.$children[0].hide()
     }
   }
 }
