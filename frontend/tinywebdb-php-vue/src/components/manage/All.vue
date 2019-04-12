@@ -40,8 +40,14 @@
         :per-page="perPage">
       <template slot="top-row">
         <td />
-        <td><b-input class="form-control" placeholder="标签名" /></td>
-        <td><b-button variant="primary" @click="onCreate">新建</b-button></td>
+        <td><b-input placeholder="标签名" v-model="editModal.key" @keypress.enter="$refs.createButton.click()" /></td>
+        <td>
+          <b-button
+              ref="createButton"
+              variant="primary"
+              @click="editModal.isCreate = true; editModal.value = ''"
+              v-b-modal.editModal>新建</b-button>
+        </td>
       </template>
 
       <div slot="table-busy" class="text-center text-danger my-2">
@@ -79,6 +85,43 @@
         v-model="currentPage"
         align="center" />
 
+    <b-modal
+        id="editModal" ref="editModal"
+        size="lg"
+        centered
+        :title="editModal.isCreate ? '创建标签' : '编辑标签'"
+        hide-header-close
+        :ok-variant="editModal.okVariant"
+        cancel-title="取消"
+        :cancel-disabled="editModal.inProgress"
+        :ok-disabled="editModal.inProgress"
+        :no-close-on-backdrop="editModal.inProgress"
+        :no-close-on-esc="editModal.inProgress"
+        @ok.prevent="onEditSubmit"
+        @shown="$refs.ediModal_value.focus()"
+        @hidden="editModal.key = ''"
+        lazy>
+    <b-form ref="editModal_form" @submit.prevent="onEditSubmit">
+      <b-form-group label="标签" label-for="ediModal_key">
+        <b-input id="ediModal_key" v-model="editModal.key" :disabled="!editModal.isCreate" />
+      </b-form-group>
+      <b-form-group label="值" label-for="ediModal_value">
+        <b-textarea
+            id="ediModal_value"
+            ref="ediModal_value"
+            v-model="editModal.value"
+            rows="8"
+            no-resize
+            @keydown.enter="e => (e.ctrlKey) ? onEditSubmit() : null" />
+        </b-form-group>
+      </b-form>
+
+      <template slot="modal-ok">
+        <b-spinner v-if="editModal.inProgress" small />
+        <span v-else v-text="editModal.okVariant == 'success' ? '完成' : '提交'" />
+      </template>
+    </b-modal>
+
     <ConfirmModal ref="confirmModal" />
     <InfoModal ref="infoModal" />
     <TextWidthTester ref="textWidthTester" />
@@ -107,7 +150,8 @@ export default {
       isLoading: false,
       items: [],
       itemCount: 0,
-      selectAll: false
+      selectAll: false,
+      editModal: { key: '', value: '', isCreate: true, inProgress: false, okVariant: 'primary' }
     }
   },
   computed: {
@@ -182,20 +226,45 @@ export default {
       this.items.forEach(item => (item.selected = val))
       this.$refs.table.refresh()
     },
-    onRowClicked (item, index, event) {
-      this.onShow(item, index, event)
-    },
     onShow (item, index, event) {
       item = { ...item }
       delete item.selected
       delete item.deleted
       this.showInfo('查看标签', JSON.stringify(item, null, 2))
     },
-    onCreate () {
-      // TODO:
-    },
     onEdit (item, index, event) {
-      // TODO:
+      this.editModal.key = item.key
+      this.editModal.value = item.value
+      this.editModal.isCreate = false
+      this.$refs.editModal.show()
+    },
+    async onEditSubmit () {
+      this.editModal.inProgress = true
+      let result = await this.$parent.service.post(`/${this.editModal.isCreate ? 'add' : 'update'}/${this.editModal.key}`, {
+        value: this.editModal.value
+      })
+      switch (result.data.state) {
+        case 0: {
+          this.editModal.okVariant = 'success'
+          setTimeout(() => (this.editModal.okVariant = 'primary'), 1500)
+          this.loadItems()
+          break
+        }
+        case 10: {
+          this.showInfo('', '编辑失败，目标标签不存在，自动切换为创建标签模式')
+          this.editModal.isCreate = true
+          break
+        }
+        case 30: {
+          this.showInfo('', '创建失败，目标标签已存在，自动切换为编辑标签模式')
+          this.editModal.isCreate = false
+          break
+        }
+        default: {
+          this.showInfo('', `${this.editModal.isCreate ? '创建' : '编辑'}失败，错误码${result.data.state}`)
+        }
+      }
+      this.editModal.inProgress = false
     },
     onDelete (item, index, event) {
       this.showConfirm('', `确认要删除\`${item.key}\`吗`, async result => {
