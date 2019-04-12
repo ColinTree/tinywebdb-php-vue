@@ -3,7 +3,7 @@
     <template slot="header">
       标签 -
       <select v-model="currentCategory" class="transparent-dropdown">
-        <option v-for="category in categories" :key="category.name" :value="category.name">{{ category.text }}</option>
+        <option v-for="category in categories" :key="category.name" :value="category.name" v-text="category.text" />
       </select>
       <span style="float:right">
         一页显示数量
