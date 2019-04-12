@@ -54,7 +54,7 @@
       </template>
 
       <template slot="checkbox" slot-scope="row">
-        <b-checkbox @input="checkSelectAll(); checkAnySelected()" v-model="row.item.selected" />
+        <b-checkbox v-model="row.item.selected" />
       </template>
 
       <template slot="keyNVal" slot-scope="row">
@@ -103,8 +103,28 @@ export default {
       isLoading: false,
       items: [],
       itemCount: 0,
-      anyItemSelected: false,
       selectAll: false
+    }
+  },
+  computed: {
+    anyItemSelected () {
+      for (let index in this.items) {
+        if (this.items[index].selected === true) {
+          return true
+        }
+      }
+      return false
+    },
+    allItemSelected () {
+      if (this.items.length === 0) {
+        return false
+      }
+      for (let index in this.items) {
+        if (this.items[index].selected !== true) {
+          return false
+        }
+      }
+      return true
     }
   },
   watch: {
@@ -114,6 +134,9 @@ export default {
     perPage () {
       this.currentPage = 1
       this.loadItems()
+    },
+    allItemSelected (val) {
+      this.selectAll = val
     }
   },
   mounted () {
@@ -153,18 +176,7 @@ export default {
     },
     onSelectAll (val) {
       this.items.forEach(item => (item.selected = val))
-      this.checkAnySelected()
       this.$refs.table.refresh()
-    },
-    checkSelectAll () {
-      let selectAll = true
-      this.items.forEach(item => (selectAll = selectAll && item.selected === true))
-      this.selectAll = selectAll
-    },
-    checkAnySelected () {
-      let anyItemSelected = false
-      this.items.forEach(item => (anyItemSelected = anyItemSelected || item.selected === true))
-      this.anyItemSelected = anyItemSelected
     },
     onRowClicked (item, index, event) {
       this.onShow(item, index, event)
