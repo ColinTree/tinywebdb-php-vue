@@ -167,12 +167,16 @@ export default {
       if (this.items.length === 0) {
         return false
       }
+      let allDeleted = true
       for (let index in this.items) {
-        if (this.items[index].deleted !== true && this.items[index].selected !== true) {
-          return false
+        if (this.items[index].deleted !== true) {
+          allDeleted = false
+          if (this.items[index].selected !== true) {
+            return false
+          }
         }
       }
-      return true
+      return !allDeleted
     }
   },
   watch: {
