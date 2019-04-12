@@ -1,6 +1,6 @@
 <template>
   <b-card>
-    <h6 slot="header" style="margin:0">
+    <h6 slot="header" style="display:flex;margin:0;justify-content:space-between">
       <slot name="header" />
     </h6>
     <slot/>

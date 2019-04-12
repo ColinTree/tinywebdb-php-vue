@@ -1,11 +1,13 @@
 <template>
-  <BaseCard>
+  <BaseCard >
     <template slot="header">
-      标签 -
-      <select v-model="currentCategory" class="transparent-dropdown">
-        <option v-for="category in categories" :key="category.name" :value="category.name" v-text="category.text" />
-      </select>
-      <span style="float:right">
+      <span>
+        标签 -
+        <select v-model="currentCategory" class="transparent-dropdown">
+          <option v-for="category in categories" :key="category.name" :value="category.name" v-text="category.text" />
+        </select>
+      </span>
+      <span>
         一页显示数量
         <select v-model="perPage" class="transparent-dropdown">
           <option :value="5">5</option>
