@@ -26,6 +26,14 @@ abstract class DbBase {
   abstract function delete(string $key);
 
   /**
+   * delete pairs of key-value
+   *
+   * @param array<string> $keys
+   * @return array<string=>bool> array of succeed or not, with keys paired
+   */
+  abstract function mDelete(array $keys);
+
+  /**
    * add / update value of the key
    *
    * @param string $key

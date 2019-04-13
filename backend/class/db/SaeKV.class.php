@@ -40,6 +40,18 @@ class DbSaeKV extends DbBase {
     return $this->kv->delete($key);
   }
 
+  function mDelete(array $keys) {
+    $retarr = [];
+    foreach ($keys as $index => $key) {
+      if (!is_string($key)) {
+        $retarr[$key] = false;
+        continue;
+      }
+      $retarr[$key] = $this->delete($key);
+    }
+    return $retarr;
+  }
+
   function set(string $key, string $value) {
     return $this->kv->set($key, $value);
   }

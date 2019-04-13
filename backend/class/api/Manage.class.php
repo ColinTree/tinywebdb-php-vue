@@ -42,6 +42,9 @@ class ApiManage extends Api {
             ? 'Key (' . $key . ') deleted'
             : [ 'state' => STATE_API_FAILED, 'result' => 'Failed deleting key: ' . $key ];
       }
+      case 'mdelete': {
+        return [ 'result' => DbProvider::getDb()->mDelete(json_decode((string) $_REQUEST['keys'])) ];
+      }
       case 'page': {
         $page = isset($_REQUEST['page']) ? (int) $_REQUEST['page'] : 1;
         $perPage = isset($_REQUEST['perPage']) ? (int) $_REQUEST['perPage'] : 100;
