@@ -8,7 +8,6 @@ class ApiManage extends Api {
 
     $args = explode('/', $GLOBALS['args'], 2);
     $action = strtolower($args[0]);
-    if (count($args) >= 2) $key = (string) $args[1];
     unset($args);
 
     switch ($action) {
@@ -16,7 +15,7 @@ class ApiManage extends Api {
         return DbProvider::getDb()->has($key);
       }
       case 'count': {
-        $ret = DbProvider::getDb()->count($key /*as prefix*/);
+        $ret = DbProvider::getDb()->count($_REQUEST['prefix']);
         return $ret !== false ? $ret : [ 'state' => STATE_API_FAILED, 'result' => 'Cannot count keys' ];
       }
       case 'get': {
@@ -44,11 +43,13 @@ class ApiManage extends Api {
             : [ 'state' => STATE_API_FAILED, 'result' => 'Failed deleting key: ' . $key ];
       }
       case 'page': {
-        $args = explode(ARG_SEPERATOR, $key, 3);
-        if (count($args) >= 2 && ($args[1] < 1 || $args[1] > 100)) {
+        $page = isset($_REQUEST['page']) ? (int) $_REQUEST['page'] : 1;
+        $perPage = isset($_REQUEST['perPage']) ? (int) $_REQUEST['perPage'] : 100;
+        $prefix = isset($_REQUEST['prefix']) ? (string) $_REQUEST['prefix'] : '';
+        if ($perPage < 1 || $perPage > 100) {
           return [ 'state' => STATE_UNACCEPTED_LIMIT, 'result' => [] ];
         }
-        return [ 'result' => DbProvider::getDb()->getPage(...$args) ];
+        return [ 'result' => DbProvider::getDb()->getPage($page, $perPage, $prefix) ];
       }
     }
     echo 'Unimplemented managing api: ' . $action;
