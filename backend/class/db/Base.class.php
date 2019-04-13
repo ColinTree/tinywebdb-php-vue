@@ -65,6 +65,7 @@ abstract class DbBase {
    * @param int $page default to 1 (first page)
    * @param int $perPage default to 100, should between 1-100
    * @param string $prefix default to empty (get all keys)
+   * @return list list of [ key, value ] pairs
    */
   abstract function getPage(int $page = 1, int $perPage = 100, string $prefix = '');
 

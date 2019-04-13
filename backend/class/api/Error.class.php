@@ -10,7 +10,7 @@ class ApiError extends Api {
   }
 
   function handle() {
-    return [ 'code' => STATE_INTERNAL_ERROR, 'message' => $this->message ];
+    return [ 'state' => STATE_INTERNAL_ERROR, 'result' => $this->message ];
   }
 
 }

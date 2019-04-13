@@ -15,25 +15,25 @@ abstract class Api {
   function __construct() {
     ob_start();
     try {
-      $result = $this->handle();
+      $handleResult = $this->handle();
     } catch (Throwable $t) {
-      $result = [ 'code' => STATE_INTERNAL_ERROR, 'message' => DEBUG_MODE === true ? $t->__toString() : $t->getMessage() ];
+      $handleResult = [ 'state' => STATE_INTERNAL_ERROR, 'result' => DEBUG_MODE === true ? $t->__toString() : $t->getMessage() ];
     } finally {
-      $message = ob_get_clean();
+      $result = ob_get_clean();
     }
 
     $state = STATE_SUCCEED;
-    if (is_null($result)) {
+    if (is_null($handleResult)) {
       // ignore
-    } else if (is_array($result)) {
-      if (isset($result['code'])) {
-        $state = $result['code'];
+    } else if (is_array($handleResult)) {
+      if (isset($handleResult['state'])) {
+        $state = $handleResult['state'];
       }
-      if (isset($result['message'])) {
-        $message = $result['message'];
+      if (isset($handleResult['result'])) {
+        $result = $handleResult['result'];
       }
     } else {
-      $message = $result;
+      $result = $handleResult;
     }
 
     $http_code = 200;
@@ -52,14 +52,14 @@ abstract class Api {
     }
     echo json_encode([
       'state' => $state,
-      'result' => $message
+      'result' => $result
     ]);
   }
 
   /**
-   * All echo would be treated as default output message.
+   * All echo would be treated as default output result.
    * Args from the get request can be found in $GLOBALS['args]
-   * @return mixed null, array for [ 'code': code, 'message': message ] or any other for message
+   * @return mixed null, array for [ 'state': state, 'result': result ] or any other for result message
    */
   abstract function handle();
 }
