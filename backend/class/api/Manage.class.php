@@ -11,19 +11,15 @@ class ApiManage extends Api {
     $key = (string) $args[1];
     switch ($action) {
       case 'has': {
-        return DbProvider::getDb()->has($key) ? 'true' : 'false';
+        return DbProvider::getDb()->has($key);
       }
       case 'count': {
         $ret = DbProvider::getDb()->count(/* as prefix */ $key);
-        return $ret !== false
-            ? '' . $ret // or it will be consider as returning code
-            : [ 'code' => STATE_API_FAILED, 'message' => 'Cannot count keys' ];
+        return $ret !== false ? $ret : [ 'code' => STATE_API_FAILED, 'message' => 'Cannot count keys' ];
       }
       case 'get': {
         $ret = DbProvider::getDb()->get($key);
-        return $ret !== false
-            ? $ret
-            : [ 'code' => STATE_KEY_NOT_FOUNT, 'message' => 'No record for key: ' . $key ];
+        return $ret !== false ? $ret : [ 'code' => STATE_KEY_NOT_FOUNT, 'message' => 'No record for key: ' . $key ];
       }
       case 'set': {
         return (DbProvider::getDb()->set($key, (string) $_POST['value']))
@@ -48,14 +44,13 @@ class ApiManage extends Api {
       case 'page': {
         $args = explode(ARG_SEPERATOR, $key, 3);
         if (count($args) >= 2 && ($args[1] < 1 || $args[1] > 100)) {
-          echo json_encode([]);
-          return STATE_UNACCEPTED_LIMIT;
+          return [ 'code' => STATE_UNACCEPTED_LIMIT, 'message' => [] ];
         }
-        return json_encode(DbProvider::getDb()->getPage(...$args));
+        return [ 'message' => DbProvider::getDb()->getPage(...$args) ];
       }
     }
     echo 'Unimplemented managing api: ' . $args[0];
-    return STATE_API_NOT_FOUND;
+    return [ 'code' => STATE_API_NOT_FOUND ];
   }
 
 }

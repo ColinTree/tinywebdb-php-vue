@@ -25,13 +25,15 @@ abstract class Api {
     $state = STATE_SUCCEED;
     if (is_null($result)) {
       // ignore
-    } else if (is_int($result)) {
-      $state = $result;
     } else if (is_array($result)) {
-      $state = $result['code'];
-      $message = $result['message'];
+      if (isset($result['code'])) {
+        $state = $result['code'];
+      }
+      if (isset($result['message'])) {
+        $message = $result['message'];
+      }
     } else {
-      $message = (string) $result;
+      $message = $result;
     }
 
     $http_code = 200;
@@ -57,7 +59,7 @@ abstract class Api {
   /**
    * All echo would be treated as default output message.
    * Args from the get request can be found in $GLOBALS['args]
-   * @return mixed null, int for code, array for [ 'code': code, 'message': message ] or any other for message replacement
+   * @return mixed null, array for [ 'code': code, 'message': message ] or any other for message
    */
   abstract function handle();
 }
