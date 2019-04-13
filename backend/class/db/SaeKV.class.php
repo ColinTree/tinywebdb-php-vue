@@ -25,7 +25,7 @@ class DbSaeKV extends DbBase {
     $start_key = '';
     while (true) {
       $ret = $this->kv->pkrget($prefix, 100, $start_key);
-      if ($ret == false) {
+      if ($ret === false) {
         return false;
       }
       $count += ($c = count($ret));
