@@ -192,11 +192,11 @@ export default {
   },
   watch: {
     currentPage () {
-      this.loadItems()
+      this.loadItems(true)
     },
     perPage () {
       this.currentPage = 1
-      this.loadItems()
+      this.loadItems(true)
     },
     allItemSelected (val) {
       this.selectAll = val
@@ -206,13 +206,15 @@ export default {
     this.loadItems()
   },
   methods: {
-    async loadItems () {
+    async loadItems (cacheCount = false) {
       this.isLoading = true
-      let fetchCurrPage = this.$parent.service.get(`/page/${this.currentPage};;${this.perPage};;` /* TODO: prefix */)
-      let fetchCount = this.$parent.service.get('/count')
+      let fetchCurrPage = this.$parent.service.get('page', { data: { page: this.currentPage, perPage: this.perPage, prefix: '' } })
+      let fetchCount = cacheCount === true
+        ? Promise.resolve({ data: { state: 0, result: this.itemCount } }) // mocking a count request result
+        : this.$parent.service.get('count')
       try {
         let result = await Promise.all([ fetchCurrPage, fetchCount ])
-        let pageItems = result[0].data.state === 0 ? JSON.parse(result[0].data.result) : []
+        let pageItems = result[0].data.state === 0 ? result[0].data.result : []
         pageItems.forEach(item => { item.selected = false; item.deleted = false })
         this.items = pageItems
         this.itemCount = result[1].data.state === 0 ? Number.parseInt(result[1].data.result) : 0
@@ -255,9 +257,7 @@ export default {
     },
     async onEditSubmit () {
       this.editModal.inProgress = true
-      let result = await this.$parent.service.post(`/${this.editModal.isCreate ? 'add' : 'update'}/${this.editModal.key}`, {
-        value: this.editModal.value
-      })
+      let result = await this.$parent.service.post(this.editModal.isCreate ? 'add' : 'update', { key: this.editModal.key, value: this.editModal.value })
       switch (result.data.state) {
         case 0: {
           this.editModal.okVariant = 'success'
@@ -284,7 +284,7 @@ export default {
     onDelete (item, index, event) {
       this.showConfirm('', `确认要删除\`${item.key}\`吗`, async result => {
         if (result) {
-          let rst = await this.$parent.service.get(`/delete/${item.key}`)
+          let rst = await this.$parent.service.get('delete', { data: { key: item.key } })
           switch (rst.data.state) {
             case 0: {
               item.deleted = true

@@ -49,20 +49,26 @@ export default {
     return {
       version: '20190322_1',
       update_available: false,
-      update_pageUrl: undefined,
+      update_pageUrl: null,
       service: null
     }
   },
   created () {
-    axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
-    this.service = axios.create({
+    let service = axios.create({
       baseURL: 'http://1.tpv0.applinzi.com/Manage/'
     })
-    this.service.interceptors.request.use(config => {
+    service.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
+    service.interceptors.request.use(config => {
       // TODO: add auth data
       config.data = qs.stringify(config.data)
+      if (config.method === 'get') {
+        config.url += '?'
+        config.url += config.data
+        config.data = ''
+      }
       return config
     })
+    this.service = service
   }
 }
 </script>
