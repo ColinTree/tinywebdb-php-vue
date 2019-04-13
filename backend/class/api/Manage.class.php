@@ -15,7 +15,7 @@ class ApiManage extends Api {
         return DbProvider::getDb()->has($key);
       }
       case 'count': {
-        $ret = DbProvider::getDb()->count($_REQUEST['prefix']);
+        $ret = DbProvider::getDb()->count((string) $_REQUEST['prefix']);
         return $ret !== false ? $ret : [ 'state' => STATE_API_FAILED, 'result' => 'Cannot count keys' ];
       }
       case 'get': {
