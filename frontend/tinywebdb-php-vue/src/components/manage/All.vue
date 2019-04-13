@@ -192,6 +192,10 @@ export default {
   },
   watch: {
     currentPage () {
+      if (this.currentPage <= 0) {
+        this.currentPage = 1
+        return
+      }
       this.loadItems(true)
     },
     perPage () {
@@ -207,17 +211,24 @@ export default {
   },
   methods: {
     async loadItems (cacheCount = false) {
-      this.isLoading = true
-      let fetchCurrPage = this.$parent.service.get('page', { data: { page: this.currentPage, perPage: this.perPage, prefix: '' } })
-      let fetchCount = cacheCount === true
-        ? Promise.resolve({ data: { state: 0, result: this.itemCount } }) // mocking a count request result
-        : this.$parent.service.get('count')
       try {
-        let result = await Promise.all([ fetchCurrPage, fetchCount ])
-        let pageItems = result[0].data.state === 0 ? result[0].data.result : []
+        this.isLoading = true
+        let fetchCount = cacheCount === true
+          ? Promise.resolve({ data: { state: 0, result: this.itemCount } }) // mocking a count request result
+          : this.$parent.service.get('count')
+        let result = await fetchCount
+        this.itemCount = result.data.state === 0 ? Number.parseInt(result.data.result) : 0
+
+        if (this.itemCount <= (this.currentPage - 1) * this.perPage) {
+          this.currentPage = Math.ceil(this.itemCount / this.perPage)
+          // change on currentPage will call loadItem(cacheCount = true)
+          return
+        }
+
+        result = await this.$parent.service.get('page', { data: { page: this.currentPage, perPage: this.perPage, prefix: '' } })
+        let pageItems = result.data.state === 0 ? result.data.result : []
         pageItems.forEach(item => { item.selected = false; item.deleted = false })
         this.items = pageItems
-        this.itemCount = result[1].data.state === 0 ? Number.parseInt(result[1].data.result) : 0
       } catch (e) {
         console.error(e)
         this.showInfo('', '数据拉取失败, 错误信息见console')
