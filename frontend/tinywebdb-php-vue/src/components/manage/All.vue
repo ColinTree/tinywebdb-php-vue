@@ -22,7 +22,7 @@
     </template>
 
     <b-card v-if="anyItemSelected" id="floating_card">
-      <b-button variant="danger" size="sm">删除</b-button>
+      <b-button variant="danger" size="sm" @click="onMultiDelete">删除</b-button>
     </b-card>
 
     <b-pagination
@@ -219,10 +219,16 @@ export default {
         let result = await fetchCount
         this.itemCount = result.data.state === 0 ? Number.parseInt(result.data.result) : 0
 
-        if (this.itemCount <= (this.currentPage - 1) * this.perPage) {
-          this.currentPage = Math.ceil(this.itemCount / this.perPage)
-          // change on currentPage will call loadItem(cacheCount = true)
+        if (this.itemCount === 0) {
+          if (this.currentPage !== 1) {
+            this.currentPage = 1
+            return // change on currentPage will call loadItem(cacheCount = true)
+          }
+          this.items = []
           return
+        } else if (this.itemCount <= (this.currentPage - 1) * this.perPage) {
+          this.currentPage = Math.ceil(this.itemCount / this.perPage)
+          return // same with above
         }
 
         result = await this.$parent.service.get('page', { data: { page: this.currentPage, perPage: this.perPage, prefix: '' } })
@@ -294,17 +300,50 @@ export default {
     },
     onDelete (item, index, event) {
       this.showConfirm('', `确认要删除\`${item.key}\`吗`, async result => {
-        if (result) {
-          let rst = await this.$parent.service.get('delete', { data: { key: item.key } })
-          switch (rst.data.state) {
-            case 0: {
-              item.deleted = true
-              break
-            }
-            default: {
-              this.showInfo('', `删除失败，错误码${rst.data.state}`)
+        if (result !== true) {
+          return
+        }
+        let rst = await this.$parent.service.post('delete', { key: item.key })
+        switch (rst.data.state) {
+          case 0: {
+            item.deleted = true
+            break
+          }
+          default: {
+            this.showInfo('', `删除失败，错误码${rst.data.state}`)
+          }
+        }
+      })
+    },
+    onMultiDelete () {
+      this.showConfirm('', '确认要删除这些标签吗', async result => {
+        if (result !== true) {
+          return
+        }
+        let deleteArr = []
+        for (let index in this.items) {
+          let item = this.items[index]
+          if (item.selected === true && item.deleted !== true) {
+            deleteArr.push('' + item.key)
+          }
+        }
+        result = await this.$parent.service.post('mdelete', { keys: JSON.stringify(deleteArr) })
+        if (result.data.state === 0) {
+          let map = {}
+          this.items.forEach((val, index) => (map[val.key] = index))
+          let failedKeys = []
+          for (let key in result.data.result) {
+            if (result.data.result[key] === true) {
+              this.items[map[key]].deleted = true
+            } else {
+              failedKeys.push(key)
             }
           }
+          if (failedKeys.length > 0) {
+            this.showInfo('', `以下标签删除失败：\`${failedKeys.join('`，`')}\``)
+          }
+        } else {
+          this.showInfo('', `删除失败，错误码${result.data.state}`)
         }
       })
     },
