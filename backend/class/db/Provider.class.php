@@ -9,7 +9,10 @@ final class DbProvider {
   }
 
   static function getDb() {
-    return self::$db;
+    if (self::$db instanceof DbBase) {
+      return self::$db;
+    }
+    throw new Error('No database can be provided');
   }
 
 }
