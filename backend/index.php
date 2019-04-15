@@ -32,10 +32,13 @@ try {
   }
   $a = explode('/', $a, 2);
   $api = "Api$a[0]";
+  if ($api == 'Api') {
+    $api .= 'Index';
+  }
   $args = isset($a[1]) ? (string) $a[1] : '';
   unset($a);
-} catch (Throwable $e) {
-  new ApiError(DEBUG_MODE === true ? $e->__toString() : $e->getMessage());
+} catch (Throwable $t) {
+  new ApiError(Api::throwable2string($t));
   exit;
 }
 
@@ -48,6 +51,6 @@ try {
 
 try {
   new $api;
-} catch (Throwable $e) {
-  new ApiError(DEBUG_MODE === true ? $e->__toString() : $e->getMessage());
+} catch (Throwable $t) {
+  new ApiError(Api::throwable2string($t));
 }

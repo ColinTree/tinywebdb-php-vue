@@ -22,6 +22,8 @@ STATE_KEY_ALREADY_EXIST | any add | 30 | 200 | key already exist
 
 Ensure you had set up `config.php`, which would produce config & decide database service.
 
+See `config.sample.php`.
+
 ## dev
 
 run

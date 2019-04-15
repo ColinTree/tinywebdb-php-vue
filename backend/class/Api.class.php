@@ -8,16 +8,21 @@ const STATE_KEY_NOT_FOUNT = 10;
 const STATE_UNACCEPTED_LIMIT = 20;
 const STATE_KEY_ALREADY_EXIST = 30;
 
-const ARG_SEPERATOR = ';;';
-
 abstract class Api {
+
+  /**
+   * This would return string result depend on config `DEBUG_MODE`
+   */
+  static function throwable2string(throwable $t) {
+    return defined('DEBUG_MODE') && DEBUG_MODE === true ? $t->__toString() : $t->getMessage();
+  }
 
   function __construct() {
     ob_start();
     try {
       $handleResult = $this->handle();
     } catch (Throwable $t) {
-      $handleResult = [ 'state' => STATE_INTERNAL_ERROR, 'result' => DEBUG_MODE === true ? $t->__toString() : $t->getMessage() ];
+      $handleResult = [ 'state' => STATE_INTERNAL_ERROR, 'result' => self::throwable2string($t) ];
     } finally {
       $result = ob_get_clean();
     }
