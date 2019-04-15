@@ -31,6 +31,7 @@ try {
     $a = substr($a, 1);
   }
   $a = explode('/', $a, 2);
+  $a[0] = ucfirst(strtolower($a[0]));
   $api = "Api$a[0]";
   if ($api == 'Api') {
     $api .= 'Index';
