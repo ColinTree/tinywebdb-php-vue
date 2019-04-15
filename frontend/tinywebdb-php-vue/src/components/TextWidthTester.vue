@@ -34,6 +34,7 @@ export default {
   },
   methods: {
     test (text) {
+      text = text.split('\n').join('').split('\r').join('')
       this.$el.innerText = text
       let width = this.$el.clientWidth
       this.$el.innerText = ''
