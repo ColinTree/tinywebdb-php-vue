@@ -1,6 +1,6 @@
 <?php
 
-class ApiSetavalue extends Api {
+class ApiStoreavalue extends Api {
 
   function handle() {
     $key = (string) $_REQUEST['key'];
