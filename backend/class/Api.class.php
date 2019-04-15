@@ -28,6 +28,11 @@ abstract class Api {
       $result = ob_get_clean();
     }
 
+    if (isset($handleResult['noProcess']) && $handleResult['noProcess'] === true) {
+      echo $handleResult['result'];
+      return;
+    }
+
     $state = STATE_SUCCEED;
     if (is_null($handleResult)) {
       // ignore
