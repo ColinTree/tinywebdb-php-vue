@@ -12,7 +12,7 @@ class DbSaeKV extends DbBase {
       $ret = $this->kv->init($accessKey);
     }
     if (!$ret) {
-      throw new Exception('SaeKV init failed: ' . $this->kv->errno());
+      throw new Exception("SaeKV init failed: {$this->kv->errno()}");
     }
   }
 

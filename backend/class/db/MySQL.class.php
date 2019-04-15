@@ -46,15 +46,15 @@ class DbMySQL extends DbBase {
 
   function delete(string $key) {
     $mysqli = $this->mysqli();
-    $stmt = $mysqli->prepare("DELETE FROM `{$this->table}` WHERE `key` = ?");
+    $stmt = $mysqli->prepare("DELETE FROM `$this->table` WHERE `key` = ?");
     if ($stmt === false) {
       throw new Exception('Cannot prepare stmt: ' . mysqli_error($mysqli));
     }
     if (!$stmt->bind_param('s', $key)) {
-      throw new Exception('Cannot bind param: ' . $stmt->error);
+      throw new Exception("Cannot bind param: $stmt->error");
     }
     if (!($result = $stmt->execute())) {
-      throw new Exception('Cannot execute query: ' . $stmt->error);
+      throw new Exception("Cannot execute query: $stmt->error");
     }
     $stmt->close();
     $mysqli->close();
@@ -63,15 +63,15 @@ class DbMySQL extends DbBase {
 
   function set(string $key, string $value) {
     $mysqli = $this->mysqli();
-    $stmt = $mysqli->prepare("INSERT INTO `{$this->table}` (`key`,`value`) VALUES (?, ?)");
+    $stmt = $mysqli->prepare("INSERT INTO `$this->table` (`key`,`value`) VALUES (?, ?)");
     if ($stmt === false) {
       throw new Exception('Cannot prepare stmt: ' . mysqli_error($mysqli));
     }
     if (!$stmt->bind_param('ss', $key, $value)) {
-      throw new Exception('Cannot bind param: ' . $stmt->error);
+      throw new Exception("Cannot bind param: $stmt->error");
     }
     if (!($result = $stmt->execute())) {
-      throw new Exception('Cannot execute query: ' . $stmt->error);
+      throw new Exception("Cannot execute query: $stmt->error");
     }
     $stmt->close();
     $mysqli->close();
@@ -80,15 +80,15 @@ class DbMySQL extends DbBase {
 
   function get(string $key) {
     $mysqli = $this->mysqli();
-    $stmt = $mysqli->prepare("SELECT `value` FROM `{$this->table}` WHERE `key` = ? LIMIT 1");
+    $stmt = $mysqli->prepare("SELECT `value` FROM `$this->table` WHERE `key` = ? LIMIT 1");
     if ($stmt === false) {
       throw new Exception('Cannot prepare stmt: ' . mysqli_error($mysqli));
     }
     if (!$stmt->bind_param('s', $key)) {
-      throw new Exception('Cannot bind param: ' . $stmt->error);
+      throw new Exception("Cannot bind param: $stmt->error");
     }
     if (!$stmt->execute()) {
-      throw new Exception('Cannot execute query: ' . $stmt->error);
+      throw new Exception("Cannot execute query: $stmt->error");
     }
     $result = $stmt->get_result();
     $rtn = false;
@@ -103,17 +103,17 @@ class DbMySQL extends DbBase {
 
   function getPage(int $page = 1, int $perPage = 100, string $prefix = '') {
     $mysqli = $this->mysqli();
-    $stmt = $mysqli->prepare("SELECT * FROM `{$this->table}` WHERE `key` LIKE ? LIMIT ?, ?");
+    $stmt = $mysqli->prepare("SELECT * FROM `$this->table` WHERE `key` LIKE ? LIMIT ?, ?");
     if ($stmt === false) {
       throw new Exception('Cannot prepare stmt: ' . mysqli_error($mysqli));
     }
     $prefix .= '%';
     $start = ($page - 1) * $perPage;
     if (!$stmt->bind_param('sii', $prefix, $start, $perPage)) {
-      throw new Exception('Cannot bind param: ' . $stmt->error);
+      throw new Exception("Cannot bind param: $stmt->error");
     }
     if (!$stmt->execute()) {
-      throw new Exception('Cannot execute query: ' . $stmt->error);
+      throw new Exception("Cannot execute query: $stmt->error");
     }
     $result = $stmt->get_result();
     $rtn = [];

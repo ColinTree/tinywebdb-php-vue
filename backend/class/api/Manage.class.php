@@ -20,27 +20,27 @@ class ApiManage extends Api {
       }
       case 'get': {
         $ret = DbProvider::getDb()->get($key);
-        return $ret !== false ? $ret : [ 'state' => STATE_KEY_NOT_FOUNT, 'result' => 'No record for key: ' . $key ];
+        return $ret !== false ? $ret : [ 'state' => STATE_KEY_NOT_FOUNT, 'result' => "No record for key: $key" ];
       }
       case 'set': {
         return (DbProvider::getDb()->set($key, $value))
-            ? 'Value of key (' . $key . ') set succeed'
-            : [ 'state' => STATE_API_FAILED, 'result' => 'Failed setting key: ' . $key ];
+            ? "Value of key ($key) set succeed"
+            : [ 'state' => STATE_API_FAILED, 'result' => "Failed setting key: $key" ];
       }
       case 'add': {
         return (DbProvider::getDb()->add($key, $value))
-            ? 'Value of key (' . $key . ') added'
-            : [ 'state' => STATE_KEY_ALREADY_EXIST, 'result' => 'Key already exist: ' . $key ];
+            ? "Value of key ($key) added"
+            : [ 'state' => STATE_KEY_ALREADY_EXIST, 'result' => "Key already exist: $key" ];
       }
       case 'update': {
         return (DbProvider::getDb()->update($key, $value))
-            ? 'Value of key (' . $key . ') updated'
-            : [ 'state' => STATE_KEY_NOT_FOUNT, 'result' => 'Key not found: ' . $key ];
+            ? "Value of key ($key) updated"
+            : [ 'state' => STATE_KEY_NOT_FOUNT, 'result' => "Key not found: $key" ];
       }
       case 'delete': {
         return (DbProvider::getDb()->delete($key))
-            ? 'Key (' . $key . ') deleted'
-            : [ 'state' => STATE_API_FAILED, 'result' => 'Failed deleting key: ' . $key ];
+            ? "Key ($key) deleted"
+            : [ 'state' => STATE_API_FAILED, 'result' => "Failed deleting key: $key" ];
       }
       case 'mdelete': {
         return [ 'result' => DbProvider::getDb()->mDelete(json_decode((string) $_REQUEST['keys'])) ];
@@ -55,8 +55,7 @@ class ApiManage extends Api {
         return [ 'result' => DbProvider::getDb()->getPage($page, $perPage, $prefix) ];
       }
     }
-    echo 'Unimplemented managing api: ' . $action;
-    return [ 'state' => STATE_API_NOT_FOUND ];
+    return [ 'state' => STATE_API_NOT_FOUND, 'result' => "Unimplemented managing api: $action" ];
   }
 
 }
