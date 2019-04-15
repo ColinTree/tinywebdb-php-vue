@@ -3,7 +3,7 @@
 class ApiStoreavalue extends Api {
 
   function handle() {
-    $key = (string) $_REQUEST['key'];
+    $key = (string) $_REQUEST['tag'];
     $value = (string) $_REQUEST['value'];
     if (DbBase::keyReserved($key)) {
       http_response_code(403);
