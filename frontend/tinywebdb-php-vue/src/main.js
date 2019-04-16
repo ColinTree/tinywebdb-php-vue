@@ -5,6 +5,8 @@ import App from './App'
 import router from './router'
 
 import BaseCard from '@/components/BaseCard'
+import TextWidthTester from '@/components/TextWidthTester'
+import LiningCode from '@/components/LiningCode'
 
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -13,6 +15,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue)
 
 Vue.component('BaseCard', BaseCard)
+Vue.component('LiningCode', LiningCode)
 
 Vue.config.productionTip = false
 
@@ -20,6 +23,6 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
-  components: { App },
-  template: '<App/>'
+  components: { App, TextWidthTester },
+  template: '<div><App/><TextWidthTester ref="textWidthTester" /></div>'
 })

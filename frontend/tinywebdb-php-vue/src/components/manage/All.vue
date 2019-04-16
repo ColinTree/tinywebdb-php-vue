@@ -70,8 +70,12 @@
       </template>
 
       <template slot="operations" slot-scope="row">
-        <b-button v-if="!row.item.deleted" variant="primary" @click="onShow(row.item, row.index, $event)">查看</b-button>
-        <b-button v-if="!row.item.deleted" variant="primary" @click="onEdit(row.item, row.index, $event)">修改</b-button>
+        <b-button
+            v-if="!row.item.deleted"
+            variant="primary"
+            @click="showModal.key = row.item.key; showModal.value = row.item.value; showModal.inProgress = showModal.jsonMode = false"
+            v-b-modal.showModal>查看</b-button>
+        <b-button v-if="!row.item.deleted" variant="primary" @click="onEdit(row.item, row.index, $event)">编辑</b-button>
         <b-button
             :disabled="row.item.deleted"
             :variant="row.item.deleted ? 'success' : 'danger'"
@@ -86,6 +90,39 @@
         :limit="10"
         v-model="currentPage"
         align="center" />
+
+    <b-modal
+        id="showModal" ref="showModal"
+        size="lg"
+        centered
+        title="查看标签"
+        hide-footer
+        @hidden="showModal.key = ''"
+        scrollable
+        lazy>
+      <b-form-group label="标签" label-for="showModal_key">
+        <b-input id="showModal_key" v-model="showModal.key" readonly />
+      </b-form-group>
+      <div role="group">
+        <div style="display: flex; justify-content: space-between">
+          <label>值</label>
+          <div>
+            <b-button
+                variant="info"
+                size="sm"
+                :disabled="!isShownValueJson"
+                @click="showModal.jsonMode = !showModal.jsonMode"
+                v-text="showModal.jsonMode ? '显示原文' : '解码JSON'" />
+            <b-button
+                variant="info"
+                size="sm"
+                @click="onShowModalRefresh">刷新</b-button>
+          </div>
+        </div>
+        <b-spinner v-if="showModal.inProgress" />
+        <LiningCode v-else v-model="computedShowModalValue" />
+      </div>
+    </b-modal>
 
     <b-modal
         id="editModal" ref="editModal"
@@ -135,18 +172,16 @@
 
     <ConfirmModal ref="confirmModal" />
     <InfoModal ref="infoModal" />
-    <TextWidthTester ref="textWidthTester" />
   </BaseCard>
 </template>
 
 <script>
 import ConfirmModal from '@/components/ConfirmModal'
 import InfoModal from '@/components/InfoModal'
-import TextWidthTester from '@/components/TextWidthTester'
 
 export default {
   name: 'ManageAll',
-  components: { ConfirmModal, InfoModal, TextWidthTester },
+  components: { ConfirmModal, InfoModal },
   data () {
     return {
       currentCategory: 'all',
@@ -162,6 +197,7 @@ export default {
       items: [],
       itemCount: 0,
       selectAll: false,
+      showModal: { key: '', value: '', jsonMode: false, inProgress: false },
       editModal: { key: '', value: '', isCreate: true, inProgress: false, okVariant: 'primary' }
     }
   },
@@ -188,6 +224,38 @@ export default {
         }
       }
       return !allDeleted
+    },
+    isShownValueJson () {
+      let val = this.showModal.value
+      // case of json string directly
+      if ([ '[', '{' ].indexOf(val.charAt(0)) >= 0) {
+        return true
+      }
+      // case of json quoted by double quotes
+      if (val.length > 4 && val.charAt(0) === '"' && val.charAt(val.length - 1) === '"') {
+        return [ '[', '{' ].indexOf(val.charAt(1)) >= 0
+      }
+      return false
+    },
+    computedShowModalValue () {
+      if (!this.showModal.jsonMode) {
+        return this.showModal.value
+      }
+      try {
+        let val = this.showModal.value
+        // case of json as string like "[\"item 0\",1]"
+        if (val.length > 4 && val.charAt(0) === '"' && val.charAt(val.length - 1) === '"') {
+          val = JSON.parse(val)
+        }
+        val = JSON.parse(val)
+        return JSON.stringify(val, null, 2)
+      } catch (e) {
+        console.error('Cannot parse json:', e)
+        this.showInfo('', '无法解码json，详情见console')
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.showModal.jsonMode = false
+        return this.showModal.value
+      }
     }
   },
   watch: {
@@ -260,11 +328,28 @@ export default {
       this.items.forEach(item => (item.selected = val))
       this.$refs.table.refresh()
     },
-    onShow (item, index, event) {
-      item = { ...item }
-      delete item.selected
-      delete item.deleted
-      this.showInfo('查看标签', JSON.stringify(item, null, 2))
+    async onShowModalRefresh () {
+      this.showModal.inProgress = true
+      let result = await this.$parent.service.post('get', { key: this.showModal.key })
+      switch (result.data.state) {
+        case 0: {
+          this.showModal.value = result.data.result
+          this.items.forEach(item => {
+            if (item.key === this.showModal.key) {
+              item.value = result.data.result
+            }
+          })
+          break
+        }
+        case 10: {
+          this.showInfo('', '标签不存在')
+          break
+        }
+        default: {
+          this.showInfo('', `获取标签信息失败，错误码${result.data.state}`)
+        }
+      }
+      this.showModal.inProgress = false
     },
     onEdit (item, index, event) {
       this.editModal.key = item.key
@@ -279,7 +364,7 @@ export default {
         case 0: {
           this.editModal.okVariant = 'success'
           setTimeout(() => (this.editModal.okVariant = 'primary'), 1500)
-          this.loadItems()
+          this.loadItems(!this.editModal.isCreate)
           break
         }
         case 10: {
@@ -354,7 +439,7 @@ export default {
       this.$refs.infoModal.show(title, content, hiddenCallback)
     },
     testTextWidth (text) {
-      return this.$refs.textWidthTester.test(text)
+      return this.$root.$refs.textWidthTester.test(text)
     }
   }
 }
