@@ -2,6 +2,7 @@
   <BaseCard >
     <template slot="header">
       <span>
+        <!-- TODO: category (when implement manage-settings) -->
         标签 -
         <select v-model="currentCategory" class="transparent-dropdown">
           <option v-for="category in categories" :key="category.name" :value="category.name" v-text="category.text" />
