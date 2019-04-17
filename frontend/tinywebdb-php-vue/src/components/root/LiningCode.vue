@@ -30,7 +30,7 @@ export default {
       return this.value.split('\n')
     },
     lineNumWidth () {
-      return this.$root.$refs.textWidthTester.test('' + (this.lines.length - 1)) + this.lineNumPadding * 2
+      return this.$root.testTextWidth('' + (this.lines.length - 1)) + this.lineNumPadding * 2
     }
   }
 }

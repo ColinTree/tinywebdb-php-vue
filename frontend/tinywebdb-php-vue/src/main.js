@@ -4,9 +4,12 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
-import BaseCard from '@/components/BaseCard'
-import TextWidthTester from '@/components/TextWidthTester'
-import LiningCode from '@/components/LiningCode'
+import BaseCard from '@/components/root/BaseCard'
+import LiningCode from '@/components/root/LiningCode'
+
+import TextWidthTester from '@/components/root/TextWidthTester'
+import ConfirmModal from '@/components/root/ConfirmModal'
+import InfoModal from '@/components/root/InfoModal'
 
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -23,6 +26,22 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
-  components: { App, TextWidthTester },
-  template: '<div><App/><TextWidthTester ref="textWidthTester" /></div>'
+  components: { App, TextWidthTester, ConfirmModal, InfoModal },
+  template: '<div>' +
+              '<App/>' +
+              '<TextWidthTester ref="textWidthTester" />' +
+              '<ConfirmModal ref="confirmModal" />' +
+              '<InfoModal ref="infoModal" />' +
+            '</div>',
+  methods: {
+    showConfirm (title, content, callback) {
+      this.$refs.confirmModal.show(title, content, callback)
+    },
+    showInfo (title, content, hiddenCallback = null) {
+      this.$refs.infoModal.show(title, content, hiddenCallback)
+    },
+    testTextWidth (text) {
+      return this.$root.$refs.textWidthTester.test(text)
+    }
+  }
 })

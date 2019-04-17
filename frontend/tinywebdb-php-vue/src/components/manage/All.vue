@@ -170,19 +170,12 @@
         <span v-else v-text="editModal.okVariant == 'success' ? '完成' : '提交'" />
       </template>
     </b-modal>
-
-    <ConfirmModal ref="confirmModal" />
-    <InfoModal ref="infoModal" />
   </BaseCard>
 </template>
 
 <script>
-import ConfirmModal from '@/components/ConfirmModal'
-import InfoModal from '@/components/InfoModal'
-
 export default {
   name: 'ManageAll',
-  components: { ConfirmModal, InfoModal },
   data () {
     return {
       currentCategory: 'all',
@@ -252,7 +245,7 @@ export default {
         return JSON.stringify(val, null, 2)
       } catch (e) {
         console.error('Cannot parse json:', e)
-        this.showInfo('', '无法解码json，详情见console')
+        this.$root.showInfo('', '无法解码json，详情见console')
         // eslint-disable-next-line vue/no-side-effects-in-computed-properties
         this.showModal.jsonMode = false
         return this.showModal.value
@@ -306,7 +299,7 @@ export default {
         this.items = pageItems
       } catch (e) {
         console.error(e)
-        this.showInfo('', '数据拉取失败, 错误信息见console')
+        this.$root.showInfo('', '数据拉取失败, 错误信息见console')
       } finally {
         this.isLoading = false
       }
@@ -315,9 +308,9 @@ export default {
       const ACCEPTED_WIDTH = 530
       let item = this.items[index]
       let val = item.value.toString()
-      if (val.length > 100 || this.testTextWidth(val) > ACCEPTED_WIDTH) {
+      if (val.length > 100 || this.$root.testTextWidth(val) > ACCEPTED_WIDTH) {
         let pointer = 1
-        while (this.testTextWidth(val.substring(0, pointer)) < ACCEPTED_WIDTH) {
+        while (this.$root.testTextWidth(val.substring(0, pointer)) < ACCEPTED_WIDTH) {
           pointer++
         }
         return `${item.key}<br/><div class="item-value">${val.substring(0, pointer - 1)}……</div>`
@@ -343,11 +336,11 @@ export default {
           break
         }
         case 10: {
-          this.showInfo('', '标签不存在')
+          this.$root.showInfo('', '标签不存在')
           break
         }
         default: {
-          this.showInfo('', `获取标签信息失败，错误码${result.data.state}`)
+          this.$root.showInfo('', `获取标签信息失败，错误码${result.data.state}`)
         }
       }
       this.showModal.inProgress = false
@@ -369,23 +362,23 @@ export default {
           break
         }
         case 10: {
-          this.showInfo('', '编辑失败，目标标签不存在，自动切换为创建标签模式', () => this.$refs.editModal_key.focus())
+          this.$root.showInfo('', '编辑失败，目标标签不存在，自动切换为创建标签模式', () => this.$refs.editModal_key.focus())
           this.editModal.isCreate = true
           break
         }
         case 30: {
-          this.showInfo('', '创建失败，目标标签已存在，自动切换为编辑标签模式', () => this.$refs.editModal_value.focus())
+          this.$root.showInfo('', '创建失败，目标标签已存在，自动切换为编辑标签模式', () => this.$refs.editModal_value.focus())
           this.editModal.isCreate = false
           break
         }
         default: {
-          this.showInfo('', `${this.editModal.isCreate ? '创建' : '编辑'}失败，错误码${result.data.state}`)
+          this.$root.showInfo('', `${this.editModal.isCreate ? '创建' : '编辑'}失败，错误码${result.data.state}`)
         }
       }
       this.editModal.inProgress = false
     },
     onDelete (item, index, event) {
-      this.showConfirm('', `确认要删除\`${item.key}\`吗`, async result => {
+      this.$root.showConfirm('', `确认要删除\`${item.key}\`吗`, async result => {
         if (result !== true) {
           return
         }
@@ -396,13 +389,13 @@ export default {
             break
           }
           default: {
-            this.showInfo('', `删除失败，错误码${rst.data.state}`)
+            this.$root.showInfo('', `删除失败，错误码${rst.data.state}`)
           }
         }
       })
     },
     onMultiDelete () {
-      this.showConfirm('', '确认要删除这些标签吗', async result => {
+      this.$root.showConfirm('', '确认要删除这些标签吗', async result => {
         if (result !== true) {
           return
         }
@@ -426,21 +419,12 @@ export default {
             }
           }
           if (failedKeys.length > 0) {
-            this.showInfo('', `以下标签删除失败：\`${failedKeys.join('`，`')}\``)
+            this.$root.showInfo('', `以下标签删除失败：\`${failedKeys.join('`，`')}\``)
           }
         } else {
-          this.showInfo('', `删除失败，错误码${result.data.state}`)
+          this.$root.showInfo('', `删除失败，错误码${result.data.state}`)
         }
       })
-    },
-    showConfirm (title, content, callback) {
-      this.$refs.confirmModal.show(title, content, callback)
-    },
-    showInfo (title, content, hiddenCallback = null) {
-      this.$refs.infoModal.show(title, content, hiddenCallback)
-    },
-    testTextWidth (text) {
-      return this.$root.$refs.textWidthTester.test(text)
     }
   }
 }
