@@ -26,7 +26,7 @@
 
       <div id="footer">
         TinyWebDB MANAGE System By <b-link target="_blank" href="http://github.com/Colintree">Colintree</b-link>.
-        VERSION: {{ version }}
+        VERSION: <span v-text="$root.versionName" />
         <label :style="{ float: 'right' }">
           <b-link target="_blank" href="http://tsp.colintree.cn/使用手册">需要帮助？</b-link>
           &nbsp;
@@ -47,7 +47,6 @@ export default {
   name: 'ManageFrame',
   data () {
     return {
-      version: '20190322_1',
       update_available: false,
       update_pageUrl: null,
       service: null
@@ -55,7 +54,7 @@ export default {
   },
   created () {
     let service = axios.create({
-      baseURL: 'http://1.tpv0.applinzi.com/Manage/'
+      baseURL: this.$root.SERVICE_BASE_URL + '/Manage/'
     })
     service.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
     service.interceptors.request.use(config => {

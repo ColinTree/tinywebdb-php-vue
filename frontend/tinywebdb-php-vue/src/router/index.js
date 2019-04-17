@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import Index from '@/components/Index'
 import ManageFrame from '@/components/manage/Frame'
 
 import ManageAll from '@/components/manage/All'
@@ -16,7 +16,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: HelloWorld
+      component: Index
     },
     {
       path: '/manage',

@@ -1,5 +1,8 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+import Axios from 'axios'
+import qs from 'qs'
+
 import Vue from 'vue'
 import App from './App'
 import router from './router'
@@ -33,6 +36,30 @@ new Vue({
               '<ConfirmModal ref="confirmModal" />' +
               '<InfoModal ref="infoModal" />' +
             '</div>',
+  data () {
+    return {
+      SERVICE_BASE_URL: '/',
+      service: null,
+      versionName: '1.0.0-alpha',
+      version: '100'
+    }
+  },
+  created () {
+    this.SERVICE_BASE_URL = window.location.origin + '/'
+    this.SERVICE_BASE_URL = 'http://1.tpv0.applinzi.com/' // FIXME: remove when release
+
+    let service = Axios.create({ baseURL: this.SERVICE_BASE_URL })
+    service.interceptors.request.use(config => {
+      config.data = qs.stringify(config.data)
+      if (config.method === 'get') {
+        config.url += '?'
+        config.url += config.data
+        config.data = ''
+      }
+      return config
+    })
+    this.service = service
+  },
   methods: {
     showConfirm (title, content, callback) {
       this.$refs.confirmModal.show(title, content, callback)
