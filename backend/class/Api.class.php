@@ -19,6 +19,11 @@ abstract class Api {
   }
 
   function __construct() {
+    header('Content-Type: application/json');
+    if (defined('ACCESS_CONTROL_ALLOW_ORIGIN')) {
+      header('Access-Control-Allow-Origin: ' . ACCESS_CONTROL_ALLOW_ORIGIN);
+    }
+
     ob_start();
     try {
       $handleResult = $this->handle();
@@ -57,10 +62,6 @@ abstract class Api {
         $http_code = 500; break;
     }
     http_response_code($http_code);
-    header('Content-Type: application/json');
-    if (defined('ACCESS_CONTROL_ALLOW_ORIGIN')) {
-      header('Access-Control-Allow-Origin: ' . ACCESS_CONTROL_ALLOW_ORIGIN);
-    }
     echo json_encode([
       'state' => $state,
       'result' => $result
