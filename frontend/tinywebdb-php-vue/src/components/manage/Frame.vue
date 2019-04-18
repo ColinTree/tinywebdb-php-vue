@@ -67,6 +67,7 @@ export default {
       }
       return config
     }, error => Promise.reject(error))
+    service.interceptors.response.use(undefined, error => Promise.reject(error))
     this.service = service
   }
 }
