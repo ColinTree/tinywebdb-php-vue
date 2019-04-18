@@ -57,7 +57,7 @@ new Vue({
         config.data = ''
       }
       return config
-    })
+    }, error => Promise.reject(error))
     this.service = service
   },
   methods: {
