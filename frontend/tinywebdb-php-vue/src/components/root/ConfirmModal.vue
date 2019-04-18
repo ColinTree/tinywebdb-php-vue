@@ -5,8 +5,11 @@
       :ok-title="okTitle"
       :ok-variant="okVariant"
       :cancel-title="cancelTitle"
-      @ok="callback(true)"
-      @hidden="callback(false)"
+      @ok="okCallback"
+      @cancel="cancelCallback"
+      no-close-on-backdrop
+      no-close-on-esc
+      hide-header-close
       centered lazy>
     <pre v-text="content" />
   </b-modal>
@@ -34,14 +37,16 @@ export default {
     return {
       title: '',
       content: '',
-      callback: result => {}
+      okCallback: () => {},
+      cancelCallback: () => {}
     }
   },
   methods: {
-    show (title, content, callback) {
+    show (title, content, okCallback = () => {}, cancelCallback = () => {}) {
       this.title = title
       this.content = content
-      this.callback = callback
+      this.okCallback = okCallback
+      this.cancelCallback = cancelCallback
       this.$children[0].show()
     }
   }

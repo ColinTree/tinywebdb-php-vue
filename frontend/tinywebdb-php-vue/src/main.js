@@ -62,8 +62,8 @@ new Vue({
     this.service = service
   },
   methods: {
-    showConfirm (title, content, callback) {
-      this.$refs.confirmModal.show(title, content, callback)
+    showConfirm (title, content, okCallback, cancelCallback) {
+      this.$refs.confirmModal.show(title, content, okCallback, cancelCallback)
     },
     showInfo (title, content, hiddenCallback = null) {
       this.$refs.infoModal.show(title, content, hiddenCallback)

@@ -378,10 +378,7 @@ export default {
       this.editModal.inProgress = false
     },
     onDelete (item, index, event) {
-      this.$root.showConfirm('', `确认要删除\`${item.key}\`吗`, async result => {
-        if (result !== true) {
-          return
-        }
+      this.$root.showConfirm('', `确认要删除\`${item.key}\`吗`, async () => {
         let rst = await this.$parent.service.post('delete', { key: item.key })
         switch (rst.data.state) {
           case 0: {
@@ -395,10 +392,7 @@ export default {
       })
     },
     onMultiDelete () {
-      this.$root.showConfirm('', '确认要删除这些标签吗', async result => {
-        if (result !== true) {
-          return
-        }
+      this.$root.showConfirm('', '确认要删除这些标签吗', async () => {
         let deleteArr = []
         for (let index in this.items) {
           let item = this.items[index]
@@ -406,7 +400,7 @@ export default {
             deleteArr.push('' + item.key)
           }
         }
-        result = await this.$parent.service.post('mdelete', { keys: JSON.stringify(deleteArr) })
+        let result = await this.$parent.service.post('mdelete', { keys: JSON.stringify(deleteArr) })
         if (result.data.state === 0) {
           let map = {}
           this.items.forEach((val, index) => (map[val.key] = index))
