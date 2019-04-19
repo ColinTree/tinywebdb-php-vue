@@ -4,6 +4,7 @@ const STATE_SUCCEED = 0;
 const STATE_API_NOT_FOUND = 1;  // with http code 404
 const STATE_API_FAILED = 2;     // with http code 503
 const STATE_INTERNAL_ERROR = 3; // with http code 500
+const STATE_UNAUTHORIZED = 4;   // with http code 401
 const STATE_KEY_NOT_FOUNT = 10;
 const STATE_KEY_RESERVED = 11;
 const STATE_UNACCEPTED_LIMIT = 20;
@@ -22,6 +23,11 @@ abstract class Api {
     header('Content-Type: application/json');
     if (defined('ACCESS_CONTROL_ALLOW_ORIGIN')) {
       header('Access-Control-Allow-Origin: ' . ACCESS_CONTROL_ALLOW_ORIGIN);
+    }
+    header('Access-Control-Allow-Headers: ' . implode(', ', [ 'Content-Type', 'X-TPV-Manage-Token' ]));
+
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+      exit;
     }
 
     ob_start();
@@ -60,12 +66,14 @@ abstract class Api {
         $http_code = 503; break;
       case STATE_INTERNAL_ERROR:
         $http_code = 500; break;
+      case STATE_UNAUTHORIZED:
+        $http_code = 401; break;
     }
     http_response_code($http_code);
-    echo json_encode([
+    exit(json_encode([
       'state' => $state,
       'result' => $result
-    ]);
+    ]));
   }
 
   /**

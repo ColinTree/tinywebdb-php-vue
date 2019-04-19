@@ -6,7 +6,7 @@ import ManageFrame from '@/components/manage/Frame'
 import ManageAll from '@/components/manage/All'
 import ManageBackup from '@/components/manage/Backup'
 import ManageFile from '@/components/manage/File'
-import ManageLogout from '@/components/manage/Logout'
+import ManageLogin from '@/components/manage/Login'
 import ManageSetting from '@/components/manage/Setting'
 
 Vue.use(Router)
@@ -27,7 +27,7 @@ export default new Router({
         { path: 'backup', component: ManageBackup },
         { path: 'file', component: ManageFile },
         { path: 'setting', component: ManageSetting },
-        { path: 'logout', component: ManageLogout },
+        { path: 'login', component: ManageLogin },
         { path: '*', component: { template: '<BaseCard>page not found</BaseCard>' } }
       ]
     },

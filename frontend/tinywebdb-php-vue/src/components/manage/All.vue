@@ -275,11 +275,10 @@ export default {
     async loadItems (cacheCount = false) {
       try {
         this.isLoading = true
-        let fetchCount = cacheCount === true
-          ? Promise.resolve({ data: { state: 0, result: this.itemCount } }) // mocking a count request result
-          : this.$parent.service.get('count')
-        let result = await fetchCount
-        this.itemCount = result.data.state === 0 ? Number.parseInt(result.data.result) : 0
+        if (cacheCount !== true) {
+          let result = await this.$parent.service.get('count')
+          this.itemCount = result.data.state === 0 ? Number.parseInt(result.data.result) : 0
+        }
 
         if (this.itemCount === 0) {
           if (this.currentPage !== 1) {
@@ -293,13 +292,15 @@ export default {
           return // same with above
         }
 
-        result = await this.$parent.service.get('page', { data: { page: this.currentPage, perPage: this.perPage, prefix: '' } })
+        let result = await this.$parent.service.get('page', { params: { page: this.currentPage, perPage: this.perPage, prefix: '' } })
         let pageItems = result.data.state === 0 ? result.data.result : []
         pageItems.forEach(item => { item.selected = false; item.deleted = false })
         this.items = pageItems
       } catch (e) {
-        console.error(e)
-        this.$root.showInfo('', '数据拉取失败, 错误信息见console')
+        if (e.handled !== true) {
+          console.error(e)
+          this.$root.showInfo('', '数据拉取失败, 错误信息见console')
+        }
       } finally {
         this.isLoading = false
       }
@@ -324,7 +325,7 @@ export default {
     },
     async onShowModalRefresh () {
       this.showModal.inProgress = true
-      let result = await this.$parent.service.post('get', { key: this.showModal.key })
+      let result = await this.$parent.service.get('get', { params: { key: this.showModal.key } })
       switch (result.data.state) {
         case 0: {
           this.showModal.value = result.data.result

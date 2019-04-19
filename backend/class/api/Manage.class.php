@@ -2,6 +2,13 @@
 
 class ApiManage extends Api {
 
+  private static function passwordCorrect ($pwd) {
+    return $pwd == md5('tpv-salt' . 'password');// TODO: implement this
+  }
+  private static function saltPassword($pwd) {
+    return md5('tpv-salt' . $pwd);
+  }
+
   function handle() {
     $key = (string) $_REQUEST['key'];
     $value = (string) $_REQUEST['value'];
@@ -10,6 +17,33 @@ class ApiManage extends Api {
     $action = strtolower($args[0]);
     unset($args);
 
+    if ($action == 'login') {
+      $pwd = self::saltPassword($_POST['pwd']);
+      if (self::passwordCorrect($pwd)) {
+        $sessionid = uniqid('manage_', true);
+        session_id($sessionid);
+        session_start();
+        $_SESSION['pwd'] = $pwd;
+        return [ 'result' => [ 'succeed' => true, 'token' => $sessionid ] ];
+      } else {
+        return [ 'result' => [ 'succeed' => false ] ];
+      }
+    }
+
+    session_id($_SERVER['HTTP_X_TPV_MANAGE_TOKEN']);
+    session_start();
+
+    if ($action == 'logout') {
+      session_destroy();
+      return [ 'result' => 'sure' ];
+    }
+
+    if (!self::passwordCorrect($_SESSION['pwd'])) {
+      return [
+        'state' => STATE_UNAUTHORIZED,
+        'result' => "Cannot login with this token: token is empty, unaccepted, outdated or password had been changed since login"
+      ];
+    }
     switch ($action) {
       case 'has': {
         return DbProvider::getDb()->has($key);
