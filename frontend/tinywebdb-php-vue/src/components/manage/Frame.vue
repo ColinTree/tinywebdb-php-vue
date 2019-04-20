@@ -54,6 +54,15 @@ export default {
       token: null
     }
   },
+  watch: {
+    token (val) {
+      if (val !== null) {
+        this.$cookies.set('manage_session', val, 60 * 60)
+      } else if (this.$cookies.isKey('manage_session')) {
+        this.$cookies.remove('manage_session')
+      }
+    }
+  },
   created () {
     let service = axios.create({
       baseURL: this.$root.SERVICE_BASE_URL + '/manage/',
@@ -64,6 +73,9 @@ export default {
       transformRequest: data => qs.stringify(data)
     })
     service.interceptors.request.use(config => {
+      if (this.$cookies.isKey('manage_session')) {
+        this.token = this.$cookies.get('manage_session')
+      }
       config.headers['X-TPV-Manage-Token'] = this.token
       return config
     }, error => Promise.reject(error))

@@ -14,10 +14,13 @@ import TextWidthTester from '@/components/root/TextWidthTester'
 import ConfirmModal from '@/components/root/ConfirmModal'
 import InfoModal from '@/components/root/InfoModal'
 
+import VueCookies from 'vue-cookies'
+
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+Vue.use(VueCookies)
 Vue.use(BootstrapVue)
 
 Vue.component('BaseCard', BaseCard)
