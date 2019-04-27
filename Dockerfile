@@ -20,4 +20,4 @@ RUN mv frontend_temp/dist/* . && \
 COPY backend .
 COPY .htaccess .
 
-RUN tar -zcvf dist.tar.gz *
+RUN tar -zcvf dist.tar.gz * .htaccess
