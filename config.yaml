@@ -1,2 +1,0 @@
-handle:
-- rewrite: if (path != "/backend/index.php") goto "/backend/index.php?a=%{REQUEST_URI}&%{QUERY_STRING}" [L]

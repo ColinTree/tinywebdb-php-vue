@@ -23,6 +23,11 @@ spl_autoload_register('loadClass');
 
 require_once 'class/Api.class.php';
 
+if (!file_exists('config.php')) {
+  new ApiError('Server is not configured yet.');
+  exit;
+}
+
 try {
   require_once 'config.php';
 
