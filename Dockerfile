@@ -18,6 +18,7 @@ RUN mv frontend_temp/dist/* . && \
     rm -rf frontend_temp
 
 COPY backend .
+COPY config.yaml .
 COPY .htaccess .
 
 RUN tar -zcvf dist.tar.gz * .htaccess
