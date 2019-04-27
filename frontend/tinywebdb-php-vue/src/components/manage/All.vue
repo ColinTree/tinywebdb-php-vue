@@ -276,8 +276,8 @@ export default {
       try {
         this.isLoading = true
         if (cacheCount !== true) {
-          let result = await this.$parent.service.get('count')
-          this.itemCount = result.data.state === 0 ? Number.parseInt(result.data.result) : 0
+          let { state, result } = (await this.$parent.service.get('count')).data
+          this.itemCount = state === 0 ? Number.parseInt(result) : 0
         }
 
         if (this.itemCount === 0) {
@@ -292,8 +292,9 @@ export default {
           return // same with above
         }
 
-        let result = await this.$parent.service.get('page', { params: { page: this.currentPage, perPage: this.perPage, prefix: '' } })
-        let pageItems = result.data.state === 0 ? result.data.result : []
+        let { state, result } = (await this.$parent.service.get('page',
+          { params: { page: this.currentPage, perPage: this.perPage, prefix: '' } })).data
+        let pageItems = state === 0 ? result : []
         pageItems.forEach(item => { item.selected = false; item.deleted = false })
         this.items = pageItems
       } catch (e) {
@@ -325,13 +326,13 @@ export default {
     },
     async onShowModalRefresh () {
       this.showModal.inProgress = true
-      let result = await this.$parent.service.get('get', { params: { key: this.showModal.key } })
-      switch (result.data.state) {
+      let { state, result } = (await this.$parent.service.get('get', { params: { key: this.showModal.key } })).data
+      switch (state) {
         case 0: {
-          this.showModal.value = result.data.result
+          this.showModal.value = result
           this.items.forEach(item => {
             if (item.key === this.showModal.key) {
-              item.value = result.data.result
+              item.value = result
             }
           })
           break
@@ -341,7 +342,7 @@ export default {
           break
         }
         default: {
-          this.$root.showInfo('', `获取标签信息失败，错误码${result.data.state}`)
+          this.$root.showInfo('', `获取标签信息失败，错误码${state}`)
         }
       }
       this.showModal.inProgress = false
@@ -354,8 +355,9 @@ export default {
     },
     async onEditSubmit () {
       this.editModal.inProgress = true
-      let result = await this.$parent.service.post(this.editModal.isCreate ? 'add' : 'update', { key: this.editModal.key, value: this.editModal.value })
-      switch (result.data.state) {
+      let { state } = (await this.$parent.service.post(this.editModal.isCreate ? 'add' : 'update',
+        { key: this.editModal.key, value: this.editModal.value })).data
+      switch (state) {
         case 0: {
           this.editModal.okVariant = 'success'
           setTimeout(() => (this.editModal.okVariant = 'primary'), 1500)
@@ -373,21 +375,21 @@ export default {
           break
         }
         default: {
-          this.$root.showInfo('', `${this.editModal.isCreate ? '创建' : '编辑'}失败，错误码${result.data.state}`)
+          this.$root.showInfo('', `${this.editModal.isCreate ? '创建' : '编辑'}失败，错误码${state}`)
         }
       }
       this.editModal.inProgress = false
     },
     onDelete (item, index, event) {
       this.$root.showConfirm('', `确认要删除\`${item.key}\`吗`, async () => {
-        let rst = await this.$parent.service.post('delete', { key: item.key })
-        switch (rst.data.state) {
+        let { state } = (await this.$parent.service.post('delete', { key: item.key })).data
+        switch (state) {
           case 0: {
             item.deleted = true
             break
           }
           default: {
-            this.$root.showInfo('', `删除失败，错误码${rst.data.state}`)
+            this.$root.showInfo('', `删除失败，错误码${state}`)
           }
         }
       })
@@ -401,13 +403,13 @@ export default {
             deleteArr.push('' + item.key)
           }
         }
-        let result = await this.$parent.service.post('mdelete', { keys: JSON.stringify(deleteArr) })
-        if (result.data.state === 0) {
+        let { state, result } = (await this.$parent.service.post('mdelete', { keys: JSON.stringify(deleteArr) })).data
+        if (state === 0) {
           let map = {}
           this.items.forEach((val, index) => (map[val.key] = index))
           let failedKeys = []
-          for (let key in result.data.result) {
-            if (result.data.result[key] === true) {
+          for (let key in result) {
+            if (result[key] === true) {
               this.items[map[key]].deleted = true
             } else {
               failedKeys.push(key)
@@ -417,7 +419,7 @@ export default {
             this.$root.showInfo('', `以下标签删除失败：\`${failedKeys.join('`，`')}\``)
           }
         } else {
-          this.$root.showInfo('', `删除失败，错误码${result.data.state}`)
+          this.$root.showInfo('', `删除失败，错误码${state}`)
         }
       })
     }

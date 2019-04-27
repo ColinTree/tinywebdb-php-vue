@@ -49,7 +49,6 @@ new Vue({
   },
   created () {
     this.SERVICE_BASE_URL = window.location.origin + '/'
-    this.SERVICE_BASE_URL = 'http://1.tpv0.applinzi.com/' // FIXME: remove when release
 
     let service = Axios.create({ baseURL: this.SERVICE_BASE_URL })
     service.interceptors.request.use(config => {

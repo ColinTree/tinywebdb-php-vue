@@ -68,8 +68,7 @@ export default {
     async onGet () {
       this.get_loading = true
       try {
-        let result = await this.$root.service.get('/getvalue', { data: { tag: this.get_key } })
-        this.get_value = result.data[2]
+        this.get_value = (await this.$root.service.get('/getvalue', { data: { tag: this.get_key } })).data[2]
         this.get_succeed = true
         setTimeout(() => (this.get_succeed = false), 800)
       } catch (e) {
