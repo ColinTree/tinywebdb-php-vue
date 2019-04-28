@@ -110,10 +110,17 @@ class ApiManage extends Api {
         $page = isset($_REQUEST['page']) ? (int) $_REQUEST['page'] : 1;
         $perPage = isset($_REQUEST['perPage']) ? (int) $_REQUEST['perPage'] : 100;
         $prefix = isset($_REQUEST['prefix']) ? (string) $_REQUEST['prefix'] : '';
+        $valueLengthLimit = isset($_REQUEST['valueLengthLimit']) ? (int) $_REQUEST['valueLengthLimit'] : 0;
         if ($perPage < 1 || $perPage > 100) {
           return [ 'state' => STATE_UNACCEPTED_LIMIT, 'result' => [] ];
         }
-        return [ 'result' => DbProvider::getDb()->getPage($page, $perPage, $prefix) ];
+        $result = DbProvider::getDb()->getPage($page, $perPage, $prefix);
+        if ($valueLengthLimit > 0) {
+          foreach ($result as &$item) {
+            $item['value'] = substr($item['value'], 0, $valueLengthLimit);
+          }
+        }
+        return [ 'result' => $result ];
       }
     }
     return [ 'state' => STATE_API_NOT_FOUND, 'result' => "Unimplemented managing api: $action" ];

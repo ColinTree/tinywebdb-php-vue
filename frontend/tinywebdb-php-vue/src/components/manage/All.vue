@@ -74,7 +74,7 @@
         <b-button
             v-if="!row.item.deleted"
             variant="primary"
-            @click="showModal.key = row.item.key; showModal.value = row.item.value; showModal.inProgress = showModal.jsonMode = false"
+            @click="showModal.key = row.item.key; showModal.inProgress = showModal.jsonMode = false; onShowModalRefresh()"
             v-b-modal.showModal>查看</b-button>
         <b-button v-if="!row.item.deleted" variant="primary" @click="onEdit(row.item, row.index, $event)">编辑</b-button>
         <b-button
@@ -293,7 +293,7 @@ export default {
         }
 
         let { state, result } = (await this.$parent.service.get('page',
-          { params: { page: this.currentPage, perPage: this.perPage, prefix: '' } })).data
+          { params: { page: this.currentPage, perPage: this.perPage, prefix: '', valueLengthLimit: 200 } })).data
         let pageItems = state === 0 ? result : []
         pageItems.forEach(item => { item.selected = false; item.deleted = false })
         this.items = pageItems
