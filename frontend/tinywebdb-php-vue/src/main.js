@@ -4,7 +4,6 @@ import Axios from 'axios'
 import qs from 'qs'
 
 import Vue from 'vue'
-import App from './App'
 import router from './router'
 
 import BaseCard from '@/components/root/BaseCard'
@@ -32,9 +31,9 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
-  components: { App, TextWidthTester, ConfirmModal, InfoModal },
+  components: { TextWidthTester, ConfirmModal, InfoModal },
   template: '<div>' +
-              '<App/>' +
+              '<router-view/>' +
               '<TextWidthTester ref="textWidthTester" />' +
               '<ConfirmModal ref="confirmModal" />' +
               '<InfoModal ref="infoModal" />' +
