@@ -4,6 +4,7 @@ abstract class DbBase {
 
   public static $KEY_RESERVED_PREFIX = '___RESERVED_';
   public static $KEY_MANAGE_SETTINGS = '___RESERVED_MANAGE_SETTINGS';
+  public static $KEY_MANAGE_PASSWORD = '___RESERVED_MANAGE_PASSWORD';
 
   public static function keyReserved ($key) {
     $len = strlen(self::$KEY_RESERVED_PREFIX);

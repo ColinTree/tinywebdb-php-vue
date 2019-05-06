@@ -22,7 +22,8 @@
 
     <div class="app-width">
       <div style="margin-top:5px">
-        <router-view />
+        <b-spinner v-if="pingDone !== true" />
+        <router-view v-else />
       </div>
 
       <div id="footer">
@@ -48,6 +49,7 @@ export default {
   name: 'ManageFrame',
   data () {
     return {
+      pingDone: false,
       update_available: false,
       update_pageUrl: null,
       service: null,
@@ -89,6 +91,7 @@ export default {
       return Promise.reject(error)
     })
     this.service = service
+    this.ping()
   },
   methods: {
     onLogout () {
@@ -101,6 +104,20 @@ export default {
           this.$root.showInfo('', '登出失败')
         }
       })
+    },
+    async ping () {
+      try {
+        let { initialized, login } = (await this.service.get('ping')).data.result
+        if (initialized === false) {
+          this.$router.push('/manage/init')
+          return
+        }
+        this.$router.push(login === true ? '/manage/all' : '/manage/login')
+        this.pingDone = true
+      } catch (e) {
+        this.$root.showInfo('', '无法连接服务器，详细信息见console')
+        console.error(e)
+      }
     }
   }
 }

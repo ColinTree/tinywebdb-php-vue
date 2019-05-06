@@ -39,7 +39,7 @@ export default {
             this.feedback = '密码错误'
           }
         } else {
-          this.feedback = '登录失败，错误码' + state
+          this.feedback = `登录失败，错误码${state}`
         }
       } catch (e) {
         console.error(e)

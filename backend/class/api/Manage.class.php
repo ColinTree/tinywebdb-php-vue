@@ -2,8 +2,14 @@
 
 class ApiManage extends Api {
 
-  private static function passwordCorrect ($pwd) {
-    return $pwd == md5('tpv-salt' . 'password');// TODO: implement this
+  private static function password() {
+    return DbProvider::getDb()->get(DbBase::$KEY_MANAGE_PASSWORD);
+  }
+  private static function initialized() {
+    return self::password() !== false;
+  }
+  private static function passwordCorrect($pwd) {
+    return $pwd === self::password();
   }
   private static function saltPassword($pwd) {
     return md5('tpv-salt' . $pwd);
@@ -17,25 +23,56 @@ class ApiManage extends Api {
     $action = strtolower($args[0]);
     unset($args);
 
-    if ($action == 'login') {
-      $pwd = self::saltPassword($_POST['pwd']);
-      if (self::passwordCorrect($pwd)) {
-        $sessionid = uniqid('manage_', true);
-        session_id($sessionid);
-        session_start();
+    $generateSession = function($pwd = null) {
+      $sessionid = uniqid('manage_', true);
+      session_id($sessionid);
+      session_start();
+      if ($pwd !== null) {
         $_SESSION['pwd'] = $pwd;
-        return [ 'result' => [ 'succeed' => true, 'token' => $sessionid ] ];
-      } else {
-        return [ 'result' => [ 'succeed' => false ] ];
+      }
+      return $sessionid;
+    };
+    switch ($action) {
+      case 'login': {
+        $pwd = self::saltPassword($_POST['pwd']);
+        if (self::passwordCorrect($pwd)) {
+          return [ 'result' => [ 'succeed' => true, 'token' => $generateSession($pwd) ] ];
+        } else {
+          return [ 'result' => [ 'succeed' => false ] ];
+        }
+      }
+      case 'init': {
+        if (self::initialized()) {
+          return [ 'state' => STATE_UNAUTHORIZED, 'result' => 'System had been initialized' ];
+        } else {
+          $pwd = $_POST['pwd'];
+          if (strlen($pwd) < 8) {
+            return [ 'state' => STATE_PASSWORD_TOO_SHORT, 'result' => 'Length of password should equal or greater than 8' ];
+          }
+          if (preg_match('/^\d+$/', $pwd) == 1 ||
+              preg_match('/^[a-z]+$/i', $pwd) == 1 ||
+              preg_match('/^[0-9a-z!@#$%^&*]+$/i', $pwd) == 0) {
+            return [ 'state' => STATE_PASSWORD_INVALID, 'result' => 'Password should contains at least two of [0-9] [a-z] [!@#$%^&*]' ];
+          }
+          $pwd = self::saltPassword($pwd);
+          DbProvider::getDb()->set(DbBase::$KEY_MANAGE_PASSWORD, $pwd);
+          return [ 'result' => $generateSession($pwd) ];
+        }
       }
     }
+    unset($generateSession);
 
     session_id($_SERVER['HTTP_X_TPV_MANAGE_TOKEN']);
     session_start();
 
-    if ($action == 'logout') {
-      session_destroy();
-      return [ 'result' => 'sure' ];
+    switch ($action) {
+      case 'logout': {
+        session_destroy();
+        return [ 'result' => 'sure' ];
+      }
+      case 'ping': {
+        return [ 'result' => [ 'login' => self::passwordCorrect($_SESSION['pwd']), 'initialized' => self::initialized() ] ];
+      }
     }
 
     if (!self::passwordCorrect($_SESSION['pwd'])) {

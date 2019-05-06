@@ -6,6 +6,7 @@ import ManageFrame from '@/components/manage/Frame'
 import ManageAll from '@/components/manage/All'
 import ManageBackup from '@/components/manage/Backup'
 import ManageFile from '@/components/manage/File'
+import ManageInit from '@/components/manage/Init'
 import ManageLogin from '@/components/manage/Login'
 import ManageSetting from '@/components/manage/Setting'
 
@@ -26,6 +27,7 @@ export default new Router({
         { path: 'all', component: ManageAll },
         { path: 'backup', component: ManageBackup },
         { path: 'file', component: ManageFile },
+        { path: 'init', component: ManageInit },
         { path: 'setting', component: ManageSetting },
         { path: 'login', component: ManageLogin },
         { path: '*', component: { template: '<BaseCard>page not found</BaseCard>' } }
