@@ -108,12 +108,12 @@ export default {
     async ping () {
       try {
         let { initialized, login } = (await this.service.get('ping')).data.result
+        this.pingDone = true
         if (initialized === false) {
           this.$router.push('/manage/init')
           return
         }
         this.$router.push(login === true ? '/manage/all' : '/manage/login')
-        this.pingDone = true
       } catch (e) {
         this.$root.showInfo('', '无法连接服务器，详细信息见console')
         console.error(e)
