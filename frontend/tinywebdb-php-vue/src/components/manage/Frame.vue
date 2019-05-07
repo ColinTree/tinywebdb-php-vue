@@ -2,9 +2,9 @@
   <div>
     <div class="sticky-top" style="background-color:#fcfcfc;display:block;border-bottom:1px solid #f9f9f9">
       <b-navbar toggleable="lg" class="app-width" style="padding:14px">
-        <b-navbar-brand to="/">TinyWebDB后台</b-navbar-brand>
+        <b-navbar-brand to="/manage">TinyWebDB后台</b-navbar-brand>
         <b-navbar-toggle target="nav_collapse" />
-        <b-collapse is-nav id="nav_collapse">
+        <b-collapse is-nav id="nav_collapse" v-if="$route.path !== '/manage/init'">
           <b-navbar-nav v-if="token !== null">
             <b-nav-item  to="/manage/all">全部标签</b-nav-item>
             <b-nav-item to="/manage/backup">备份/恢复</b-nav-item>
@@ -113,7 +113,11 @@ export default {
           this.$router.push('/manage/init')
           return
         }
-        this.$router.push(login === true ? '/manage/all' : '/manage/login')
+        if (login !== true) {
+          this.$router.push('/manage/login')
+        } else if (this.$route.path === '/manage/login' || this.$route.path === '/manage/init') {
+          this.$router.push('/manage/all')
+        }
       } catch (e) {
         this.$root.showInfo('', '无法连接服务器，详细信息见console')
         console.error(e)

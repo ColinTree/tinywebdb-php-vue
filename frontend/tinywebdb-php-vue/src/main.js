@@ -69,6 +69,13 @@ new Vue({
     showInfo (title, content, hiddenCallback = null) {
       this.$refs.infoModal.show(title, content, hiddenCallback)
     },
+    showToast (message) {
+      this.$bvToast.toast(message, {
+        toaster: 'b-toaster-bottom-right',
+        appendToast: true,
+        solid: true
+      })
+    },
     testTextWidth (text) {
       return this.$root.$refs.textWidthTester.test(text)
     }
