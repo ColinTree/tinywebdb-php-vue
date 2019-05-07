@@ -21,7 +21,7 @@
       <b-form-group label-cols="2" label="确认密码" label-for="pwd2">
         <b-input id="pwd2" type="password" autocomplete="new-password" v-model="pass2" :state="pwd2State" />
       </b-form-group>
-      <b-button type="submit" variant="primary" :disabled="submiting || !pwd2State">
+      <b-button type="submit" variant="primary" :disabled="submiting || !pwdState || !pwd2State">
         <b-spinner small v-if="submiting" />
         <span v-else>提交</span>
       </b-button>
