@@ -43,7 +43,12 @@
 
       <div style="display:flex; justify-content:space-between">
         <b-link to="/manage">前往服务器后台</b-link>
-        <label style="color:gray; font-size:80%">By ColinTree, version <span v-text="$root.versionName" /></label>
+        <label style="color:gray; font-size:80%">
+          <b-link target="_blank" :href="$root.repo">Project TPV</b-link>
+          By
+          <b-link target="_blank" :href="$root.author">ColinTree</b-link>,
+          version <span v-text="$root.versionName" />
+        </label>
       </div>
     </b-card>
   </div>

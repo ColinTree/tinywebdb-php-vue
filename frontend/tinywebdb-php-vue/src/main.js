@@ -45,7 +45,9 @@ new Vue({
       SERVICE_BASE_URL: '/',
       service: null,
       versionName: '1.0.0-alpha',
-      version: '100'
+      version: '100',
+      author: 'https://github.com/ColinTree',
+      repo: 'https://github.com/ColinTree/tinywebdb-php-vue'
     }
   },
   created () {

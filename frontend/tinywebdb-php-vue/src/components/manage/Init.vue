@@ -3,7 +3,7 @@
     <template slot="header">欢迎使用TPV</template>
 
     <template slot="lead">
-      TPV（Tinywebdb-PHP-Vue），是一个高度可拓展的tinywebdb开源管理系统，由ColinTree主要负责开发和维护，具体见<b-link target="_blank" href="https://github.com/ColinTree/tinywebdb-php-vue">TPV源码</b-link>
+      TPV（Tinywebdb-PHP-Vue），是一个高度可拓展的tinywebdb开源管理系统，由ColinTree主要负责开发和维护，具体见<b-link target="_blank" :href="$root.repo">TPV源码</b-link>
     </template>
 
     <hr class="my-4">
