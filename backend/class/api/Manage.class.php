@@ -73,6 +73,10 @@ class ApiManage extends Api {
       case 'ping': {
         return [ 'result' => [ 'login' => self::passwordCorrect($_SESSION['pwd']), 'initialized' => self::initialized() ] ];
       }
+      case 'deletepwd': {
+        $result = DbProvider::getDb()->delete(DbBase::$KEY_MANAGE_PASSWORD);
+        return [ 'result' => var_export($result) ];
+      }
     }
 
     if (!self::passwordCorrect($_SESSION['pwd'])) {

@@ -8,6 +8,7 @@ import router from './router'
 
 import BaseCard from '@/components/root/BaseCard'
 import LiningCode from '@/components/root/LiningCode'
+import SpinnerButton from '@/components/root/SpinnerButton'
 
 import TextWidthTester from '@/components/root/TextWidthTester'
 import ConfirmModal from '@/components/root/ConfirmModal'
@@ -24,6 +25,7 @@ Vue.use(BootstrapVue)
 
 Vue.component('BaseCard', BaseCard)
 Vue.component('LiningCode', LiningCode)
+Vue.component('b-spinner-button', SpinnerButton)
 
 Vue.config.productionTip = false
 
@@ -71,7 +73,7 @@ new Vue({
     },
     showToast (message) {
       this.$bvToast.toast(message, {
-        toaster: 'b-toaster-bottom-right',
+        toaster: 'b-toaster-top-right',
         appendToast: true,
         solid: true
       })

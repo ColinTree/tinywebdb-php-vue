@@ -10,7 +10,7 @@
 
     <p><b>设置后台密码</b></p>
 
-    <b-form @submit.prevent="onSubmit">
+    <b-form @submit.prevent="$refs.submit_btn.onClick()">
       <b-form-group label-cols="2" label="后台密码" label-for="pwd">
         <b-input id="pwd" type="password" autocomplete="new-password" v-model="pass" :state="pwdState" />
         <template slot="description">
@@ -21,10 +21,8 @@
       <b-form-group label-cols="2" label="确认密码" label-for="pwd2">
         <b-input id="pwd2" type="password" autocomplete="new-password" v-model="pass2" :state="pwd2State" />
       </b-form-group>
-      <b-button type="submit" variant="primary" :disabled="submiting || !pwdState || !pwd2State">
-        <b-spinner small v-if="submiting" />
-        <span v-else>提交</span>
-      </b-button>
+      <b-spinner-button ref="submit_btn" @click="onSubmit" variant="primary" :disabled="!pwdState || !pwd2State">提交</b-spinner-button>
+      <b-button type="submit" v-show="false" />
     </b-form>
   </b-jumbotron>
 </template>
@@ -35,8 +33,7 @@ export default {
   data () {
     return {
       pass: '',
-      pass2: '',
-      submiting: false
+      pass2: ''
     }
   },
   computed: {
@@ -60,21 +57,20 @@ export default {
     }
   },
   methods: {
-    async onSubmit () {
+    async onSubmit (done) {
       try {
-        this.submiting = true
         let { state, result } = (await this.$parent.service.post('init', { pwd: this.pass })).data
         if (state === 0) {
           this.$parent.token = result
           this.$router.push('/manage/all')
         } else {
-          this.submiting = false
           this.$root.showInfo('', `系统初始化失败，错误码${state}`)
         }
       } catch (e) {
-        this.submiting = false
         this.$root.showInfo('', `登录失败，错误信息见console`)
         console.error('Failed init manage system', e)
+      } finally {
+        done()
       }
     }
   }

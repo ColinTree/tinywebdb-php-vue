@@ -9,7 +9,7 @@
 
       <hr>
 
-      <b-form @submit.prevent="onGet" @reset="get_key = ''; get_value = ''">
+      <b-form @submit.prevent="$refs.get_btn.onClick()">
         <h5>获取标签</h5>
         <b-form-group label="标签" label-for="get_key" label-cols="1">
           <b-input id="get_key" v-model="get_key" autocomplete="off" />
@@ -17,15 +17,15 @@
         <b-form-group label="值" label-for="get_value" label-cols="1">
           <b-input id="get_value" ref="get_value" v-model="get_value" readonly @click="selectGetValue" />
         </b-form-group>
-        <b-button type="submit" :variant="get_succeed ? 'success' : 'primary'" :disabled="get_loading">
-          <b-spinner v-if="get_loading" small />
-          <span v-else v-text="get_succeed ? '查询成功' : '查询'" />
-        </b-button>
+        <b-spinner-button ref="get_btn" @click="onGet" :variant="get_succeed ? 'success' : 'primary'">
+          <span v-text="get_succeed ? '查询成功' : '查询'" />
+        </b-spinner-button>
+        <b-button type="submit" v-show="false" />
       </b-form>
 
       <hr>
 
-      <b-form @submit.prevent="onStore" @reset="store_key = ''; store_value = ''">
+      <b-form @submit.prevent="$refs.store_btn.onClick()">
         <h5>储存标签</h5>
         <b-form-group label="标签" label-for="store_key" label-cols="1">
           <b-input id="store_key" v-model="store_key" autocomplete="off" />
@@ -33,10 +33,10 @@
         <b-form-group label="值" label-for="store_value" label-cols="1">
           <b-input id="store_value" v-model="store_value" autocomplete="off" />
         </b-form-group>
-        <b-button type="submit" :variant="store_succeed ? 'success' : 'primary'" :disabled="store_loading">
-          <b-spinner v-if="store_loading" small />
-          <span v-else v-text="store_succeed ? '保存成功' : '保存'" />
-        </b-button>
+        <b-spinner-button ref="store_btn" @click="onStore" :variant="store_succeed ? 'success' : 'primary'">
+          <span v-text="store_succeed ? '保存成功' : '保存'" />
+        </b-spinner-button>
+        <b-button type="submit" v-show="false" />
       </b-form>
 
       <hr>
@@ -56,47 +56,43 @@ export default {
     return {
       get_key: '',
       get_value: '',
-      get_loading: false,
       get_succeed: false,
       store_key: '',
       store_value: '',
-      store_loading: false,
       store_succeed: false
     }
   },
   methods: {
-    async onGet () {
-      this.get_loading = true
+    async onGet (done) {
       try {
         this.get_value = (await this.$root.service.get('/getvalue', { data: { tag: this.get_key } })).data[2]
         this.get_succeed = true
         setTimeout(() => (this.get_succeed = false), 800)
       } catch (e) {
-        if (e.response.status === 403) {
+        if (e.response && e.response.status === 403) {
           this.$root.showInfo('', '获取失败，该标签属于系统保留标签')
         } else {
           console.error(e)
           this.$root.showInfo('', '获取失败，错误信息见console')
         }
       } finally {
-        this.get_loading = false
+        done()
       }
     },
-    async onStore () {
-      this.store_loading = true
+    async onStore (done) {
       try {
         await this.$root.service.post('/storeavalue', { tag: this.store_key, value: this.store_value })
         this.store_succeed = true
         setTimeout(() => (this.store_succeed = false), 800)
       } catch (e) {
-        if (e.response.status === 403) {
+        if (e.response && e.response.status === 403) {
           this.$root.showInfo('', '保存失败，该标签属于系统保留标签')
         } else {
           console.error(e)
           this.$root.showInfo('', '保存失败，错误信息见console')
         }
       } finally {
-        this.store_loading = false
+        done()
       }
     },
     selectServiceUrl () {
