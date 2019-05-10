@@ -14,7 +14,7 @@
           </b-navbar-nav>
           <b-navbar-nav class="ml-auto">
             <b-nav-item v-if="token !== null" @click.stop.prevent="onLogout">登出后台</b-nav-item>
-            <b-nav-item v-else to="/manage/login">登录</b-nav-item>
+            <b-nav-item v-else-if="$route.path !== '/manage/login'" to="/manage/login">登录</b-nav-item>
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>

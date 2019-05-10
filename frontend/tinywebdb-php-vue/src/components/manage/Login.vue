@@ -32,7 +32,11 @@ export default {
         if (state === 0) {
           if (result.succeed === true) {
             this.$parent.token = result.token
-            setTimeout(() => this.$router.push('/manage/all'), 5000)
+            setTimeout(() => {
+              if (this.$route.path === '/manage/login') {
+                this.$router.push('/manage/all')
+              }
+            }, 5000)
             this.state = true
             this.feedback = '登录成功，将于5秒后为您跳转。此次登录将于1小时后过期，您也可以选择提前登出'
           } else {
