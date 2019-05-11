@@ -70,7 +70,7 @@ export default {
   methods: {
     async onGet (done) {
       try {
-        this.get_value = (await this.$root.service.get('/getvalue', { data: { tag: this.get_key } })).data[2]
+        this.get_value = (await this.$root.service.get('/getvalue', { params: { tag: this.get_key } })).data[2]
         this.get_succeed = true
         setTimeout(() => (this.get_succeed = false), 800)
       } catch (e) {

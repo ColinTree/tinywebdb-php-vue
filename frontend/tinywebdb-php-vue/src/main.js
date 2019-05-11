@@ -57,11 +57,6 @@ new Vue({
     let service = Axios.create({ baseURL: this.SERVICE_BASE_URL })
     service.interceptors.request.use(config => {
       config.data = qs.stringify(config.data)
-      if (config.method === 'get') {
-        config.url += '?'
-        config.url += config.data
-        config.data = ''
-      }
       return config
     }, error => Promise.reject(error))
     service.interceptors.response.use(undefined, error => Promise.reject(error))
