@@ -42,12 +42,13 @@ new Vue({
             '</div>',
   data () {
     return {
+      AUTHOR_URL: 'https://github.com/ColinTree',
+      REPO_URL: 'https://github.com/ColinTree/tinywebdb-php-vue',
       SERVICE_BASE_URL: '/',
-      service: null,
-      versionName: '1.0.0-alpha',
-      version: '100',
-      author: 'https://github.com/ColinTree',
-      repo: 'https://github.com/ColinTree/tinywebdb-php-vue'
+      VERSION_NAME: '1.0.0-alpha',
+      VERSION_CODE: '100',
+
+      service: null
     }
   },
   created () {
@@ -81,7 +82,7 @@ new Vue({
       })
     },
     testTextWidth (text) {
-      return this.$root.$refs.textWidthTester.test(text)
+      return this.$refs.textWidthTester.test(text)
     }
   }
 })
