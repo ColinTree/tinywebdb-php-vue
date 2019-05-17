@@ -18,7 +18,7 @@ docker rm tpv_temp_container
 上线生产环境之前请确保负责提供配置的 `config.php` 已经被创建并设置
 
 常量 | 必须？ | 默认值
--|-|-|-
+-|-|-
 DEBUG_MODE | 否 | false
 ACCESS_CONTROL_ALLOW_ORIGIN | 否 | (未设置则不会生效)
 
