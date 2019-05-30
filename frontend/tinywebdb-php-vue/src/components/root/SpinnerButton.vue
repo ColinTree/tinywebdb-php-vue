@@ -1,15 +1,12 @@
 <template>
-  <div>
-    <b-button
-        :variant="variant"
-        :disabled="submiting || disabled"
-        @click="onClick">
-      <b-spinner v-if="submiting && spinnerPosition === 'inside-left'" small :variant="spinnerVariant" :type="spinnerType" />
-      <slot v-if="!submiting || keepTextWhenSpin" />
-      <b-spinner v-if="submiting && spinnerPosition === 'inside-right'" small :variant="spinnerVariant" :type="spinnerType" />
-    </b-button>
-    <b-spinner v-if="submiting && spinnerPosition === 'outside-right'" small :variant="spinnerVariant" :type="spinnerType" />
-  </div>
+  <b-button
+      :variant="variant"
+      :disabled="submiting || disabled"
+      @click="onClick">
+    <b-spinner v-if="submiting && spinnerPosition === 'left'" small :variant="spinnerVariant" :type="spinnerType" />
+    <slot v-if="!submiting || keepTextWhenSpin" />
+    <b-spinner v-if="submiting && spinnerPosition === 'right'" small :variant="spinnerVariant" :type="spinnerType" />
+  </b-button>
 </template>
 
 <script>
@@ -21,9 +18,9 @@ export default {
   props: {
     spinnerPosition: {
       type: String,
-      default: 'inside-left',
+      default: 'left',
       validator: function (value) {
-        return [ 'inside-left', 'inside-right', 'outside-right' ].indexOf(value) >= 0
+        return [ 'left', 'right' ].indexOf(value) >= 0
       }
     },
     spinnerVariant: {
@@ -63,8 +60,8 @@ export default {
       this.submiting = (to !== undefined && typeof to === 'boolean') ? to : (!this.submiting)
     },
     onClick () {
-      this.toggle()
-      this.$emit('click', () => this.toggle(false))
+      this.toggle(true)
+      this.$emit('click', /* onDone = */ () => this.toggle(false))
     }
   }
 }

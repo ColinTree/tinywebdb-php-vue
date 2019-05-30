@@ -57,7 +57,7 @@ export default {
     }
   },
   methods: {
-    async onSubmit (done) {
+    async onSubmit (onDone) {
       try {
         let { state, result } = (await this.$parent.service.post('init', { pwd: this.pass })).data
         if (state === 0) {
@@ -70,7 +70,7 @@ export default {
         this.$root.showInfo('', `登录失败，错误信息见console`)
         console.error('Failed init manage system', e)
       } finally {
-        done()
+        onDone()
       }
     }
   }

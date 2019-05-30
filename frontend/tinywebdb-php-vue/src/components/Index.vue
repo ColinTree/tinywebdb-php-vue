@@ -68,7 +68,7 @@ export default {
     }
   },
   methods: {
-    async onGet (done) {
+    async onGet (onDone) {
       try {
         this.get_value = (await this.$root.service.get('/getvalue', { params: { tag: this.get_key } })).data[2]
         this.get_succeed = true
@@ -81,10 +81,10 @@ export default {
           this.$root.showInfo('', '获取失败，错误信息见console')
         }
       } finally {
-        done()
+        onDone()
       }
     },
-    async onStore (done) {
+    async onStore (onDone) {
       try {
         await this.$root.service.post('/storeavalue', { tag: this.store_key, value: this.store_value })
         this.store_succeed = true
@@ -97,7 +97,7 @@ export default {
           this.$root.showInfo('', '保存失败，错误信息见console')
         }
       } finally {
-        done()
+        onDone()
       }
     },
     selectServiceUrl () {

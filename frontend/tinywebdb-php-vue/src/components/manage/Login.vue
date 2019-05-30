@@ -1,12 +1,12 @@
 <template>
   <BaseCard>
     <template slot="header" v-text="'登录后台'" />
-    <b-form @submit.prevent="onLogin">
+    <b-form @submit.prevent="$refs.login_button.onClick()">
       <b-form-group :state="state" :valid-feedback="feedback" :invalid-feedback="feedback">
         <b-input-group prepend="后台密码" class="mt-2">
           <b-input type="password" :state="state" v-model="pwd" autocomplete="current-password" @input="state = null" />
           <b-input-group-append>
-            <b-button variant="primary" type="submit">登录</b-button>
+            <b-spinner-button ref="login_button" @click="onLogin" variant="primary">登录</b-spinner-button>
           </b-input-group-append>
         </b-input-group>
       </b-form-group>
@@ -25,20 +25,21 @@ export default {
     }
   },
   methods: {
-    async onLogin () {
+    async onLogin (onDone) {
       try {
         let { state, result } = (await this.$parent.service.post('login', { pwd: this.pwd })).data
         this.state = result.succeed
         if (state === 0) {
           if (result.succeed === true) {
             this.$parent.token = result.token
-            setTimeout(() => {
-              if (this.$route.path === '/manage/login') {
-                this.$router.push('/manage/all')
-              }
-            }, 5000)
             this.state = true
             this.feedback = '登录成功，将于5秒后为您跳转。此次登录将于1小时后过期，您也可以选择提前登出'
+            onDone()
+            await this.$root.sleep(5000)
+            if (this.$route.path === '/manage/login') {
+              this.$router.push('/manage/all')
+            }
+            return
           } else {
             this.feedback = '密码错误'
           }
@@ -49,6 +50,8 @@ export default {
         console.error(e)
         this.state = false
         this.feedback = '登录失败，错误信息见console'
+      } finally {
+        onDone()
       }
     }
   }

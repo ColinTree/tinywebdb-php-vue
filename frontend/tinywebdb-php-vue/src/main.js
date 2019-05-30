@@ -63,6 +63,10 @@ new Vue({
     this.service = service
   },
   methods: {
+    // use await this.$root.sleep(ms) in async functions
+    sleep (ms) {
+      return new Promise(resolve => setTimeout(resolve, ms))
+    },
     showConfirm (title, content, okCallback, cancelCallback) {
       this.$refs.confirmModal.show(title, content, okCallback, cancelCallback)
     },

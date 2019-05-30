@@ -32,8 +32,9 @@ export default {
       this.hiddenCallback = hiddenCallback
       this.$children[0].show()
     },
-    onShown () {
-      setTimeout(() => this.$refs.ok.focus(), 100)
+    async onShown () {
+      await this.$root.sleep(100)
+      this.$refs.ok.focus()
     },
     onHidden () {
       this.title = ''
