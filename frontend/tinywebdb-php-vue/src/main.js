@@ -25,7 +25,7 @@ Vue.use(BootstrapVue)
 
 Vue.component('BaseCard', BaseCard)
 Vue.component('LiningCode', LiningCode)
-Vue.component('b-spinner-button', SpinnerButton)
+Vue.component('SpinnerButton', SpinnerButton)
 
 Vue.config.productionTip = false
 

@@ -6,7 +6,7 @@
         <b-input-group prepend="后台密码" class="mt-2">
           <b-input type="password" :state="state" v-model="pwd" autocomplete="current-password" @input="state = null" />
           <b-input-group-append>
-            <b-spinner-button ref="login_button" @click="onLogin" variant="primary">登录</b-spinner-button>
+            <SpinnerButton ref="login_button" @click="onLogin" variant="primary">登录</SpinnerButton>
           </b-input-group-append>
         </b-input-group>
       </b-form-group>

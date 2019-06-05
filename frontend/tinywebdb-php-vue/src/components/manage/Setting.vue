@@ -1,7 +1,7 @@
 <template>
   <BaseCard>
     <template slot="header">设置</template>
-    <b-spinner-button @click="deletepwd" variant="danger">清除登录密码</b-spinner-button>
+    <SpinnerButton @click="deletepwd" variant="danger">清除登录密码</SpinnerButton>
   </BaseCard>
 </template>
 

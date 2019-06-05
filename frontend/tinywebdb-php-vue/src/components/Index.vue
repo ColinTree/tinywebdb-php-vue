@@ -17,9 +17,9 @@
         <b-form-group label="值" label-for="get_value" label-cols="1">
           <b-input id="get_value" ref="get_value" v-model="get_value" readonly @click="selectGetValue" />
         </b-form-group>
-        <b-spinner-button ref="get_btn" @click="onGet" :variant="get_succeed ? 'success' : 'primary'">
+        <SpinnerButton ref="get_btn" @click="onGet" :variant="get_succeed ? 'success' : 'primary'">
           <span v-text="get_succeed ? '查询成功' : '查询'" />
-        </b-spinner-button>
+        </SpinnerButton>
         <b-button type="submit" v-show="false" />
       </b-form>
 
@@ -33,9 +33,9 @@
         <b-form-group label="值" label-for="store_value" label-cols="1">
           <b-input id="store_value" v-model="store_value" autocomplete="off" />
         </b-form-group>
-        <b-spinner-button ref="store_btn" @click="onStore" :variant="store_succeed ? 'success' : 'primary'">
+        <SpinnerButton ref="store_btn" @click="onStore" :variant="store_succeed ? 'success' : 'primary'">
           <span v-text="store_succeed ? '保存成功' : '保存'" />
-        </b-spinner-button>
+        </SpinnerButton>
         <b-button type="submit" v-show="false" />
       </b-form>
 
