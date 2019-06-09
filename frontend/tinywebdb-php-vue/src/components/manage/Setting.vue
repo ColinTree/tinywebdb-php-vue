@@ -83,7 +83,7 @@ export default {
   computed: {
     all_category_preview () {
       return Array.from(new Set(this.setting.all_category.split('#')))
-        .map(item => ({value: item, text: item.length === 0 ? '显示所有' : '前缀：' + item}))
+        .map(item => ({value: item, text: item.length === 0 ? '显示所有' : `前缀\`${item}\``}))
     }
   },
   mounted () {

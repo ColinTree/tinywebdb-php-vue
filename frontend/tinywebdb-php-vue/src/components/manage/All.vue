@@ -278,7 +278,7 @@ export default {
       case 0: {
         this.categories = Array.from(
           new Set((result.hasOwnProperty('all_category') ? result.all_category : '').split('#')))
-          .map(value => value === '' ? ({ name: '', text: '显示所有' }) : { name: value, text: value })
+          .map(value => value === '' ? ({ name: '', text: '显示所有' }) : { name: value, text: `前缀\`${value}\`` })
         this.currentCategory = this.categories[0].name
         this.loadItems()
         return
