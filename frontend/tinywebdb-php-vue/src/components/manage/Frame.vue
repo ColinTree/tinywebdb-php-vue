@@ -82,11 +82,14 @@ export default {
       return config
     }, error => Promise.reject(error))
     service.interceptors.response.use(undefined, error => {
-      if (error.response && error.response.data.status === 4) {
-        this.$root.showInfo('', this.token === null ? '请先登录' : '登录已失效，请重新登录')
-        this.token = null
-        this.$router.push('/manage/login')
-        error.handled = true
+      if (error.response) {
+        if (error.response.data.status === 4) {
+          this.$root.showInfo('', this.token === null ? '请先登录' : '登录已失效，请重新登录')
+          this.token = null
+          this.$router.push('/manage/login')
+          return Promise.reject(new Error('请先登录'))
+        }
+        return Promise.resolve(error.response)
       }
       return Promise.reject(error)
     })

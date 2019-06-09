@@ -92,31 +92,27 @@ export default {
   methods: {
     async loadSettings () {
       this.loaded = false
-      try {
-        let { status, result } = (await this.$parent.service.get('settings')).data
-        if (status === 0) {
+      let { status, result } = (await this.$parent.service.get('settings')).data
+      switch (status) {
+        case 0: {
           if (result.hasOwnProperty('all_category')) this.setting.all_category = result.all_category
           this.loaded = true
-          return
+          break
         }
-      } catch (e) {
-        console.error(e)
+        default: {
+          this.loaded = '拉取设置失败'
+        }
       }
-      this.loaded = '拉取设置失败'
     },
     async save (settingId, value) {
-      try {
-        let { status } = (await this.$parent.service.post('setting_update', { settingId, value })).data
-        if (status !== 0) {
+      let { status } = (await this.$parent.service.post('setting_update', { settingId, value })).data
+      switch (status) {
+        case 0: {
+          return true
+        }
+        default: {
           throw new Error(`保存设置'${settingId}'失败，错误码${status}`)
         }
-        return true
-      } catch (e) {
-        if (e.handled !== true) {
-          console.error(e)
-          this.$root.showInfo('', `${settingId}保存失败，具体错误信息见console`)
-        }
-        return false
       }
     },
 
@@ -133,10 +129,18 @@ export default {
     },
     deletePwd (onDone) {
       this.$root.showConfirm('', '确认要清除登录密码？', async () => {
-        await this.$parent.service.post('deletepwd')
-        this.$parent.token = null
-        this.$router.push('/manage/init')
-        this.$root.showToast('系统密码已重置，请重新设置新的密码')
+        let { status } = (await this.$parent.service.post('deletepwd')).data
+        switch (status) {
+          case 0: {
+            this.$parent.token = null
+            this.$router.push('/manage/init')
+            this.$root.showToast('系统密码已重置，请重新设置新的密码')
+            break
+          }
+          default: {
+            this.$root.showInfo('', `重置密码失败，错误码${status}`)
+          }
+        }
         onDone()
       }, onDone)
     },

@@ -58,20 +58,18 @@ export default {
   },
   methods: {
     async onSubmit (onDone) {
-      try {
-        let { status, result } = (await this.$parent.service.post('init', { pwd: this.pass })).data
-        if (status === 0) {
+      let { status, result } = (await this.$parent.service.post('init', { pwd: this.pass })).data
+      switch (status) {
+        case 0: {
           this.$parent.token = result
           this.$router.push('/manage/all')
-        } else {
+          break
+        }
+        default: {
           this.$root.showInfo('', `系统初始化失败，错误码${status}`)
         }
-      } catch (e) {
-        this.$root.showInfo('', `登录失败，错误信息见console`)
-        console.error('Failed init manage system', e)
-      } finally {
-        onDone()
       }
+      onDone()
     }
   }
 }

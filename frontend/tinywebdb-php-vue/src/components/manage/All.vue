@@ -274,48 +274,46 @@ export default {
   async mounted () {
     this.isLoading = true
     let { status, result } = (await this.$parent.service.get('settings')).data
-    if (status === 0) {
-      this.categories = Array.from(
-        new Set((result.hasOwnProperty('all_category') ? result.all_category : '').split('#')))
-        .map(value => value === '' ? ({ name: '', text: '显示所有' }) : { name: value, text: value })
-      this.currentCategory = this.categories[0].name
+    switch (status) {
+      case 0: {
+        this.categories = Array.from(
+          new Set((result.hasOwnProperty('all_category') ? result.all_category : '').split('#')))
+          .map(value => value === '' ? ({ name: '', text: '显示所有' }) : { name: value, text: value })
+        this.currentCategory = this.categories[0].name
+        this.loadItems()
+        return
+      }
+      default: {
+        this.$root.showInfo('', `拉取失败，错误码${status}`)
+      }
     }
-    this.loadItems()
   },
   methods: {
     async loadItems (cacheCount = false) {
-      try {
-        this.isLoading = true
-        if (cacheCount !== true) {
-          let { status, result } = (await this.$parent.service.get('count', { params: { prefix: this.currentCategory } })).data
-          this.itemCount = status === 0 ? Number.parseInt(result) : 0
-        }
-
-        if (this.itemCount === 0) {
-          if (this.currentPage !== 1) {
-            this.currentPage = 1
-            return // change on currentPage will call loadItem(cacheCount = true)
-          }
-          this.items = []
-          return
-        } else if (this.itemCount <= (this.currentPage - 1) * this.perPage) {
-          this.currentPage = Math.ceil(this.itemCount / this.perPage)
-          return // same with above
-        }
-
-        let { status, result } = (await this.$parent.service.get('page',
-          { params: { page: this.currentPage, perPage: this.perPage, prefix: this.currentCategory, valueLengthLimit: 200 } })).data
-        let pageItems = status === 0 ? result : []
-        pageItems.forEach(item => { item.selected = false; item.deleted = false })
-        this.items = pageItems
-      } catch (e) {
-        if (e.handled !== true) {
-          console.error(e)
-          this.$root.showInfo('', '数据拉取失败, 错误信息见console')
-        }
-      } finally {
-        this.isLoading = false
+      this.isLoading = true
+      if (cacheCount !== true) {
+        let { status, result } = (await this.$parent.service.get('count', { params: { prefix: this.currentCategory } })).data
+        this.itemCount = status === 0 ? Number.parseInt(result) : 0
       }
+
+      if (this.itemCount === 0) {
+        if (this.currentPage !== 1) {
+          this.currentPage = 1
+          return // change on currentPage will call loadItem(cacheCount = true)
+        }
+        this.items = []
+        return
+      } else if (this.itemCount <= (this.currentPage - 1) * this.perPage) {
+        this.currentPage = Math.ceil(this.itemCount / this.perPage)
+        return // same with above
+      }
+
+      let { status, result } = (await this.$parent.service.get('page',
+        { params: { page: this.currentPage, perPage: this.perPage, prefix: this.currentCategory, valueLengthLimit: 200 } })).data
+      let pageItems = status === 0 ? result : []
+      this.items = pageItems.map(item => ({ selected: false, deleted: false, ...item }))
+
+      this.isLoading = false
     },
     itemToHtml (index) {
       const ACCEPTED_WIDTH = 530
@@ -415,22 +413,26 @@ export default {
           }
         }
         let { status, result } = (await this.$parent.service.post('mdelete', { keys: JSON.stringify(deleteArr) })).data
-        if (status === 0) {
-          let map = {}
-          this.items.forEach((val, index) => (map[val.key] = index))
-          let failedKeys = []
-          for (let key in result) {
-            if (result[key] === true) {
-              this.items[map[key]].deleted = true
-            } else {
-              failedKeys.push(key)
+        switch (status) {
+          case 0: {
+            let map = {}
+            this.items.forEach((val, index) => (map[val.key] = index))
+            let failedKeys = []
+            for (let key in result) {
+              if (result[key] === true) {
+                this.items[map[key]].deleted = true
+              } else {
+                failedKeys.push(key)
+              }
             }
+            if (failedKeys.length > 0) {
+              this.$root.showInfo('', `以下标签删除失败：\`${failedKeys.join('`，`')}\``)
+            }
+            break
           }
-          if (failedKeys.length > 0) {
-            this.$root.showInfo('', `以下标签删除失败：\`${failedKeys.join('`，`')}\``)
+          default: {
+            this.$root.showInfo('', `删除失败，错误码${status}`)
           }
-        } else {
-          this.$root.showInfo('', `删除失败，错误码${status}`)
         }
       })
     }

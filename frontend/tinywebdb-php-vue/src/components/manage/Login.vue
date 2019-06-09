@@ -26,10 +26,9 @@ export default {
   },
   methods: {
     async onLogin (onDone) {
-      try {
-        let { status, result } = (await this.$parent.service.post('login', { pwd: this.pwd })).data
-        this.state = result.succeed
-        if (status === 0) {
+      let { status, result } = (await this.$parent.service.post('login', { pwd: this.pwd })).data
+      switch (status) {
+        case 0: {
           if (result.succeed === true) {
             this.$parent.token = result.token
             this.state = true
@@ -41,18 +40,17 @@ export default {
             }
             return
           } else {
+            this.state = false
             this.feedback = '密码错误'
           }
-        } else {
+          break
+        }
+        default: {
+          this.state = false
           this.feedback = `登录失败，错误码${status}`
         }
-      } catch (e) {
-        console.error(e)
-        this.state = false
-        this.feedback = '登录失败，错误信息见console'
-      } finally {
-        onDone()
       }
+      onDone()
     }
   }
 }
