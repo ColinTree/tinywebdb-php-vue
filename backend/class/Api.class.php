@@ -57,6 +57,9 @@ abstract class Api {
       if (isset($handleResult['result'])) {
         $result = $handleResult['result'];
       }
+      if (isset($handleResult['extra'])) {
+        $extraResult = $handleResult['extra'];
+      }
     } else {
       $result = $handleResult;
     }
@@ -73,10 +76,10 @@ abstract class Api {
         $http_code = 401; break;
     }
     http_response_code($http_code);
-    exit(json_encode([
-      'status' => $status,
-      'result' => $result
-    ]));
+    $response = isset($extraResult) ? $extraResult : [];
+    $response['status'] = $status;
+    $response['result'] = $result;
+    exit(json_encode($response));
   }
 
   /**

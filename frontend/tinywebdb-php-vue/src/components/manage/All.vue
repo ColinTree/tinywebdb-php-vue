@@ -291,25 +291,27 @@ export default {
   methods: {
     async loadItems (cacheCount = false) {
       this.isLoading = true
-      if (cacheCount !== true) {
-        let { status, result } = (await this.$parent.service.get('count', { params: { prefix: this.currentCategory } })).data
-        this.itemCount = status === 0 ? Number.parseInt(result) : 0
-      }
 
-      if (this.itemCount === 0) {
-        if (this.currentPage !== 1) {
-          this.currentPage = 1
-          return // change on currentPage will call loadItem(cacheCount = true)
+      let response = (await this.$parent.service.get('page', {
+        params: {
+          count: !cacheCount,
+          page: this.currentPage,
+          perPage: this.perPage,
+          prefix: this.currentCategory,
+          valueLengthLimit: 200
         }
-        this.items = []
-        return
-      } else if (this.itemCount <= (this.currentPage - 1) * this.perPage) {
-        this.currentPage = Math.ceil(this.itemCount / this.perPage)
-        return // same with above
+      })).data
+      let { status, result } = response
+      if (status === 0 && response.count !== undefined) {
+        this.itemCount = response.count
+        if (this.itemCount <= (this.currentPage - 1) * this.perPage) {
+          let targetPage = Math.max(1, Math.ceil(this.itemCount / this.perPage))
+          if (targetPage !== this.currentPage) {
+            this.currentPage = targetPage
+            return // change on currentPage will call loadItem(cacheCount = true)
+          }
+        }
       }
-
-      let { status, result } = (await this.$parent.service.get('page',
-        { params: { page: this.currentPage, perPage: this.perPage, prefix: this.currentCategory, valueLengthLimit: 200 } })).data
       let pageItems = status === 0 ? result : []
       this.items = pageItems.map(item => ({ selected: false, deleted: false, ...item }))
 
