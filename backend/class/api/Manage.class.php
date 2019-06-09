@@ -95,25 +95,6 @@ class ApiManage extends Api {
       ];
     }
     switch ($action) {
-      case 'has': {
-        return DbProvider::getDb()->has($key);
-      }
-      case 'count': {
-        $ret = DbProvider::getDb()->count((string) $_REQUEST['prefix']);
-        return $ret !== false ? $ret : [ 'status' => STATUS_API_FAILED, 'result' => 'Cannot count keys' ];
-      }
-      case 'get': {
-        $ret = DbProvider::getDb()->get($key);
-        return $ret !== false ? $ret : [ 'status' => STATUS_KEY_NOT_FOUNT, 'result' => "No record for key: $key" ];
-      }
-      case 'set': {
-        if (DbBase::keyReserved($key)) {
-          return [ 'status' => STATUS_KEY_RESERVED, 'result' => "Key reserved: $key" ];
-        }
-        return (DbProvider::getDb()->set($key, $value))
-            ? "Value of key ($key) set succeed"
-            : [ 'status' => STATUS_API_FAILED, 'result' => "Failed setting key: $key" ];
-      }
       case 'add': {
         if (DbBase::keyReserved($key)) {
           return [ 'status' => STATUS_KEY_RESERVED, 'result' => "Key reserved: $key" ];
@@ -122,13 +103,9 @@ class ApiManage extends Api {
             ? "Value of key ($key) added"
             : [ 'status' => STATUS_KEY_ALREADY_EXIST, 'result' => "Key already exist: $key" ];
       }
-      case 'update': {
-        if (DbBase::keyReserved($key)) {
-          return [ 'status' => STATUS_KEY_RESERVED, 'result' => "Key reserved: $key" ];
-        }
-        return (DbProvider::getDb()->update($key, $value))
-            ? "Value of key ($key) updated"
-            : [ 'status' => STATUS_KEY_NOT_FOUNT, 'result' => "Key not found: $key" ];
+      case 'count': {
+        $ret = DbProvider::getDb()->count((string) $_REQUEST['prefix']);
+        return $ret !== false ? $ret : [ 'status' => STATUS_API_FAILED, 'result' => 'Cannot count keys' ];
       }
       case 'delete': {
         if (DbBase::keyReserved($key)) {
@@ -137,6 +114,13 @@ class ApiManage extends Api {
         return (DbProvider::getDb()->delete($key))
             ? "Key ($key) deleted"
             : [ 'status' => STATUS_API_FAILED, 'result' => "Failed deleting key: $key" ];
+      }
+      case 'get': {
+        $ret = DbProvider::getDb()->get($key);
+        return $ret !== false ? $ret : [ 'status' => STATUS_KEY_NOT_FOUNT, 'result' => "No record for key: $key" ];
+      }
+      case 'has': {
+        return DbProvider::getDb()->has($key);
       }
       case 'mdelete': {
         $keys = json_decode((string) $_REQUEST['keys']);
@@ -172,8 +156,13 @@ class ApiManage extends Api {
         }
         return [ 'result' => $result ];
       }
-      case 'settings': {
-        return [ 'result' => self::settings() ];
+      case 'set': {
+        if (DbBase::keyReserved($key)) {
+          return [ 'status' => STATUS_KEY_RESERVED, 'result' => "Key reserved: $key" ];
+        }
+        return (DbProvider::getDb()->set($key, $value))
+            ? "Value of key ($key) set succeed"
+            : [ 'status' => STATUS_API_FAILED, 'result' => "Failed setting key: $key" ];
       }
       case 'setting_update': {
         $settingId = (string) $_REQUEST['settingId'];
@@ -186,6 +175,17 @@ class ApiManage extends Api {
             return [ 'status' => STATUS_API_FAILED, 'result' => 'The settingId can not be recognised.' ];
           }
         }
+      }
+      case 'settings': {
+        return [ 'result' => self::settings() ];
+      }
+      case 'update': {
+        if (DbBase::keyReserved($key)) {
+          return [ 'status' => STATUS_KEY_RESERVED, 'result' => "Key reserved: $key" ];
+        }
+        return (DbProvider::getDb()->update($key, $value))
+            ? "Value of key ($key) updated"
+            : [ 'status' => STATUS_KEY_NOT_FOUNT, 'result' => "Key not found: $key" ];
       }
     }
     return [ 'status' => STATUS_API_NOT_FOUND, 'result' => "Unimplemented managing api: $action" ];
