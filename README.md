@@ -151,11 +151,11 @@ STATE_PASSWORD_INVALID  | 初始化 | 41 | 200 | 密码过于简单或者包含�
     * `perPage` - 非必需 - 默认为100 - 每页最大数量
     * `prefix` - 非必需 - 默认为空 - 标签前缀
   * 返回值 - [ "state": 状态码, "result": 标签-值列表，如`{ ["key":"key1","value":"valueOfKey1"], ["key":"key2","value":"valueOfKey2"] }` ]
-* get_settings - 获取所有设置
+* settings - 获取所有设置
   * 请求头
     * `X-TPV-Manage-Token` - 必须
   * 返回值 - [ "state": 状态码, "result": 所有非默认设置，如`{ "all_category": "#student_#teacher_" }` ]
-* update_setting - 获取所有设置
+* setting_update - 获取所有设置
   * 请求头
     * `X-TPV-Manage-Token` - 必须
   * 参数
