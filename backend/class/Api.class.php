@@ -1,17 +1,17 @@
 <?php
 
-const STATE_SUCCEED = 0;
-const STATE_API_NOT_FOUND = 1;  // with http code 404
-const STATE_API_FAILED = 2;     // with http code 503
-const STATE_INTERNAL_ERROR = 3; // with http code 500
-const STATE_UNAUTHORIZED = 4;   // with http code 401
-const STATE_KEY_NOT_FOUNT = 10;
-const STATE_KEY_RESERVED = 11;
-const STATE_UNACCEPTED_LIMIT = 20;
-const STATE_KEY_ALREADY_EXIST = 30;
-const STATE_PASSWORD_TOO_SHORT = 40;
-const STATE_PASSWORD_INVALID = 41;
-const STATE_SETTING_NOT_RECOGNISED = 50;
+const STATUS_SUCCEED = 0;
+const STATUS_API_NOT_FOUND = 1;  // with http code 404
+const STATUS_API_FAILED = 2;     // with http code 503
+const STATUS_INTERNAL_ERROR = 3; // with http code 500
+const STATUS_UNAUTHORIZED = 4;   // with http code 401
+const STATUS_KEY_NOT_FOUNT = 10;
+const STATUS_KEY_RESERVED = 11;
+const STATUS_UNACCEPTED_LIMIT = 20;
+const STATUS_KEY_ALREADY_EXIST = 30;
+const STATUS_PASSWORD_TOO_SHORT = 40;
+const STATUS_PASSWORD_INVALID = 41;
+const STATUS_SETTING_NOT_RECOGNISED = 50;
 
 abstract class Api {
 
@@ -37,7 +37,7 @@ abstract class Api {
     try {
       $handleResult = $this->handle();
     } catch (Throwable $t) {
-      $handleResult = [ 'state' => STATE_INTERNAL_ERROR, 'result' => self::throwable2string($t) ];
+      $handleResult = [ 'status' => STATUS_INTERNAL_ERROR, 'result' => self::throwable2string($t) ];
     } finally {
       $result = ob_get_clean();
     }
@@ -47,12 +47,12 @@ abstract class Api {
       return;
     }
 
-    $state = STATE_SUCCEED;
+    $status = STATUS_SUCCEED;
     if (is_null($handleResult)) {
       // ignore
     } else if (is_array($handleResult)) {
-      if (isset($handleResult['state'])) {
-        $state = $handleResult['state'];
+      if (isset($handleResult['status'])) {
+        $status = $handleResult['status'];
       }
       if (isset($handleResult['result'])) {
         $result = $handleResult['result'];
@@ -62,19 +62,19 @@ abstract class Api {
     }
 
     $http_code = 200;
-    switch ($state) {
-      case STATE_API_NOT_FOUND:
+    switch ($status) {
+      case STATUS_API_NOT_FOUND:
         $http_code = 404; break;
-      case STATE_API_FAILED:
+      case STATUS_API_FAILED:
         $http_code = 503; break;
-      case STATE_INTERNAL_ERROR:
+      case STATUS_INTERNAL_ERROR:
         $http_code = 500; break;
-      case STATE_UNAUTHORIZED:
+      case STATUS_UNAUTHORIZED:
         $http_code = 401; break;
     }
     http_response_code($http_code);
     exit(json_encode([
-      'state' => $state,
+      'status' => $status,
       'result' => $result
     ]));
   }
@@ -82,7 +82,7 @@ abstract class Api {
   /**
    * All echo would be treated as default output result.
    * Args from the get request can be found in $GLOBALS['args]
-   * @return mixed null, array for [ 'state': state, 'result': result ] or any other for result message
+   * @return mixed null, array for [ 'status': status, 'result': result ] or any other for result message
    */
   abstract function handle();
 }

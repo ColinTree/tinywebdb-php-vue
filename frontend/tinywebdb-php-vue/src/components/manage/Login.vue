@@ -27,9 +27,9 @@ export default {
   methods: {
     async onLogin (onDone) {
       try {
-        let { state, result } = (await this.$parent.service.post('login', { pwd: this.pwd })).data
+        let { status, result } = (await this.$parent.service.post('login', { pwd: this.pwd })).data
         this.state = result.succeed
-        if (state === 0) {
+        if (status === 0) {
           if (result.succeed === true) {
             this.$parent.token = result.token
             this.state = true
@@ -44,7 +44,7 @@ export default {
             this.feedback = '密码错误'
           }
         } else {
-          this.feedback = `登录失败，错误码${state}`
+          this.feedback = `登录失败，错误码${status}`
         }
       } catch (e) {
         console.error(e)

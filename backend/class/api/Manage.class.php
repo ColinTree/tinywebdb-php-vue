@@ -52,16 +52,16 @@ class ApiManage extends Api {
       }
       case 'init': {
         if (self::initialized()) {
-          return [ 'state' => STATE_UNAUTHORIZED, 'result' => 'System had been initialized' ];
+          return [ 'status' => STATUS_UNAUTHORIZED, 'result' => 'System had been initialized' ];
         } else {
           $pwd = $_POST['pwd'];
           if (strlen($pwd) < 8) {
-            return [ 'state' => STATE_PASSWORD_TOO_SHORT, 'result' => 'Length of password should equal or greater than 8' ];
+            return [ 'status' => STATUS_PASSWORD_TOO_SHORT, 'result' => 'Length of password should equal or greater than 8' ];
           }
           if (preg_match('/^\d+$/', $pwd) == 1 ||
               preg_match('/^[a-z]+$/i', $pwd) == 1 ||
               preg_match('/^[0-9a-z!@#$%^&*]+$/i', $pwd) == 0) {
-            return [ 'state' => STATE_PASSWORD_INVALID, 'result' => 'Password should contains at least two of [0-9] [a-z] [!@#$%^&*]' ];
+            return [ 'status' => STATUS_PASSWORD_INVALID, 'result' => 'Password should contains at least two of [0-9] [a-z] [!@#$%^&*]' ];
           }
           $pwd = self::saltPassword($pwd);
           DbProvider::getDb()->set(DbBase::$KEY_MANAGE_PASSWORD, $pwd);
@@ -90,7 +90,7 @@ class ApiManage extends Api {
 
     if (!self::passwordCorrect($_SESSION['pwd'])) {
       return [
-        'state' => STATE_UNAUTHORIZED,
+        'status' => STATUS_UNAUTHORIZED,
         'result' => "Cannot login with this token: token is empty, unaccepted, outdated or password had been changed since login"
       ];
     }
@@ -100,43 +100,43 @@ class ApiManage extends Api {
       }
       case 'count': {
         $ret = DbProvider::getDb()->count((string) $_REQUEST['prefix']);
-        return $ret !== false ? $ret : [ 'state' => STATE_API_FAILED, 'result' => 'Cannot count keys' ];
+        return $ret !== false ? $ret : [ 'status' => STATUS_API_FAILED, 'result' => 'Cannot count keys' ];
       }
       case 'get': {
         $ret = DbProvider::getDb()->get($key);
-        return $ret !== false ? $ret : [ 'state' => STATE_KEY_NOT_FOUNT, 'result' => "No record for key: $key" ];
+        return $ret !== false ? $ret : [ 'status' => STATUS_KEY_NOT_FOUNT, 'result' => "No record for key: $key" ];
       }
       case 'set': {
         if (DbBase::keyReserved($key)) {
-          return [ 'state' => STATE_KEY_RESERVED, 'result' => "Key reserved: $key" ];
+          return [ 'status' => STATUS_KEY_RESERVED, 'result' => "Key reserved: $key" ];
         }
         return (DbProvider::getDb()->set($key, $value))
             ? "Value of key ($key) set succeed"
-            : [ 'state' => STATE_API_FAILED, 'result' => "Failed setting key: $key" ];
+            : [ 'status' => STATUS_API_FAILED, 'result' => "Failed setting key: $key" ];
       }
       case 'add': {
         if (DbBase::keyReserved($key)) {
-          return [ 'state' => STATE_KEY_RESERVED, 'result' => "Key reserved: $key" ];
+          return [ 'status' => STATUS_KEY_RESERVED, 'result' => "Key reserved: $key" ];
         }
         return (DbProvider::getDb()->add($key, $value))
             ? "Value of key ($key) added"
-            : [ 'state' => STATE_KEY_ALREADY_EXIST, 'result' => "Key already exist: $key" ];
+            : [ 'status' => STATUS_KEY_ALREADY_EXIST, 'result' => "Key already exist: $key" ];
       }
       case 'update': {
         if (DbBase::keyReserved($key)) {
-          return [ 'state' => STATE_KEY_RESERVED, 'result' => "Key reserved: $key" ];
+          return [ 'status' => STATUS_KEY_RESERVED, 'result' => "Key reserved: $key" ];
         }
         return (DbProvider::getDb()->update($key, $value))
             ? "Value of key ($key) updated"
-            : [ 'state' => STATE_KEY_NOT_FOUNT, 'result' => "Key not found: $key" ];
+            : [ 'status' => STATUS_KEY_NOT_FOUNT, 'result' => "Key not found: $key" ];
       }
       case 'delete': {
         if (DbBase::keyReserved($key)) {
-          return [ 'state' => STATE_KEY_RESERVED, 'result' => "Key reserved: $key" ];
+          return [ 'status' => STATUS_KEY_RESERVED, 'result' => "Key reserved: $key" ];
         }
         return (DbProvider::getDb()->delete($key))
             ? "Key ($key) deleted"
-            : [ 'state' => STATE_API_FAILED, 'result' => "Failed deleting key: $key" ];
+            : [ 'status' => STATUS_API_FAILED, 'result' => "Failed deleting key: $key" ];
       }
       case 'mdelete': {
         $keys = json_decode((string) $_REQUEST['keys']);
@@ -162,7 +162,7 @@ class ApiManage extends Api {
         $prefix = isset($_REQUEST['prefix']) ? (string) $_REQUEST['prefix'] : '';
         $valueLengthLimit = isset($_REQUEST['valueLengthLimit']) ? (int) $_REQUEST['valueLengthLimit'] : 0;
         if ($perPage < 1 || $perPage > 100) {
-          return [ 'state' => STATE_UNACCEPTED_LIMIT, 'result' => [] ];
+          return [ 'status' => STATUS_UNACCEPTED_LIMIT, 'result' => [] ];
         }
         $result = DbProvider::getDb()->getPage($page, $perPage, $prefix);
         if ($valueLengthLimit > 0) {
@@ -183,12 +183,12 @@ class ApiManage extends Api {
             return [ 'result' => 'Succeed' ];
           }
           default: {
-            return [ 'state' => STATE_API_FAILED, 'result' => 'The settingId can not be recognised.' ];
+            return [ 'status' => STATUS_API_FAILED, 'result' => 'The settingId can not be recognised.' ];
           }
         }
       }
     }
-    return [ 'state' => STATE_API_NOT_FOUND, 'result' => "Unimplemented managing api: $action" ];
+    return [ 'status' => STATUS_API_NOT_FOUND, 'result' => "Unimplemented managing api: $action" ];
   }
 
 }

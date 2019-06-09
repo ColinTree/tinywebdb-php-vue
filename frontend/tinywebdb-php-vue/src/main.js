@@ -59,7 +59,7 @@ new Vue({
       config.data = qs.stringify(config.data)
       return config
     }, error => Promise.reject(error))
-    // TODO: make only state === 0 resolve, and reject all other states
+    // TODO: make only status === 0 resolve, and reject all other statuss
     service.interceptors.response.use(undefined, error => Promise.reject(error))
     this.service = service
   },

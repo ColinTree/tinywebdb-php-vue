@@ -59,12 +59,12 @@ export default {
   methods: {
     async onSubmit (onDone) {
       try {
-        let { state, result } = (await this.$parent.service.post('init', { pwd: this.pass })).data
-        if (state === 0) {
+        let { status, result } = (await this.$parent.service.post('init', { pwd: this.pass })).data
+        if (status === 0) {
           this.$parent.token = result
           this.$router.push('/manage/all')
         } else {
-          this.$root.showInfo('', `系统初始化失败，错误码${state}`)
+          this.$root.showInfo('', `系统初始化失败，错误码${status}`)
         }
       } catch (e) {
         this.$root.showInfo('', `登录失败，错误信息见console`)

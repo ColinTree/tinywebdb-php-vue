@@ -273,8 +273,8 @@ export default {
   },
   async mounted () {
     this.isLoading = true
-    let { state, result } = (await this.$parent.service.get('settings')).data
-    if (state === 0) {
+    let { status, result } = (await this.$parent.service.get('settings')).data
+    if (status === 0) {
       this.categories = Array.from(
         new Set((result.hasOwnProperty('all_category') ? result.all_category : '').split('#')))
         .map(value => value === '' ? ({ name: '', text: '显示所有' }) : { name: value, text: value })
@@ -287,8 +287,8 @@ export default {
       try {
         this.isLoading = true
         if (cacheCount !== true) {
-          let { state, result } = (await this.$parent.service.get('count', { params: { prefix: this.currentCategory } })).data
-          this.itemCount = state === 0 ? Number.parseInt(result) : 0
+          let { status, result } = (await this.$parent.service.get('count', { params: { prefix: this.currentCategory } })).data
+          this.itemCount = status === 0 ? Number.parseInt(result) : 0
         }
 
         if (this.itemCount === 0) {
@@ -303,9 +303,9 @@ export default {
           return // same with above
         }
 
-        let { state, result } = (await this.$parent.service.get('page',
+        let { status, result } = (await this.$parent.service.get('page',
           { params: { page: this.currentPage, perPage: this.perPage, prefix: this.currentCategory, valueLengthLimit: 200 } })).data
-        let pageItems = state === 0 ? result : []
+        let pageItems = status === 0 ? result : []
         pageItems.forEach(item => { item.selected = false; item.deleted = false })
         this.items = pageItems
       } catch (e) {
@@ -337,8 +337,8 @@ export default {
     },
     async onShowModalRefresh () {
       this.showModal.inProgress = true
-      let { state, result } = (await this.$parent.service.get('get', { params: { key: this.showModal.key } })).data
-      switch (state) {
+      let { status, result } = (await this.$parent.service.get('get', { params: { key: this.showModal.key } })).data
+      switch (status) {
         case 0: {
           this.showModal.value = result
           this.items.forEach(item => {
@@ -353,7 +353,7 @@ export default {
           break
         }
         default: {
-          this.$root.showInfo('', `获取标签信息失败，错误码${state}`)
+          this.$root.showInfo('', `获取标签信息失败，错误码${status}`)
         }
       }
       this.showModal.inProgress = false
@@ -366,9 +366,9 @@ export default {
     },
     async onEditSubmit () {
       this.editModal.inProgress = true
-      let { state } = (await this.$parent.service.post(this.editModal.isCreate ? 'add' : 'update',
+      let { status } = (await this.$parent.service.post(this.editModal.isCreate ? 'add' : 'update',
         { key: this.editModal.key, value: this.editModal.value })).data
-      switch (state) {
+      switch (status) {
         case 0: {
           this.editModal.okVariant = 'success'
           setTimeout(() => (this.editModal.okVariant = 'primary'), 1500)
@@ -386,21 +386,21 @@ export default {
           break
         }
         default: {
-          this.$root.showInfo('', `${this.editModal.isCreate ? '创建' : '编辑'}失败，错误码${state}`)
+          this.$root.showInfo('', `${this.editModal.isCreate ? '创建' : '编辑'}失败，错误码${status}`)
         }
       }
       this.editModal.inProgress = false
     },
     onDelete (item, index, event) {
       this.$root.showConfirm('', `确认要删除\`${item.key}\`吗`, async () => {
-        let { state } = (await this.$parent.service.post('delete', { key: item.key })).data
-        switch (state) {
+        let { status } = (await this.$parent.service.post('delete', { key: item.key })).data
+        switch (status) {
           case 0: {
             item.deleted = true
             break
           }
           default: {
-            this.$root.showInfo('', `删除失败，错误码${state}`)
+            this.$root.showInfo('', `删除失败，错误码${status}`)
           }
         }
       })
@@ -414,8 +414,8 @@ export default {
             deleteArr.push('' + item.key)
           }
         }
-        let { state, result } = (await this.$parent.service.post('mdelete', { keys: JSON.stringify(deleteArr) })).data
-        if (state === 0) {
+        let { status, result } = (await this.$parent.service.post('mdelete', { keys: JSON.stringify(deleteArr) })).data
+        if (status === 0) {
           let map = {}
           this.items.forEach((val, index) => (map[val.key] = index))
           let failedKeys = []
@@ -430,7 +430,7 @@ export default {
             this.$root.showInfo('', `以下标签删除失败：\`${failedKeys.join('`，`')}\``)
           }
         } else {
-          this.$root.showInfo('', `删除失败，错误码${state}`)
+          this.$root.showInfo('', `删除失败，错误码${status}`)
         }
       })
     }

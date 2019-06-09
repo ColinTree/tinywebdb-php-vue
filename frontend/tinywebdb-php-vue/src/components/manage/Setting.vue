@@ -93,8 +93,8 @@ export default {
     async loadSettings () {
       this.loaded = false
       try {
-        let { state, result } = (await this.$parent.service.get('settings')).data
-        if (state === 0) {
+        let { status, result } = (await this.$parent.service.get('settings')).data
+        if (status === 0) {
           if (result.hasOwnProperty('all_category')) this.setting.all_category = result.all_category
           this.loaded = true
           return
@@ -106,9 +106,9 @@ export default {
     },
     async save (settingId, value) {
       try {
-        let { state } = (await this.$parent.service.post('setting_update', { settingId, value })).data
-        if (state !== 0) {
-          throw new Error(`保存设置'${settingId}'失败：state: ${state}`)
+        let { status } = (await this.$parent.service.post('setting_update', { settingId, value })).data
+        if (status !== 0) {
+          throw new Error(`保存设置'${settingId}'失败，错误码${status}`)
         }
         return true
       } catch (e) {
