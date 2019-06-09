@@ -15,6 +15,15 @@ class ApiManage extends Api {
     return md5('tpv-salt' . $pwd);
   }
 
+  private static function settings() {
+    return json_decode(DbProvider::getDb()->get(DbBase::$KEY_MANAGE_SETTINGS), true);
+  }
+  private static function updateSetting($settingId, $value) {
+    $settings = self::settings();
+    $settings[$settingId] = $value;
+    DbProvider::getDb()->set(DbBase::$KEY_MANAGE_SETTINGS, json_encode($settings));
+  }
+
   function handle() {
     $key = (string) $_REQUEST['key'];
     $value = (string) $_REQUEST['value'];
@@ -162,6 +171,21 @@ class ApiManage extends Api {
           }
         }
         return [ 'result' => $result ];
+      }
+      case 'settings': {
+        return [ 'result' => self::settings() ];
+      }
+      case 'setting_update': {
+        $settingId = (string) $_REQUEST['settingId'];
+        switch ($settingId) {
+          case 'all_category': {
+            self::updateSetting($settingId, $value);
+            return [ 'result' => 'Succeed' ];
+          }
+          default: {
+            return [ 'state' => STATE_API_FAILED, 'result' => 'The settingId can not be recognised.' ];
+          }
+        }
       }
     }
     return [ 'state' => STATE_API_NOT_FOUND, 'result' => "Unimplemented managing api: $action" ];

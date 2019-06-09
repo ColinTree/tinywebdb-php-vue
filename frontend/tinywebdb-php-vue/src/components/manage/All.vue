@@ -178,8 +178,8 @@ export default {
   name: 'ManageAll',
   data () {
     return {
-      currentCategory: 'all',
-      categories: [ { name: 'all', text: '显示所有' } ],
+      currentCategory: '',
+      categories: [ { name: '', text: '显示所有' } ],
       perPage: 10,
       currentPage: 1,
       fields: [
@@ -253,6 +253,9 @@ export default {
     }
   },
   watch: {
+    currentCategory () {
+      this.loadItems()
+    },
     currentPage () {
       if (this.currentPage <= 0) {
         this.currentPage = 1
@@ -268,7 +271,15 @@ export default {
       this.selectAll = val
     }
   },
-  mounted () {
+  async mounted () {
+    this.isLoading = true
+    let { state, result } = (await this.$parent.service.get('settings')).data
+    if (state === 0) {
+      this.categories = Array.from(
+        new Set((result.hasOwnProperty('all_category') ? result.all_category : '').split('#')))
+        .map(value => value === '' ? ({ name: '', text: '显示所有' }) : { name: value, text: value })
+      this.currentCategory = this.categories[0].name
+    }
     this.loadItems()
   },
   methods: {
@@ -276,7 +287,7 @@ export default {
       try {
         this.isLoading = true
         if (cacheCount !== true) {
-          let { state, result } = (await this.$parent.service.get('count')).data
+          let { state, result } = (await this.$parent.service.get('count', { params: { prefix: this.currentCategory } })).data
           this.itemCount = state === 0 ? Number.parseInt(result) : 0
         }
 
@@ -293,7 +304,7 @@ export default {
         }
 
         let { state, result } = (await this.$parent.service.get('page',
-          { params: { page: this.currentPage, perPage: this.perPage, prefix: '', valueLengthLimit: 200 } })).data
+          { params: { page: this.currentPage, perPage: this.perPage, prefix: this.currentCategory, valueLengthLimit: 200 } })).data
         let pageItems = state === 0 ? result : []
         pageItems.forEach(item => { item.selected = false; item.deleted = false })
         this.items = pageItems
