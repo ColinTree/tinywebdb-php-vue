@@ -17,10 +17,11 @@ docker rm tpv_temp_container
 
 上线生产环境之前请确保负责提供配置的 `config.php` 已经被创建并设置
 
-常量 | 必须？ | 默认值
--|-|-
-DEBUG_MODE | 否 | false
-ACCESS_CONTROL_ALLOW_ORIGIN | 否 | (未设置则不会生效)
+常量 | 必须？ | 默认值 | 备注
+-|-|-|-
+DEBUG_MODE | 否 | false | 调试模式，如果发生错误会附带错误信息在result
+ACCESS_CONTROL_ALLOW_ORIGIN | 否 | (未设置则不生效) | 是否允许浏览器跨域/其策略，`"*"`即为允许所有
+MANAGE_LOGIN_TIMEOUT | 否 | 600 | 后台管理会话自动结束时长（秒）
 
 
 其他设置：
@@ -41,7 +42,7 @@ ACCESS_CONTROL_ALLOW_ORIGIN | 否 | (未设置则不会生效)
   * 返回值
     * [ "VALUE", tag, value / 错误信息 ]
 
-* `/setvalue`
+* `/storeavalue`
   * 参数
     * tag
     * value

@@ -32,7 +32,7 @@ export default {
           if (result.succeed === true) {
             this.$parent.token = result.token
             this.state = true
-            this.feedback = '登录成功，将于5秒后为您跳转。此次登录将于1小时后过期，您也可以选择提前登出'
+            this.feedback = '登录成功，将在5秒后为您跳转。使用期间10分钟无操作，会话将自动结束，您也可以选择提前退出'
             onDone()
             await this.$root.sleep(5000)
             if (this.$route.path === '/manage/login') {

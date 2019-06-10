@@ -11,6 +11,17 @@ class ApiManage extends Api {
   private static function passwordCorrect($pwd) {
     return $pwd === self::password();
   }
+  /**
+   * Would refresh $_SESSION['last_timestamp']
+   */
+  private static function loginValid() {
+    $TIMEOUT = defined('MANAGE_LOGIN_TIMEOUT') ? MANAGE_LOGIN_TIMEOUT : 600;
+    $now = time();
+    $valid = ($_SESSION['pwd'] === self::password()) && ($now - ((int) $_SESSION['last_timestamp']) < $TIMEOUT);
+    // refresh time
+    $_SESSION['last_timestamp'] = $now;
+    return $valid;
+  }
   private static function saltPassword($pwd) {
     return md5('tpv-salt' . $pwd);
   }
@@ -38,6 +49,7 @@ class ApiManage extends Api {
       session_start();
       if ($pwd !== null) {
         $_SESSION['pwd'] = $pwd;
+        $_SESSION['last_timestamp'] = time();
       }
       return $sessionid;
     };
@@ -80,7 +92,7 @@ class ApiManage extends Api {
         return [ 'result' => 'sure' ];
       }
       case 'ping': {
-        return [ 'result' => [ 'login' => self::passwordCorrect($_SESSION['pwd']), 'initialized' => self::initialized() ] ];
+        return [ 'result' => [ 'login' => self::loginValid(), 'initialized' => self::initialized() ] ];
       }
       case 'deletepwd': {
         $result = DbProvider::getDb()->delete(DbBase::$KEY_MANAGE_PASSWORD);
@@ -88,7 +100,7 @@ class ApiManage extends Api {
       }
     }
 
-    if (!self::passwordCorrect($_SESSION['pwd'])) {
+    if (!self::loginValid()) {
       return [
         'status' => STATUS_UNAUTHORIZED,
         'result' => "Cannot login with this token: token is empty, unaccepted, outdated or password had been changed since login"

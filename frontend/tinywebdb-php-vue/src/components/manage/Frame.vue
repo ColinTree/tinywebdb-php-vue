@@ -59,7 +59,7 @@ export default {
   watch: {
     token (val) {
       if (val !== null) {
-        this.$cookies.set('manage_session', val, 60 * 60)
+        this.$cookies.set('manage_session', val)
       } else if (this.$cookies.isKey('manage_session')) {
         this.$cookies.remove('manage_session')
       }

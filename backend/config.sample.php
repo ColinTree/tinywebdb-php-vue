@@ -2,6 +2,7 @@
 
 // const DEBUG_MODE = false;
 // const ACCESS_CONTROL_ALLOW_ORIGIN = '*';
+// const MANAGE_LOGIN_TIMEOUT = 600; // seconds
 
 // Sae KVDB
 // DbProvider::setDb(new DbSaeKV());
