@@ -72,12 +72,10 @@ export default {
         'Accept': 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
       },
-      transformRequest: data => qs.stringify(data)
+      transformRequest: data => data instanceof FormData ? data : qs.stringify(data)
     })
     service.interceptors.request.use(config => {
-      if (this.$cookies.isKey('manage_session')) {
-        this.token = this.$cookies.get('manage_session')
-      }
+      this.updateTokenFromCookie()
       config.headers['X-TPV-Manage-Token'] = this.token
       return config
     }, error => Promise.reject(error))
@@ -107,6 +105,11 @@ export default {
           this.$root.showInfo('', '登出失败')
         }
       })
+    },
+    updateTokenFromCookie () {
+      if (this.$cookies.isKey('manage_session')) {
+        this.token = this.$cookies.get('manage_session')
+      }
     },
     async ping () {
       try {

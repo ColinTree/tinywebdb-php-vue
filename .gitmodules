@@ -1,0 +1,3 @@
+[submodule "xlsxwriter"]
+	path = backend/lib/xlsxwriter
+	url = https://github.com/mk-j/PHP_XLSXWriter.git

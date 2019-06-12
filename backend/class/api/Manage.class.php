@@ -80,6 +80,10 @@ class ApiManage extends Api {
           return [ 'result' => $generateSession($pwd) ];
         }
       }
+      case 'export': {
+        $_SERVER['HTTP_X_TPV_MANAGE_TOKEN'] = $_REQUEST['token'];
+        break;
+      }
     }
     unset($generateSession);
 
@@ -127,12 +131,125 @@ class ApiManage extends Api {
             ? "Key ($key) deleted"
             : [ 'status' => STATUS_API_FAILED, 'result' => "Failed deleting key: $key" ];
       }
+      case 'export': {
+        $type = (string) $_REQUEST['type'];
+        $prefix = (string) $_REQUEST['prefix'];
+        $includeReserved = ((string) $_REQUEST['include_reserved']) === 'true';
+        switch (strtolower($type)) {
+          case 'json': {
+            ob_end_clean();
+            header('Content-disposition: attachment; filename="export-' . time() . '.json"');
+            header('Content-Transfer-Encoding: binary');
+            header('Cache-Control: must-revalidate');
+            echo '[';
+            $first = true;
+            foreach (DbProvider::getDb()->getAll($prefix) as $index => $key_value_pair) {
+              if (!$includeReserved && DbBase::keyReserved($key_value_pair['key'])) {
+                continue;
+              }
+              if ($first) { $first = false; } else { echo ','; }
+              echo json_encode($key_value_pair);
+            }
+            echo ']';
+            die();
+          }
+          case 'xml': {
+            ob_end_clean();
+            header('Content-disposition: attachment; filename="export-' . time() . '.xml"');
+            header('Content-Type: application/xml');
+            header('Content-Transfer-Encoding: binary');
+            header('Cache-Control: must-revalidate');
+            echo '<?xml version="1.0"?>' . "\n";
+            echo '<tinywebdb>' . "\n";
+            foreach (DbProvider::getDb()->getAll($prefix) as $index => $key_value_pair) {
+              if (!$includeReserved && DbBase::keyReserved($key_value_pair['key'])) {
+                continue;
+              }
+              $xmlEscaper = function($str = '') {
+                $str = str_replace('&', '&amp;', $str);
+                $str = str_replace('<', '&lt;', $str);
+                $str = str_replace('>', '&gt;', $str);
+                $str = str_replace('\'', '&apos;', $str);
+                $str = str_replace('"', '&quot;', $str);
+                $str = str_replace("\n", '&#10;', $str);
+                return $str;
+              };
+              echo '<pair><key>';
+              echo $xmlEscaper($key_value_pair['key']);
+              echo '</key><value>';
+              echo $xmlEscaper($key_value_pair['value']);
+              echo '</value></pair>' . "\n";
+            }
+            echo '</tinywebdb>';
+            die();
+          }
+          case 'csv': {
+            ob_end_clean();
+            header('Content-disposition: attachment; filename="export-' . time() . '.csv"');
+            header('Content-Type: text/csv');
+            header('Content-Transfer-Encoding: binary');
+            header('Cache-Control: must-revalidate');
+            foreach (DbProvider::getDb()->getAll($prefix) as $index => $key_value_pair) {
+              if (!$includeReserved && DbBase::keyReserved($key_value_pair['key'])) {
+                continue;
+              }
+              $csvEscaper = function($str = '') {
+                $str = str_replace('"', '""', $str);
+                return '"' . $str . '"';
+              };
+              echo $csvEscaper($key_value_pair['key']);
+              echo ',';
+              echo $csvEscaper($key_value_pair['value']);
+              echo "\n";
+            }
+            die();
+          }
+          case 'xlsx': {
+            ob_end_clean();
+            header('Content-disposition: attachment; filename="export-' . time() . '.xlsx"');
+            header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            header('Content-Transfer-Encoding: binary');
+            header('Cache-Control: must-revalidate');
+            require __DIR__ . '/../../lib/xlsxwriter/xlsxwriter.class.php';
+            $writer = new XLSXWriter();
+            $writer->writeSheetRow('Sheet1', [ 'key', 'value' ], [ 'font-style' => 'bold' ]);
+            foreach (DbProvider::getDb()->getAll($prefix) as $index => $key_value_pair) {
+              if (!$includeReserved && DbBase::keyReserved($key_value_pair['key'])) {
+                continue;
+              }
+              $writer->writeSheetRow('Sheet1', [ $key_value_pair['key'], str_replace("\n", '\n', $key_value_pair['value']) ]);
+            }
+            $writer->writeToStdOut();
+            die();
+          }
+          default: {
+            return [ 'status' => STATUS_EXPORT_UNACCEPTED_TYPE, ];
+          }
+        }
+      }
       case 'get': {
         $ret = DbProvider::getDb()->get($key);
         return $ret !== false ? $ret : [ 'status' => STATUS_KEY_NOT_FOUNT, 'result' => "No record for key: $key" ];
       }
       case 'has': {
         return DbProvider::getDb()->has($key);
+      }
+      case 'import_json': {
+        if (!isset($_FILES["file"])) {
+          return [ 'status' => STATUS_API_FAILED, 'result' => 'Where the f is the file?' ];
+        }
+        $importJson = json_decode(file_get_contents($_FILES["file"]["tmp_name"]), true);
+        $failed = [];
+        foreach ($importJson as $item) {
+          if (DbBase::keyReserved($item['key'])) {
+            $failed[] = $item['key'];
+          } else {
+            if (DbProvider::getDb()->set($item['key'], $item['value']) === false) {
+              $failed[] = $item['key'];
+            }
+          }
+        }
+        return [ 'result' => [ 'failed' => $failed ] ];
       }
       case 'mdelete': {
         $keys = json_decode((string) $_REQUEST['keys']);

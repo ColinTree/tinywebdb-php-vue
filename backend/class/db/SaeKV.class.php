@@ -83,12 +83,65 @@ class DbSaeKV extends DbBase {
     return self::obj2arr($ret);
   }
 
-  private static function obj2arr($obj) {
+  function getAll(string $prefix = '') {
+    return new DbSaeKVIterator($prefix, $this->kv);
+  }
+
+  static function obj2arr($obj) {
     $ret = [];
     foreach ($obj as $key => $value) {
       $ret[] = [ 'key' => $key, 'value' => $value ];
     }
     return $ret;
+  }
+
+}
+
+class DbSaeKVIterator implements Iterator {
+
+  private $prefix = '';
+  private $kv;
+
+  private $startKey = '';
+  // one-based
+  private $page = 0;
+  private $currentValue = [];
+  // zero-based
+  private $position = -1;
+
+  function __construct(string $prefix, SaeKV $kv) {
+    $this->prefix = $prefix;
+    $this->kv = $kv;
+    $this->rewind();
+  }
+
+  public function current() {
+    return $this->currentValue[$this->position];
+  }
+  public function key() {
+    return ($this->page - 1) * 100 + $this->position;
+  }
+  public function next() {
+    if ($this->position >= 0 && $this->position < count($this->currentValue)) {
+      $this->position ++;
+    } else {
+      $this->page ++;
+      $this->position = 0;
+      $this->currentValue = $this->kv->pkrget($this->prefix, 100, $this->startKey);
+      end($this->currentValue);
+      $this->startKey = key($this->currentValue);
+      $this->currentValue = DbSaeKV::obj2arr($this->currentValue);
+    }
+  }
+  public function rewind() {
+    $this->startKey = '';
+    $this->page = 0;
+    $this->position = -1;
+    $this->next();
+  }
+  public function valid() {
+    return count($this->currentValue) > 0
+        && $this->position < count($this->currentValue);
   }
 
 }
