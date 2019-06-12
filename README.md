@@ -1,10 +1,13 @@
 # Tinywebdb (php-vue)
 
-## 构建
+## 下载&构建
 
 （需要提前安装docker）
 
 ```
+git clone https://github.com/ColinTree/tinywebdb-php-vue.git
+cd tinywebdb-php-vue
+git submodule update --init
 docker build -t tpv .
 docker create --name tpv_temp_container tpv
 docker cp tpv_temp_container:/usr/app/dist.tar.gz .
@@ -12,6 +15,9 @@ docker rm tpv_temp_container
 ```
 
 执行完之后你就可以看到 `dist.tar.gz` 出现在你当前的文件夹中
+
+注：
+如果有需要可以通过`npm i -g tar-to-zip`安装tar.gz转换zip的模块，并运行`tar2zip dist.tar.gz`
 
 ## 生产环境的配置
 
@@ -67,6 +73,7 @@ STATUS_KEY_ALREADY_EXIST | 需要添加标签的地方 | 30 | 200 | 标签已存
 STATUS_PASSWORD_TOO_SHORT | 初始化 | 40 | 200 | 密码太短
 STATUS_PASSWORD_INVALID  | 初始化 | 41 | 200 | 密码过于简单或者包含了不允许的字符
 STATUS_SETTING_NOT_RECOGNISED | 更新设置 | 50 | 200 | 服务器不支持指定的设置
+STATUS_EXPORT_UNACCEPTED_TYPE | 导出数据 | 60 | 200 | 服务器不支持指定的导出格式
 
 #### 后台管理：
 
@@ -93,6 +100,14 @@ STATUS_SETTING_NOT_RECOGNISED | 更新设置 | 50 | 200 | 服务器不支持指�
     * `key` - 必需 - 默认为空 - 标签
   * 返回值 - [ "status": 状态码, "result": 提示文本 ]
   * 可能返回的非全局状态码 - STATUS_KEY_RESERVED
+* export - 导出数据
+  * 参数
+    * `token` - 必需 - 功能同`X-TPV-Manage-Token`，旨在方便通过链接直接下载
+    * `type` - 必需 - 支持`json`, `xml`, `csv`, `xlsx`，具体导出格式自行尝试
+    * `prefix` - 非必需 - 默认为空 - 标签前缀
+    * `include_reserved` - 非必需 - 默认为`false` - 是否导出保留标签
+  * 返回值 - 对应的文件下载 或者 [ "status": 状态码, "result": 错误信息 ]
+  * 可能返回的非全局状态码 - STATUS_EXPORT_UNACCEPTED_TYPE
 * get - 请求标签的值
   * 请求头
     * `X-TPV-Manage-Token` - 必须
@@ -106,10 +121,14 @@ STATUS_SETTING_NOT_RECOGNISED | 更新设置 | 50 | 200 | 服务器不支持指�
   * 参数
     * `key` - 必需 - 默认为空 - 标签
   * 返回值 - [ "status": 状态码, "result": 标签是否存在 ]
+* import_json - 导入json格式数据
+  * 参数
+    * `file` - 必需 - FormData格式文件
+  * 返回值 - [ 'status': 状态码, 'result': [ 'failed': 导入失败的标签（如保留标签）列表 ] ]
 * init - 初始化
   * 参数
     * `pwd` - 必须 - **只接受POST** - 密码
-  * 返回值 - [ 'status' => 状态码, 'result' => 初始化成功返回token，或者其他情况下返回提示文本 ]
+  * 返回值 - [ 'status': 状态码, 'result': 初始化成功返回token，或者其他情况下返回提示文本 ]
   * 可能返回的非全局状态码 - STATUS_PASSWORD_TOO_SHORT, STATUS_PASSWORD_INVALID
 * login - 登录
   * 参数
@@ -136,7 +155,7 @@ STATUS_SETTING_NOT_RECOGNISED | 更新设置 | 50 | 200 | 服务器不支持指�
 * ping - 检查状态
   * 请求头
     * `X-TPV-Manage-Token` - 非必须
-  * 返回值 - [ "status": 状态码, "result": [ 'login' => 是否已登录, 'initialized' => 系统是否已经初始化 ] ]
+  * 返回值 - [ "status": 状态码, "result": [ 'login': 是否已登录, 'initialized': 系统是否已经初始化 ] ]
 * set - 设置标签的值
   * 请求头
     * `X-TPV-Manage-Token` - 必须
