@@ -22,7 +22,10 @@
 
     <div class="app-width">
       <div style="margin-top:5px">
-        <b-spinner v-if="pingDone !== true" />
+        <div v-if="pingDone !== true">
+          <b-spinner />
+          连接服务器中
+        </div>
         <router-view v-else />
       </div>
 
