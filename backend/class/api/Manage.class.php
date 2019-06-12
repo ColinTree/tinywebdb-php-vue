@@ -205,6 +205,9 @@ class ApiManage extends Api {
             die();
           }
           case 'xlsx': {
+            if (!file_exists(__DIR__ . '/../../lib/xlsxwriter/xlsxwriter.class.php')) {
+              return [ 'status' => STATUS_EXPORT_XLSX_UNSUPPORTED, 'result' => 'Please ensure submodule `xlsxwriter` is inited and updated' ];
+            }
             ob_end_clean();
             header('Content-disposition: attachment; filename="export-' . time() . '.xlsx"');
             header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");

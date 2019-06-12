@@ -74,6 +74,7 @@ STATUS_PASSWORD_TOO_SHORT | 初始化 | 40 | 200 | 密码太短
 STATUS_PASSWORD_INVALID  | 初始化 | 41 | 200 | 密码过于简单或者包含了不允许的字符
 STATUS_SETTING_NOT_RECOGNISED | 更新设置 | 50 | 200 | 服务器不支持指定的设置
 STATUS_EXPORT_UNACCEPTED_TYPE | 导出数据 | 60 | 200 | 服务器不支持指定的导出格式
+STATUS_EXPORT_XLSX_UNSUPPORTED | 导出数据(仅限xlsx) | 61 | 200 | 服务器未安装xlsx相关的模块
 
 #### 后台管理：
 
@@ -107,7 +108,7 @@ STATUS_EXPORT_UNACCEPTED_TYPE | 导出数据 | 60 | 200 | 服务器不支持指�
     * `prefix` - 非必需 - 默认为空 - 标签前缀
     * `include_reserved` - 非必需 - 默认为`false` - 是否导出保留标签
   * 返回值 - 对应的文件下载 或者 [ "status": 状态码, "result": 错误信息 ]
-  * 可能返回的非全局状态码 - STATUS_EXPORT_UNACCEPTED_TYPE
+  * 可能返回的非全局状态码 - STATUS_EXPORT_UNACCEPTED_TYPE, STATUS_EXPORT_XLSX_UNSUPPORTED(仅限xlsx导出)
 * get - 请求标签的值
   * 请求头
     * `X-TPV-Manage-Token` - 必须
