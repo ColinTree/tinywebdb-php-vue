@@ -18,8 +18,10 @@ class ApiManage extends Api {
     $TIMEOUT = defined('MANAGE_LOGIN_TIMEOUT') ? MANAGE_LOGIN_TIMEOUT : 600;
     $now = time();
     $valid = ($_SESSION['pwd'] === self::password()) && ($now - ((int) $_SESSION['last_timestamp']) < $TIMEOUT);
-    // refresh time
-    $_SESSION['last_timestamp'] = $now;
+    if ($valid) {
+      // refresh time
+      $_SESSION['last_timestamp'] = $now;
+    }
     return $valid;
   }
   private static function saltPassword($pwd) {

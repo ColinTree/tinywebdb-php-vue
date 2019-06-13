@@ -123,6 +123,7 @@ export default {
           return
         }
         if (login !== true) {
+          this.token = null
           this.$router.push('/manage/login')
         } else if (this.$route.path === '/manage/login' || this.$route.path === '/manage/init') {
           this.$router.push('/manage/all')
