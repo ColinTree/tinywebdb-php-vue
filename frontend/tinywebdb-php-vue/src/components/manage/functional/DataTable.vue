@@ -1,5 +1,9 @@
 <template>
   <div>
+    <b-card v-if="anyItemSelected" id="floating_card">
+      <b-button variant="danger" size="sm" @click="onMultiDelete">删除</b-button>
+    </b-card>
+
     <b-pagination
         :total-rows="itemCount" :per-page="perPage"
         :limit="10"
@@ -15,7 +19,7 @@
         @head-clicked="onSelectAll(!selectAll)"
         @row-clicked="(item, index) => { item.selected = !item.selected }"
         :per-page="perPage">
-      <template slot="top-row">
+      <template v-if="showCreate" slot="top-row">
         <td />
         <td><b-input placeholder="标签名" v-model="editModal.key" @keypress.enter="$refs.createButton.click()" /></td>
         <td>
@@ -151,6 +155,10 @@
 export default {
   name: 'DataTable',
   props: {
+    showCreate: {
+      type: Boolean,
+      default: true
+    },
     itemCount: Number,
     currentPage: Number,
     busy: Boolean,
@@ -170,6 +178,14 @@ export default {
     }
   },
   computed: {
+    anyItemSelected () {
+      for (let index in this.items) {
+        if (this.items[index].deleted !== true && this.items[index].selected === true) {
+          return true
+        }
+      }
+      return false
+    },
     inheritedService () {
       let parent = this.$parent
       while (!parent.service) {
@@ -318,6 +334,39 @@ export default {
           }
         }
       })
+    },
+    onMultiDelete () {
+      this.$root.showConfirm('', '确认要删除这些标签吗', async () => {
+        let deleteArr = []
+        for (let index in this.items) {
+          let item = this.items[index]
+          if (item.selected === true && item.deleted !== true) {
+            deleteArr.push('' + item.key)
+          }
+        }
+        let { status, result } = (await this.inheritedService.post('mdelete', { keys: JSON.stringify(deleteArr) })).data
+        switch (status) {
+          case 0: {
+            let map = {}
+            this.items.forEach((val, index) => (map[val.key] = index))
+            let failedKeys = []
+            for (let key in result) {
+              if (result[key] === true) {
+                this.items[map[key]].deleted = true
+              } else {
+                failedKeys.push(key)
+              }
+            }
+            if (failedKeys.length > 0) {
+              this.$root.showInfo('', `以下标签删除失败：\`${failedKeys.join('`，`')}\``)
+            }
+            break
+          }
+          default: {
+            this.$root.showInfo('', `删除失败，错误码${status}`)
+          }
+        }
+      })
     }
   }
 }
@@ -334,5 +383,19 @@ export default {
 #bottom_pagination {
   margin: 0;
   padding: 0;
+}
+#floating_card {
+  position: fixed;
+  left: 50%;
+  top: 130px;
+  width: 82px;
+  margin-left: -550px;
+  text-align: center;
+}
+#floating_card .card-body {
+  padding: 15px 0;
+}
+#floating_card .btn {
+  margin: 3px;
 }
 </style>

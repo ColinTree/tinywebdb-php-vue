@@ -36,13 +36,13 @@
         <b-form-group>
           <b-input-group>
             <SpinnerButton @click="deleteData" variant="danger">清除数据库</SpinnerButton>
-            <span style="margin:auto 10px" class="text-danger">执行清空数据库，设置将被保留</span>
+            <span style="margin-left:10px" class="vertical-auto-margin text-danger">执行清空数据库，设置将被保留</span>
           </b-input-group>
         </b-form-group>
         <b-form-group>
           <b-input-group>
             <SpinnerButton @click="deletePwd" variant="danger">清除登录密码</SpinnerButton>
-            <span style="margin:auto 10px" class="text-danger">清除设置将会重置已有密码，请及时设置新密码</span>
+            <span style="margin-left:10px" class="vertical-auto-margin text-danger">清除设置将会重置已有密码，请及时设置新密码</span>
           </b-input-group>
         </b-form-group>
         <b-form-group>
