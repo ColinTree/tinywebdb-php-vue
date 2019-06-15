@@ -83,6 +83,8 @@ export default {
         case 0: {
           if (result.failed && result.failed.length > 0) {
             this.$root.showInfo('', `以下标签导入失败：\`${result.failed.join('`，`')}\``)
+          } else {
+            this.$root.showInfo('', '所有标签都导入成功啦')
           }
           break
         }
