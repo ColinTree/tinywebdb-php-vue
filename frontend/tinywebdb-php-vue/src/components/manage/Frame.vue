@@ -32,9 +32,9 @@
         TinyWebDB MANAGE System By <b-link target="_blank" :href="$root.AUTHOR_URL">Colintree</b-link>.
         VERSION: <span v-text="$root.VERSION_NAME" />
         <label :style="{ float: 'right' }">
-          <b-link target="_blank" href="http://tsp.colintree.cn/使用手册">需要帮助？</b-link>
+          <b-link target="_blank" :href="$root.REPO_URL + '/blob/master/README.md'">需要帮助？</b-link>
           &nbsp;
-          <b-link target="_blank" href="http://tsp.colintree.cn/意见反馈">意见反馈</b-link>
+          <b-link target="_blank" :href="$root.REPO_URL + '/issues/new/choose'">意见反馈</b-link>
           &nbsp;
           <b-link target="_blank" :href="$root.REPO_URL">查看TPV源码</b-link>
         </label>
