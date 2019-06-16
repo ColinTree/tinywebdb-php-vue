@@ -11,6 +11,8 @@ abstract class DbBase {
     return strlen($key) >= $len && substr($key, 0, $len) == self::$KEY_RESERVED_PREFIX;
   }
 
+  public static $SEARCH_RESULT_PER_PAGE = 20;
+
   /**
    * check if key exists
    *
@@ -92,5 +94,15 @@ abstract class DbBase {
    * @return Iterator each iterator value should be a key-value object array (e.g. `['key'=>'key1', 'value'=>'val1']`)
    */
   abstract function getAll(string $prefix = '');
+
+  /**
+   * get all of values in db via iterator
+   * @param string $text text to search
+   * @param string $page page number of search result (20 a page)
+   * @param bool $ignoreCase whether case matters or not
+   * @param array $range search range (fields names)
+   * @return Iterator each iterator value should be a key-value object array (e.g. `['key'=>'key1', 'value'=>'val1']`)
+   */
+  abstract function search(string $text, string $page, bool $ignoreCase, array $range);
 
 }

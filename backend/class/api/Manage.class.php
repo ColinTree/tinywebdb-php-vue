@@ -296,6 +296,26 @@ class ApiManage extends Api {
         }
         return [ 'result' => $returnResult ];
       }
+      case 'search': {
+        $text = (string) $_REQUEST['text'];
+        $ignoreCase = ((string) $_REQUEST['ignore_case'] === 'true');
+        $range = (string) $_REQUEST['range'];
+        if ($range === 'both') {
+          $range = [ 'key', 'value' ];
+        } else {
+          $range = [ $range ];
+        }
+        $page = (string) $_REQUEST['page'];
+
+        $result = DbProvider::getDb()->search($text, $page, $ignoreCase, $range);
+
+        return [
+          'result' => [
+            'count' => $result['count'],
+            'content' => $result['result']
+          ]
+        ];
+      }
       case 'set': {
         if (DbBase::keyReserved($key)) {
           return [ 'status' => STATUS_KEY_RESERVED, 'result' => "Key reserved: $key" ];

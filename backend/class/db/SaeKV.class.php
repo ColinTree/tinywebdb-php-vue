@@ -87,6 +87,34 @@ class DbSaeKV extends DbBase {
     return new DbSaeKVIterator($prefix, $this->kv);
   }
 
+  function search(string $text, string $page, bool $ignoreCase, array $range) {
+    if ($ignoreCase) {
+      $text = strtolower($text);
+    }
+    $countStartIndex = self::$SEARCH_RESULT_PER_PAGE * ($page - 1);
+    $result = [];
+    $count = 0;
+    foreach ($this->getAll() as $index => $key_value_pair) {
+      $match = false;
+      foreach ($range as $field) {
+        if (isset($key_value_pair[$field]) && $key_value_pair[$field]) {
+          $field = $ignoreCase ? strtolower($key_value_pair[$field]) : $key_value_pair[$field];
+          if (count(explode($text, $field, 2)) > 1) {
+            $match = true;
+            break;
+          }
+        }
+      }
+      if ($match) {
+        $count++;
+        if ($count > $countStartIndex && count($result) < self::$SEARCH_RESULT_PER_PAGE) {
+          $result[] = $key_value_pair;
+        }
+      }
+    }
+    return [ 'count' => $count, 'result' => $result ];
+  }
+
   static function obj2arr($obj) {
     $ret = [];
     foreach ($obj as $key => $value) {

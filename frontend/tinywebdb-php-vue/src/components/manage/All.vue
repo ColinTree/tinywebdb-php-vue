@@ -7,12 +7,28 @@
           <b-select plain style="padding:0" v-model="currentCategory" :options="categories" />
         </b-input-group>
       </div>
-      <div>
-        <b-input-group>
-          <div class="vertical-auto-margin">一页显示数量</div>
-          <b-select plain style="padding:0" v-model="perPage" :options="[ 5, 10, 20, 50, 100 ]" />
-          <b-link class="vertical-auto-margin" @click="loadItems">刷新</b-link>
-        </b-input-group>
+      <div style="display:flex">
+        <div>
+          <b-input-group>
+            <div class="vertical-auto-margin">一页显示数量</div>
+            <b-select plain style="padding:0" v-model="perPage" :options="[ 5, 10, 20, 50, 100 ]" />
+            <b-link class="vertical-auto-margin" @click="loadItems">刷新</b-link>
+          </b-input-group>
+        </div>
+        <div style="margin:-4px -8px -4px 10px">
+          <b-input-group>
+            <b-input
+                ref="searchBox"
+                size="sm"
+                v-show="search.show"
+                v-model="search.text"
+                placeholder="在标签中搜索"
+                @keypress.enter="onSearch()" />
+            <b-button size="sm" @click="onSearch">
+              <font-awesome-icon icon="search" />
+            </b-button>
+          </b-input-group>
+        </div>
       </div>
     </template>
 
@@ -30,6 +46,8 @@
 <script>
 import DataTable from '@/components/manage/functional/DataTable.vue'
 
+import qs from 'qs'
+
 export default {
   name: 'ManageAll',
   components: { DataTable },
@@ -41,7 +59,11 @@ export default {
       currentPage: 1,
       isLoading: false,
       items: [],
-      itemCount: 0
+      itemCount: 0,
+      search: {
+        text: '',
+        show: false
+      }
     }
   },
   watch: {
@@ -118,6 +140,14 @@ export default {
       }
       this.currentPage = to
       this.loadItems()
+    },
+    onSearch () {
+      if (this.search.show === true) {
+        this.$router.push({ path: '/manage/search?' + qs.stringify({ text: this.search.text }) })
+      } else {
+        this.search.show = true
+        this.$nextTick(() => this.$refs.searchBox.focus())
+      }
     }
   }
 }
