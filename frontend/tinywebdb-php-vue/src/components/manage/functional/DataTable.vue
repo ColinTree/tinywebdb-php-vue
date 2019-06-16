@@ -7,7 +7,8 @@
     <b-pagination
         :total-rows="itemCount" :per-page="perPage"
         :limit="10"
-        :value="currentPage" @input="to => $emit('currentPageChanged', to)"
+        :value="currentPage"
+        @change="to => $emit('switchPage', to)"
         align="center" />
 
     <b-table
@@ -67,7 +68,8 @@
         id="bottom_pagination"
         :total-rows="itemCount" :per-page="perPage"
         :limit="10"
-        :value="currentPage" @input="to => $emit('currentPageChanged', to)"
+        :value="currentPage"
+        @change="to => $emit('switchPage', to)"
         align="center" />
 
     <b-modal

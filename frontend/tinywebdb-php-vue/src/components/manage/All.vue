@@ -22,7 +22,7 @@
         :busy="isLoading"
         :items="items"
         :per-page="perPage"
-        @currentPageChanged="onCurrentPageChanged"
+        @switchPage="onSwitchPage"
         @requestLoadItems="loadItems" />
   </BaseCard>
 </template>
@@ -37,7 +37,7 @@ export default {
     return {
       currentCategory: '',
       categories: [ { value: '', text: '显示所有' } ],
-      perPage: 10,
+      perPage: 20,
       currentPage: 1,
       isLoading: false,
       items: [],
@@ -45,67 +45,79 @@ export default {
     }
   },
   watch: {
+    '$route.query' () {
+      let queryPage = Number.parseInt(this.$route.query.page)
+      if (queryPage !== this.currentPage && !Number.isNaN(queryPage)) {
+        this.currentPage = queryPage
+        this.loadItems()
+      }
+    },
     currentCategory () {
       this.loadItems()
     },
+    currentPage (val) {
+      this.$router.push('?page=' + val)
+    },
     perPage () {
       this.currentPage = 1
-      this.loadItems(true)
+      this.loadItems()
     }
   },
   async mounted () {
     this.isLoading = true
+
     let { status, result } = (await this.$parent.service.get('settings')).data
     switch (status) {
       case 0: {
         this.categories = Array.from(
           new Set((result.hasOwnProperty('all_category') ? result.all_category : '').split('#')))
           .map(value => value === '' ? ({ value: '', text: '显示所有' }) : { value, text: `前缀\`${value}\`` })
-        this.currentCategory = this.categories[0].value
-        this.loadItems()
-        return
+        break
       }
       default: {
-        this.$root.showInfo('', `拉取失败，错误码${status}`)
+        this.categories = [ { value: '', text: '显示所有' } ]
+        this.$root.showInfo('', `拉取分类失败，错误码${status}`)
       }
     }
+    this.currentCategory = this.categories[0].value
+
+    let queryPage = Number.parseInt(this.$route.query.page)
+    if (queryPage > 1) {
+      // ignore NaN(from undefined) or 1-
+      this.currentPage = queryPage
+    }
+    this.loadItems()
   },
   methods: {
-    async loadItems (cacheCount = false) {
+    async loadItems () {
       this.isLoading = true
-
-      let response = (await this.$parent.service.get('page', {
+      let { status, result } = (await this.$parent.service.get('page', {
         params: {
-          count: !cacheCount,
           page: this.currentPage,
           perPage: this.perPage,
           prefix: this.currentCategory,
           valueLengthLimit: 200
         }
       })).data
-      let { status, result } = response
-      if (status === 0 && response.count !== undefined) {
-        this.itemCount = response.count
-        if (this.itemCount <= (this.currentPage - 1) * this.perPage) {
-          let targetPage = Math.max(1, Math.ceil(this.itemCount / this.perPage))
-          if (targetPage !== this.currentPage) {
-            this.currentPage = targetPage
-            return // change on currentPage will call loadItem(cacheCount = true)
-          }
+      this.isLoading = false
+      switch (status) {
+        case 0: {
+          this.itemCount = result.count
+          this.items = result.content.map(item => ({ selected: false, deleted: false, ...item }))
+          this.currentPage = result.actualPage
+          return
+        }
+        default: {
+          this.$root.showInfo('', `数据加载失败，错误码：${status}`)
         }
       }
-      let pageItems = status === 0 ? result : []
-      this.items = pageItems.map(item => ({ selected: false, deleted: false, ...item }))
-
-      this.isLoading = false
     },
-    onCurrentPageChanged (to) {
-      this.currentPage = to
-      if (this.currentPage <= 0) {
-        this.currentPage = 1
+    onSwitchPage (to) {
+      if (to === this.currentPage) {
         return
       }
-      this.loadItems(true)
+      this.currentPage = to
+      this.loadItems()
     }
   }
 }

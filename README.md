@@ -152,7 +152,7 @@ STATUS_EXPORT_XLSX_UNSUPPORTED | 导出数据(仅限xlsx) | 61 | 200 | 服务器
     * `page` - 非必需 - 默认为1 - 要获取的页数
     * `perPage` - 非必需 - 默认为100 - 每页最大数量
     * `prefix` - 非必需 - 默认为空 - 标签前缀
-  * 返回值 - [ "status": 状态码, "result": 标签-值列表，如`{ ["key":"key1","value":"valueOfKey1"], ["key":"key2","value":"valueOfKey2"] }` ]
+  * 返回值 - [ "status": 状态码, "result": [ 'count' => 数据库有多少数据, 'actualPage' => 实际返回的是第几页, 'content' => 标签-值列表，如`{ ["key":"key1","value":"valueOfKey1"], ["key":"key2","value":"valueOfKey2"] }` ] ]
 * ping - 检查状态
   * 请求头
     * `X-TPV-Manage-Token` - 非必须

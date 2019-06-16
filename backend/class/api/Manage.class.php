@@ -275,7 +275,6 @@ class ApiManage extends Api {
         return [ 'result' => $result ];
       }
       case 'page': {
-        $count = isset($_REQUEST['count']) && $_REQUEST['count'] === 'true' ? true : false;
         $page = isset($_REQUEST['page']) ? (int) $_REQUEST['page'] : 1;
         $perPage = isset($_REQUEST['perPage']) ? (int) $_REQUEST['perPage'] : 100;
         $prefix = isset($_REQUEST['prefix']) ? (string) $_REQUEST['prefix'] : '';
@@ -283,18 +282,19 @@ class ApiManage extends Api {
         if ($perPage < 1 || $perPage > 100) {
           return [ 'status' => STATUS_UNACCEPTED_LIMIT, 'result' => [] ];
         }
-        $result = DbProvider::getDb()->getPage($page, $perPage, $prefix);
+        $returnResult = [];
+        $returnResult['count'] = DbProvider::getDb()->count((string) $_REQUEST['prefix']);
+        if (($page - 1) * $perPage >= $returnResult['count']) {
+          $page = max(1, ceil($returnResult['count'] / $perPage));
+        }
+        $returnResult['actualPage'] = $page;
+        $returnResult['content'] = DbProvider::getDb()->getPage($page, $perPage, $prefix);
         if ($valueLengthLimit > 0) {
-          foreach ($result as &$item) {
+          foreach ($returnResult['content'] as &$item) {
             $item['value'] = substr($item['value'], 0, $valueLengthLimit);
           }
         }
-        if ($count) {
-          $countResult = DbProvider::getDb()->count((string) $_REQUEST['prefix']);
-          return [ 'result' => $result, 'extra' => [ 'count' => $countResult !== false ? $countResult : 0 ] ];
-        } else {
-          return [ 'result' => $result ];
-        }
+        return [ 'result' => $returnResult ];
       }
       case 'set': {
         if (DbBase::keyReserved($key)) {
