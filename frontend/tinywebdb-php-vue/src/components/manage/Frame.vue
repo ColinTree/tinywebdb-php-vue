@@ -8,7 +8,6 @@
           <b-navbar-nav v-if="token !== null">
             <b-nav-item  to="/manage/all">全部标签</b-nav-item>
             <b-nav-item to="/manage/backup">备份/恢复</b-nav-item>
-            <b-nav-item to="/manage/file">文件目录</b-nav-item>
             <b-nav-item to="/manage/setting">设置</b-nav-item>
             <b-nav-item v-if="update_available" :href="update_pageUrl" target="_blank">管理系统有更新！</b-nav-item>
           </b-navbar-nav>

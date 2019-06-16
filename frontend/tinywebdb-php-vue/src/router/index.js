@@ -5,7 +5,6 @@ import ManageFrame from '@/components/manage/Frame'
 
 import ManageAll from '@/components/manage/All'
 import ManageBackup from '@/components/manage/Backup'
-import ManageFile from '@/components/manage/File'
 import ManageInit from '@/components/manage/Init'
 import ManageLogin from '@/components/manage/Login'
 import ManageSearch from '@/components/manage/Search'
@@ -27,7 +26,6 @@ export default new Router({
         { path: '', redirect: 'all' },
         { path: 'all', component: ManageAll },
         { path: 'backup', component: ManageBackup },
-        { path: 'file', component: ManageFile },
         { path: 'init', component: ManageInit },
         { path: 'login', component: ManageLogin },
         { path: 'search', component: ManageSearch },
