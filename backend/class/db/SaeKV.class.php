@@ -150,7 +150,7 @@ class DbSaeKVIterator implements Iterator {
     return ($this->page - 1) * 100 + $this->position;
   }
   public function next() {
-    if ($this->position >= 0 && $this->position < count($this->currentValue)) {
+    if ($this->position >= 0 && $this->position + 1 < count($this->currentValue)) {
       $this->position ++;
     } else {
       $this->page ++;
