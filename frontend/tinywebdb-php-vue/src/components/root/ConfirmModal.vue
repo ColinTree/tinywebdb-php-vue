@@ -11,7 +11,7 @@
       no-close-on-esc
       hide-header-close
       centered lazy>
-    <pre v-text="content" />
+    <pre v-text="content" style="white-space:pre-wrap" />
   </b-modal>
 </template>
 

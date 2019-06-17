@@ -100,10 +100,6 @@ class ApiManage extends Api {
       case 'ping': {
         return [ 'result' => [ 'login' => self::loginValid(), 'initialized' => self::initialized() ] ];
       }
-      case 'deletepwd': {
-        $result = DbProvider::getDb()->delete(DbBase::$KEY_MANAGE_PASSWORD);
-        return [ 'result' => var_export($result) ];
-      }
     }
 
     if (!self::loginValid()) {
@@ -132,6 +128,24 @@ class ApiManage extends Api {
         return (DbProvider::getDb()->delete($key))
             ? "Key ($key) deleted"
             : [ 'status' => STATUS_API_FAILED, 'result' => "Failed deleting key: $key" ];
+      }
+      case 'erase_all': {
+        foreach (DbProvider::getDb()->getAll() as $index => $key_value_pair) {
+          DbProvider::getDb()->delete($key_value_pair['key']);
+        }
+        return [ 'result' => 'All data erased' ];
+      }
+      case 'erase_pwd': {
+        $result = DbProvider::getDb()->delete(DbBase::$KEY_MANAGE_PASSWORD);
+        return [ 'result' => var_export($result) ];
+      }
+      case 'erase_data': {
+        foreach (DbProvider::getDb()->getAll() as $index => $key_value_pair) {
+          if (!DbBase::keyReserved($key_value_pair['key'])) {
+            DbProvider::getDb()->delete($key_value_pair['key']);
+          }
+        }
+        return [ 'result' => 'All data erased (except for reserved keys)' ];
       }
       case 'export': {
         $type = (string) $_REQUEST['type'];

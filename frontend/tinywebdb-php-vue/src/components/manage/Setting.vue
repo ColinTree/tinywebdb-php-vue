@@ -34,19 +34,16 @@
       <div style="font-weight:bold; margin-bottom:10px" disabled>危险选项</div>
       <div>
         <b-form-group>
-          <b-input-group>
-            <SpinnerButton @click="deleteData" variant="danger">清除数据库</SpinnerButton>
-            <span style="margin-left:10px" class="vertical-auto-margin text-danger">执行清空数据库，设置将被保留</span>
-          </b-input-group>
+          <SpinnerButton @click="eraseData" variant="danger">清除数据库</SpinnerButton>
+          <span style="margin-left:10px" class="vertical-auto-margin text-danger">执行清空数据库，设置将被保留</span>
         </b-form-group>
         <b-form-group>
-          <b-input-group>
-            <SpinnerButton @click="deletePwd" variant="danger">清除登录密码</SpinnerButton>
-            <span style="margin-left:10px" class="vertical-auto-margin text-danger">清除设置将会重置已有密码，请及时设置新密码</span>
-          </b-input-group>
+          <SpinnerButton @click="erasePwd" variant="danger">清除登录密码</SpinnerButton>
+          <span style="margin-left:10px" class="vertical-auto-margin text-danger">清除设置将会重置已有密码，请及时设置新密码</span>
         </b-form-group>
         <b-form-group>
-          <SpinnerButton @click="deleteAll" variant="danger">清除数据库和所有设置</SpinnerButton>
+          <SpinnerButton @click="eraseAll" variant="danger">清除数据库和所有设置</SpinnerButton>
+          <span style="margin-left:10px" class="vertical-auto-margin text-danger">完全重置TPV</span>
         </b-form-group>
       </div>
     </div>
@@ -125,16 +122,12 @@ export default {
       this.buttonText.all_category = undefined
       this.buttonVariant.all_category = undefined
     },
-    deleteData (onDone) {
-    },
-    deletePwd (onDone) {
-      this.$root.showConfirm('', '确认要清除登录密码？', async () => {
-        let { status } = (await this.$parent.service.post('deletepwd')).data
+    eraseData (onDone) {
+      this.$root.showConfirm('', '确认要清空数据库吗？该操作无法逆转！请提前做好数据备份', async () => {
+        let { status } = (await this.$parent.service.post('erase_data')).data
         switch (status) {
           case 0: {
-            this.$parent.token = null
-            this.$router.push('/manage/init')
-            this.$root.showToast('系统密码已重置，请重新设置新的密码')
+            this.$root.showInfo('', '数据已清空')
             break
           }
           default: {
@@ -144,7 +137,39 @@ export default {
         onDone()
       }, onDone)
     },
-    deleteAll (onDone) {
+    erasePwd (onDone) {
+      this.$root.showConfirm('', '确认要清除登录密码？', async () => {
+        let { status } = (await this.$parent.service.post('erase_pwd')).data
+        switch (status) {
+          case 0: {
+            this.$parent.token = null
+            this.$router.push('/manage/init')
+            this.$root.showInfo('', '系统密码已重置，请重新设置新的密码')
+            break
+          }
+          default: {
+            this.$root.showInfo('', `重置密码失败，错误码${status}`)
+          }
+        }
+        onDone()
+      }, onDone)
+    },
+    eraseAll (onDone) {
+      this.$root.showConfirm('', '确认要清空数据库并且清除所有设置（包括后台密码）吗？该操作无法逆转！请提前做好数据备份', async () => {
+        let { status } = (await this.$parent.service.post('erase_all')).data
+        switch (status) {
+          case 0: {
+            this.$parent.token = null
+            this.$router.push('/manage/init')
+            this.$root.showInfo('', '数据库和所有设置已清除')
+            break
+          }
+          default: {
+            this.$root.showInfo('', `清除失败，错误码${status}`)
+          }
+        }
+        onDone()
+      }, onDone)
     }
   }
 }

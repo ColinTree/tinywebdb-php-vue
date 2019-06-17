@@ -5,7 +5,7 @@
       @shown="onShown"
       @hidden="onHidden"
       centered lazy>
-    <pre v-text="content" style="white-space:pre-warp" />
+    <pre v-text="content" style="white-space:pre-wrap" />
     <template slot="modal-footer">
       <b-button ref="ok" variant="primary" @click="onOk">好的</b-button>
     </template>
