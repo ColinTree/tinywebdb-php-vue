@@ -3,17 +3,17 @@
     <template slot="header">设置</template>
 
     <div v-if="loaded === true">
-      <div style="font-weight:bold; margin-bottom:10px" disabled>标签浏览页·分类列表</div>
+      <div class="setting-header">标签浏览页·分类列表</div>
       <div>
         <b-form-group>
-          <b-input v-model="setting.all_category" />
+          <b-input v-model="all_category.value" />
           <template slot="description">
             使用井号#分隔每一项（重复项会被隐藏）<br>
             例如：默认显示全部，可选显示“student_”或者“teacher_”开头的标签，则应当这么填：
-            <b-link @click="setting.all_category = '#student_#teacher_'">#student_#teacher_（点击预览）</b-link>
+            <b-link @click="all_category.value = '#student_#teacher_'">#student_#teacher_（点击预览）</b-link>
             <br>
             例如：默认显示“student_”，可选显示全部和开头为“teacher_”的标签，则应当这么填：
-            <b-link @click="setting.all_category = 'student_##teacher_'">student_##teacher_（点击预览）</b-link>
+            <b-link @click="all_category.value = 'student_##teacher_'">student_##teacher_（点击预览）</b-link>
           </template>
         </b-form-group>
         <b-form-group label="预览">
@@ -23,15 +23,29 @@
               :select-size="Math.min(5, all_category_preview.length)" />
         </b-form-group>
         <SpinnerButton
-            :variant="typeof buttonVariant.all_category === 'string' ? buttonVariant.all_category : 'secondary'"
-          @click="updateCategory">
-          <span v-text="typeof buttonText.all_category === 'string' ? buttonText.all_category : '保存'"/>
+            :variant="typeof all_category.variant === 'string' ? all_category.variant : 'secondary'"
+            @click="onDone => save('all_category', onDone)">
+          <span v-text="typeof all_category.text === 'string' ? all_category.text : '保存'"/>
         </SpinnerButton>
       </div>
 
       <hr>
 
-      <div style="font-weight:bold; margin-bottom:10px" disabled>危险选项</div>
+      <div class="setting-header">数据安全</div>
+      <div>
+        <b-form-group description="说明：本功能对于数据防修改能力较弱，仅做简单的浏览器级别防御，请不要过度依赖">
+          <b-checkbox v-model="allow_browser.value">允许来自浏览器的读写</b-checkbox>
+        </b-form-group>
+        <SpinnerButton
+            :variant="typeof allow_browser.variant === 'string' ? allow_browser.variant : 'secondary'"
+            @click="onDone => save('allow_browser', onDone)">
+          <span v-text="typeof allow_browser.text === 'string' ? allow_browser.text : '保存'"/>
+        </SpinnerButton>
+      </div>
+
+      <hr>
+
+      <div class="setting-header">危险选项</div>
       <div>
         <b-form-group>
           <SpinnerButton @click="eraseData" variant="danger">清除数据库</SpinnerButton>
@@ -66,20 +80,21 @@ export default {
   data () {
     return {
       loaded: false,
-      setting: {
-        all_category: ''
+      all_category: {
+        value: '',
+        variant: undefined,
+        text: undefined
       },
-      buttonVariant: {
-        all_category: undefined
-      },
-      buttonText: {
-        all_category: undefined
+      allow_browser: {
+        value: true,
+        variant: undefined,
+        text: undefined
       }
     }
   },
   computed: {
     all_category_preview () {
-      return Array.from(new Set(this.setting.all_category.split('#')))
+      return Array.from(new Set(this.all_category.value.split('#')))
         .map(item => ({value: item, text: item.length === 0 ? '显示所有' : `前缀\`${item}\``}))
     }
   },
@@ -92,7 +107,8 @@ export default {
       let { status, result } = (await this.$parent.service.get('settings')).data
       switch (status) {
         case 0: {
-          if (result.hasOwnProperty('all_category')) this.setting.all_category = result.all_category
+          this.all_category.value = result.all_category || ''
+          this.allow_browser.value = result.allow_browser !== 'false'
           this.loaded = true
           break
         }
@@ -101,11 +117,22 @@ export default {
         }
       }
     },
-    async save (settingId, value) {
+    async save (settingId, onDone = () => {}) {
+      let value = (this[settingId] || {}).value
+      if (value === undefined || value === null) {
+        this.$root.showInfo('', '设置内容为undefined或null，请刷新页面后重试。如反复出现请联系作者排查问题')
+        return
+      }
       let { status } = (await this.$parent.service.post('setting_update', { settingId, value })).data
       switch (status) {
         case 0: {
-          return true
+          this[settingId].text = '保存成功'
+          this[settingId].variant = 'success'
+          onDone()
+          await this.$root.sleep(1000)
+          this[settingId].text = undefined
+          this[settingId].variant = undefined
+          break
         }
         default: {
           throw new Error(`保存设置'${settingId}'失败，错误码${status}`)
@@ -113,15 +140,6 @@ export default {
       }
     },
 
-    async updateCategory (onDone) {
-      let result = await this.save('all_category', this.setting.all_category)
-      onDone()
-      this.buttonText.all_category = result ? '保存成功' : '保存失败'
-      this.buttonVariant.all_category = result ? 'success' : 'danger'
-      await this.$root.sleep(1000)
-      this.buttonText.all_category = undefined
-      this.buttonVariant.all_category = undefined
-    },
     eraseData (onDone) {
       this.$root.showConfirm('', '确认要清空数据库吗？该操作无法逆转！请提前做好数据备份', async () => {
         let { status } = (await this.$parent.service.post('erase_data')).data
@@ -176,5 +194,8 @@ export default {
 </script>
 
 <style>
-
+.setting-header {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
 </style>

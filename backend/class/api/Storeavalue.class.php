@@ -3,6 +3,7 @@
 class ApiStoreavalue extends Api {
 
   function handle() {
+    ApiGetvalue::checkAllowBrowser();
     $key = (string) $_REQUEST['tag'];
     $value = (string) $_REQUEST['value'];
     if (DbBase::keyReserved($key)) {

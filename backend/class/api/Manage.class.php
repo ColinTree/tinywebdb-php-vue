@@ -341,12 +341,13 @@ class ApiManage extends Api {
       case 'setting_update': {
         $settingId = (string) $_REQUEST['settingId'];
         switch ($settingId) {
-          case 'all_category': {
+          case 'all_category':
+          case 'allow_browser': {
             self::updateSetting($settingId, $value);
             return [ 'result' => 'Succeed' ];
           }
           default: {
-            return [ 'status' => STATUS_API_FAILED, 'result' => 'The settingId can not be recognised.' ];
+            return [ 'status' => STATUS_SETTING_NOT_RECOGNISED, 'result' => 'The settingId can not be recognised.' ];
           }
         }
       }
