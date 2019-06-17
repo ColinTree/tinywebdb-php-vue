@@ -68,10 +68,8 @@ export default {
   methods: {
     async onImportJson (onDone) {
       if (this.importJson.file === null) {
-        this.importJson.state = false
+        this.$root.showInfo('', '请选择一个文件')
         onDone()
-        await this.$root.sleep(1000)
-        this.importJson.state = null
         return
       }
       let formData = new FormData()
