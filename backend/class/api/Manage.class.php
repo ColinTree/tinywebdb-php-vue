@@ -135,10 +135,6 @@ class ApiManage extends Api {
         }
         return [ 'result' => 'All data erased' ];
       }
-      case 'erase_pwd': {
-        $result = DbProvider::getDb()->delete(DbBase::$KEY_MANAGE_PASSWORD);
-        return [ 'result' => var_export($result) ];
-      }
       case 'erase_data': {
         foreach (DbProvider::getDb()->getAll() as $index => $key_value_pair) {
           if (!DbBase::keyReserved($key_value_pair['key'])) {
@@ -146,6 +142,10 @@ class ApiManage extends Api {
           }
         }
         return [ 'result' => 'All data erased (except for reserved keys)' ];
+      }
+      case 'erase_pwd': {
+        DbProvider::getDb()->delete(DbBase::$KEY_MANAGE_PASSWORD);
+        return [ 'result' => 'Password deleted, please set a new one ASAP' ];
       }
       case 'export': {
         $type = (string) $_REQUEST['type'];

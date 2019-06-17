@@ -101,6 +101,18 @@ STATUS_EXPORT_XLSX_UNSUPPORTED | 导出数据(仅限xlsx) | 61 | 200 | 服务器
     * `key` - 必需 - 默认为空 - 标签
   * 返回值 - [ "status": 状态码, "result": 提示文本 ]
   * 可能返回的非全局状态码 - STATUS_KEY_RESERVED
+* erase_all - 重置（初始化）整个TPV系统
+  * 请求头
+    * `X-TPV-Manage-Token` - 必须
+  * 返回值 - [ "status": 状态码, "result": 提示文本 ]
+* erase_data - 清除所有数据（除了保留标签，如设置和密码）
+  * 请求头
+    * `X-TPV-Manage-Token` - 必须
+  * 返回值 - [ "status": 状态码, "result": 提示文本 ]
+* erase_pwd - 删除密码
+  * 请求头
+    * `X-TPV-Manage-Token` - 必须
+  * 返回值 - [ "status": 状态码, "result": 提示文本 ]
 * export - 导出数据
   * 参数
     * `token` - 必需 - 功能同`X-TPV-Manage-Token`，旨在方便通过链接直接下载
@@ -191,4 +203,4 @@ STATUS_EXPORT_XLSX_UNSUPPORTED | 导出数据(仅限xlsx) | 61 | 200 | 服务器
 设置Id | 设置名 | 接受的值
 -|-|-
 all_category | 标签浏览页·分类列表 | 使用井号#分隔的文本
-allow_browser | 允许来自浏览器的读写 | 不是`"false"`默认为`"true"`
+allow_browser | 允许来自浏览器的读写 | 不是`false`默认为`true`
