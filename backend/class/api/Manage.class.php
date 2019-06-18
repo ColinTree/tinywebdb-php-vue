@@ -29,7 +29,8 @@ class ApiManage extends Api {
   }
 
   private static function settings() {
-    return json_decode(DbProvider::getDb()->getReserved(DbBase::$KEY_MANAGE_SETTINGS), true);
+    $settings = json_decode(DbProvider::getDb()->getReserved(DbBase::$KEY_MANAGE_SETTINGS), true);
+    return $settings === '' ? new stdClass : $settings;
   }
   private static function updateSetting($settingId, $value) {
     $settings = self::settings();
