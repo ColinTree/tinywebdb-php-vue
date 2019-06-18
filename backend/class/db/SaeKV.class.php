@@ -87,7 +87,7 @@ class DbSaeKV extends DbBase {
     return new DbSaeKVIterator($prefix, $this->kv);
   }
 
-  function search(string $text, string $page, bool $ignoreCase, array $range) {
+  function search(string $text, int $page, bool $ignoreCase, array $range) {
     if ($ignoreCase) {
       $text = strtolower($text);
     }

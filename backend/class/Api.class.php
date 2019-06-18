@@ -44,10 +44,11 @@ abstract class Api {
       $result = ob_get_clean();
     }
 
-    if (isset($handleResult['noProcess']) && $handleResult['noProcess'] === true) {
+    // echo then die() in handle() instead
+    /* if (isset($handleResult['noProcess']) && $handleResult['noProcess'] === true) {
       echo $handleResult['result'];
       return;
-    }
+    } */
 
     $status = STATUS_SUCCEED;
     if (is_null($handleResult)) {

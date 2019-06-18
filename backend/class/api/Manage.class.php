@@ -319,7 +319,7 @@ class ApiManage extends Api {
         } else {
           $range = [ $range ];
         }
-        $page = (string) $_REQUEST['page'];
+        $page = (int) $_REQUEST['page'];
 
         $result = DbProvider::getDb()->search($text, $page, $ignoreCase, $range);
 
@@ -342,7 +342,8 @@ class ApiManage extends Api {
         $settingId = (string) $_REQUEST['settingId'];
         switch ($settingId) {
           case 'all_category':
-          case 'allow_browser': {
+          case 'allow_browser':
+          case 'special_tags': {
             self::updateSetting($settingId, $value);
             return [ 'result' => 'Succeed' ];
           }

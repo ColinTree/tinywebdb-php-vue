@@ -8,10 +8,10 @@ class ApiStoreavalue extends Api {
     $value = (string) $_REQUEST['value'];
     if (DbBase::keyReserved($key)) {
       http_response_code(403);
-      return [ 'noProcess' => true, 'result' => json_encode([ 'STORED', $key, 'Key reserved, refuse to store' ]) ];
+      die(json_encode([ 'STORED', $key, 'Key reserved, refuse to store' ]));
     }
     DbProvider::getDb()->set($key, $value);
-    return [ 'noProcess' => true, 'result' => json_encode([ 'STORED', $key, $value ]) ];
+    die(json_encode([ 'STORED', $key, $value ]));
   }
 
 }

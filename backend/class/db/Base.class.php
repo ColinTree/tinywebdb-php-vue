@@ -98,11 +98,11 @@ abstract class DbBase {
   /**
    * get all of values in db via iterator
    * @param string $text text to search
-   * @param string $page page number of search result (20 a page)
+   * @param int $page page number of search result (20 a page)
    * @param bool $ignoreCase whether case matters or not
    * @param array $range search range (fields names)
    * @return Iterator each iterator value should be a key-value object array (e.g. `['key'=>'key1', 'value'=>'val1']`)
    */
-  abstract function search(string $text, string $page, bool $ignoreCase, array $range);
+  abstract function search(string $text, int $page, bool $ignoreCase, array $range);
 
 }
