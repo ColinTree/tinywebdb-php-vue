@@ -97,7 +97,7 @@ export default {
           return
         }
         default: {
-          this.$root.showInfo('', `搜索失败，错误码${status}`)
+          this.$root.showInfo(`搜索失败，错误码${status}`)
         }
       }
     },

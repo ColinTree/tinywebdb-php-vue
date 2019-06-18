@@ -120,7 +120,7 @@ export default {
     async save (settingId, onDone = () => {}) {
       let value = (this[settingId] || {}).value
       if (value === undefined || value === null) {
-        this.$root.showInfo('', '设置内容为undefined或null，请刷新页面后重试。如反复出现请联系作者排查问题')
+        this.$root.showInfo('设置内容为undefined或null，请刷新页面后重试。如反复出现请联系作者排查问题')
         return
       }
       let { status } = (await this.$parent.service.post('setting_update', { settingId, value })).data
@@ -135,7 +135,7 @@ export default {
           break
         }
         default: {
-          throw new Error(`保存设置'${settingId}'失败，错误码${status}`)
+          this.$root.showInfo(`保存设置'${settingId}'失败，错误码${status}`)
         }
       }
     },
@@ -145,11 +145,11 @@ export default {
         let { status } = (await this.$parent.service.post('erase_data')).data
         switch (status) {
           case 0: {
-            this.$root.showInfo('', '数据已清空')
+            this.$root.showInfo('数据已清空')
             break
           }
           default: {
-            this.$root.showInfo('', `重置密码失败，错误码${status}`)
+            this.$root.showInfo(`重置密码失败，错误码${status}`)
           }
         }
         onDone()
@@ -162,11 +162,11 @@ export default {
           case 0: {
             this.$parent.token = null
             this.$router.push('/manage/init')
-            this.$root.showInfo('', '系统密码已重置，请重新设置新的密码')
+            this.$root.showInfo('系统密码已重置，请重新设置新的密码')
             break
           }
           default: {
-            this.$root.showInfo('', `重置密码失败，错误码${status}`)
+            this.$root.showInfo(`重置密码失败，错误码${status}`)
           }
         }
         onDone()
@@ -179,11 +179,11 @@ export default {
           case 0: {
             this.$parent.token = null
             this.$router.push('/manage/init')
-            this.$root.showInfo('', '数据库和所有设置已清除')
+            this.$root.showInfo('数据库和所有设置已清除')
             break
           }
           default: {
-            this.$root.showInfo('', `清除失败，错误码${status}`)
+            this.$root.showInfo(`清除失败，错误码${status}`)
           }
         }
         onDone()

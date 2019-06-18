@@ -98,7 +98,7 @@ export default {
       }
       default: {
         this.categories = [ { value: '', text: '显示所有' } ]
-        this.$root.showInfo('', `拉取分类失败，错误码${status}`)
+        this.$root.showInfo(`拉取分类失败，错误码${status}`)
       }
     }
     this.currentCategory = this.categories[0].value
@@ -130,7 +130,7 @@ export default {
           return
         }
         default: {
-          this.$root.showInfo('', `数据加载失败，错误码：${status}`)
+          this.$root.showInfo(`数据加载失败，错误码：${status}`)
         }
       }
     },

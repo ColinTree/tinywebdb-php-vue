@@ -78,8 +78,8 @@ new Vue({
     showConfirm (title, content, okCallback, cancelCallback) {
       this.$refs.confirmModal.show(title, content, okCallback, cancelCallback)
     },
-    showInfo (title, content, hiddenCallback = null) {
-      this.$refs.infoModal.show(title, content, hiddenCallback)
+    showInfo (content, hiddenCallback = null) {
+      this.$refs.infoModal.show('', content, hiddenCallback)
     },
     showToast (message) {
       this.$bvToast.toast(message, {

@@ -84,7 +84,7 @@ export default {
     service.interceptors.response.use(undefined, error => {
       if (error.response) {
         if (error.response.data.status === 4) {
-          this.$root.showInfo('', this.token === null ? '请先登录' : '登录已失效，请重新登录')
+          this.$root.showInfo(this.token === null ? '请先登录' : '登录已失效，请重新登录')
           this.token = null
           this.$router.push('/manage/login')
           return Promise.reject(new Error('请先登录'))
@@ -104,7 +104,7 @@ export default {
           this.token = null
           this.$router.push('/manage/login')
         } catch (e) {
-          this.$root.showInfo('', '登出失败')
+          this.$root.showInfo('登出失败')
         }
       })
     },
@@ -128,7 +128,7 @@ export default {
           this.$router.push('/manage/all')
         }
       } catch (e) {
-        this.$root.showInfo('', '无法连接服务器，详细信息见console')
+        this.$root.showInfo('无法连接服务器，详细信息见console')
         console.error(e)
       }
     }

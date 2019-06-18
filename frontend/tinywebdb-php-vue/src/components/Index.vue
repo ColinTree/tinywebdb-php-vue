@@ -75,10 +75,10 @@ export default {
         setTimeout(() => (this.get_succeed = false), 800)
       } catch (e) {
         if (e.response && e.response.status === 403) {
-          this.$root.showInfo('', '获取失败，该标签属于系统保留标签 或 根据设定，浏览器的访问不被允许')
+          this.$root.showInfo('获取失败，该标签属于系统保留标签 或 根据设定，浏览器的访问不被允许')
         } else {
           console.error(e)
-          this.$root.showInfo('', '获取失败，错误信息见console')
+          this.$root.showInfo('获取失败，错误信息见console')
         }
       } finally {
         onDone()
@@ -91,10 +91,10 @@ export default {
         setTimeout(() => (this.store_succeed = false), 800)
       } catch (e) {
         if (e.response && e.response.status === 403) {
-          this.$root.showInfo('', '保存失败，该标签属于系统保留标签 或 根据设定，浏览器的访问不被允许')
+          this.$root.showInfo('保存失败，该标签属于系统保留标签 或 根据设定，浏览器的访问不被允许')
         } else {
           console.error(e)
-          this.$root.showInfo('', '保存失败，错误信息见console')
+          this.$root.showInfo('保存失败，错误信息见console')
         }
       } finally {
         onDone()

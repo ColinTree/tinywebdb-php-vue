@@ -66,7 +66,7 @@ export default {
           break
         }
         default: {
-          this.$root.showInfo('', `系统初始化失败，错误码${status}`)
+          this.$root.showInfo(`系统初始化失败，错误码${status}`)
         }
       }
       onDone()

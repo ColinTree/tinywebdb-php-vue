@@ -68,7 +68,7 @@ export default {
   methods: {
     async onImportJson (onDone) {
       if (this.importJson.file === null) {
-        this.$root.showInfo('', '请选择一个文件')
+        this.$root.showInfo('请选择一个文件')
         onDone()
         return
       }
@@ -80,14 +80,14 @@ export default {
       switch (status) {
         case 0: {
           if (result.failed && result.failed.length > 0) {
-            this.$root.showInfo('', `以下标签导入失败：\`${result.failed.join('`，`')}\``)
+            this.$root.showInfo(`以下标签导入失败：\`${result.failed.join('`，`')}\``)
           } else {
-            this.$root.showInfo('', '所有标签都导入成功啦')
+            this.$root.showInfo('所有标签都导入成功啦')
           }
           break
         }
         default: {
-          this.$root.showInfo('', `上传失败，错误码：${status}`)
+          this.$root.showInfo(`上传失败，错误码：${status}`)
         }
       }
     }

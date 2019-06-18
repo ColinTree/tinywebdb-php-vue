@@ -236,7 +236,7 @@ export default {
         return JSON.stringify(val, null, 2)
       } catch (e) {
         console.error('Cannot parse json:', e)
-        this.$root.showInfo('', '无法解码json，详情见console')
+        this.$root.showInfo('无法解码json，详情见console')
         // eslint-disable-next-line vue/no-side-effects-in-computed-properties
         this.showModal.jsonMode = false
         return this.showModal.value
@@ -281,11 +281,11 @@ export default {
           break
         }
         case 10: {
-          this.$root.showInfo('', '标签不存在')
+          this.$root.showInfo('标签不存在')
           break
         }
         default: {
-          this.$root.showInfo('', `获取标签信息失败，错误码${status}`)
+          this.$root.showInfo(`获取标签信息失败，错误码${status}`)
         }
       }
       this.showModal.inProgress = false
@@ -308,17 +308,17 @@ export default {
           break
         }
         case 10: {
-          this.$root.showInfo('', '编辑失败，目标标签不存在，自动切换为创建标签模式', () => this.$refs.editModal_key.focus())
+          this.$root.showInfo('编辑失败，目标标签不存在，自动切换为创建标签模式', () => this.$refs.editModal_key.focus())
           this.editModal.isCreate = true
           break
         }
         case 30: {
-          this.$root.showInfo('', '创建失败，目标标签已存在，自动切换为编辑标签模式', () => this.$refs.editModal_value.focus())
+          this.$root.showInfo('创建失败，目标标签已存在，自动切换为编辑标签模式', () => this.$refs.editModal_value.focus())
           this.editModal.isCreate = false
           break
         }
         default: {
-          this.$root.showInfo('', `${this.editModal.isCreate ? '创建' : '编辑'}失败，错误码${status}`)
+          this.$root.showInfo(`${this.editModal.isCreate ? '创建' : '编辑'}失败，错误码${status}`)
         }
       }
       this.editModal.inProgress = false
@@ -332,7 +332,7 @@ export default {
             break
           }
           default: {
-            this.$root.showInfo('', `删除失败，错误码${status}`)
+            this.$root.showInfo(`删除失败，错误码${status}`)
           }
         }
       })
@@ -360,12 +360,12 @@ export default {
               }
             }
             if (failedKeys.length > 0) {
-              this.$root.showInfo('', `以下标签删除失败：\`${failedKeys.join('`，`')}\``)
+              this.$root.showInfo(`以下标签删除失败：\`${failedKeys.join('`，`')}\``)
             }
             break
           }
           default: {
-            this.$root.showInfo('', `删除失败，错误码${status}`)
+            this.$root.showInfo(`删除失败，错误码${status}`)
           }
         }
       })
