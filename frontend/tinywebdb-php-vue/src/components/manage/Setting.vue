@@ -49,9 +49,19 @@
 
       <div class="setting-header">特殊标签</div>
       <b-form @submit.prevent="$refs.special_tags_button.onClick()">
-        <b-form-group label="返回总标签数量" :state="special_count_state" invalid-feedback="不能包含#，空格">
-          <b-input v-model="special_tags.value.count" placeholder="special_count" :state="special_count_state" />
-          <template slot="description">
+        <b-form-group :state="special_count_state" invalid-feedback="不能包含#，空格">
+          <b-input
+              v-model="special_tags.value.count"
+              placeholder="special_count"
+              :state="special_count_state"
+              :disabled="special_tags.value.count === 'disabled'" />
+          <template slot="label">
+            返回总标签数量
+            <b-link
+                v-text="special_tags.value.count === 'disabled' ? '启用' : '禁用'"
+                @click="special_tags.value.count === 'disabled' ? (special_tags.value.count = '') : (special_tags.value.count = 'disabled')" />
+          </template>
+          <template slot="description" v-if="special_tags.value.count !== 'disabled'">
             使用方法：请求获取标签“<span v-text="special_count" />[#计数前缀]”。如果不包含前缀，默认为空<br />
             返回：一个文本形式的数字<br />
             例子：
@@ -61,9 +71,19 @@
             </ul>
           </template>
         </b-form-group>
-        <b-form-group label="获取指定前缀的所有标签和值" :state="special_getall_state" invalid-feedback="不能包含，空格，空格">
-          <b-input v-model="special_tags.value.getall" placeholder="special_getall" :state="special_getall_state" />
-          <template slot="description">
+        <b-form-group :state="special_getall_state" invalid-feedback="不能包含，空格，空格">
+          <b-input
+              v-model="special_tags.value.getall"
+              placeholder="special_getall"
+              :state="special_getall_state"
+              :disabled="special_tags.value.getall === 'disabled'" />
+          <template slot="label">
+            获取指定前缀的所有标签和值
+            <b-link
+                v-text="special_tags.value.getall === 'disabled' ? '启用' : '禁用'"
+                @click="special_tags.value.getall === 'disabled' ? (special_tags.value.getall = '') : (special_tags.value.getall = 'disabled')" />
+          </template>
+          <template slot="description" v-if="special_tags.value.getall !== 'disabled'">
             使用方法：请求获取标签“<span v-text="special_getall" />#获取前缀[#起始偏移][#数量限制]”。
             <b>***如数据库内的数据数量较大，请慎重使用***</b><br />
             <ul>
@@ -81,17 +101,37 @@
             </ul>
           </template>
         </b-form-group>
-        <b-form-group label="一次性获取多个标签的值" :state="special_listget_state" invalid-feedback="不能包含，空格">
-          <b-input v-model="special_tags.value.listget" placeholder="special_listget" :state="special_listget_state" />
-          <template slot="description">
+        <b-form-group :state="special_listget_state" invalid-feedback="不能包含，空格">
+          <b-input
+              v-model="special_tags.value.listget"
+              placeholder="special_listget"
+              :state="special_listget_state"
+              :disabled="special_tags.value.listget === 'disabled'" />
+          <template slot="label">
+            一次性获取多个标签的值
+            <b-link
+                v-text="special_tags.value.listget === 'disabled' ? '启用' : '禁用'"
+                @click="special_tags.value.listget === 'disabled' ? (special_tags.value.listget = '') : (special_tags.value.listget = 'disabled')" />
+          </template>
+          <template slot="description" v-if="special_tags.value.listget !== 'disabled'">
             使用方法：请求获取标签“<span v-text="special_listget" />[#标签1][#标签2][……]”<br />
             返回：一个json编码的文本，格式如<code>[ 结果列表 ]</code>，每个列表项为<code>{ key: '标签', value: '值' }</code><br />
             例子：获取"id_2455_pwd"和"id_2455_money"：“<span v-text="special_listget" />#id_2455_pwd#id_2455_money”
           </template>
         </b-form-group>
-        <b-form-group label="搜索数据库的标签和值" :state="special_search_state" invalid-feedback="不能包含，空格">
-          <b-input v-model="special_tags.value.search" placeholder="special_search" :state="special_search_state" />
-          <template slot="description">
+        <b-form-group :state="special_search_state" invalid-feedback="不能包含，空格">
+          <b-input
+              v-model="special_tags.value.search"
+              placeholder="special_search"
+              :state="special_search_state"
+              :disabled="special_tags.value.search === 'disabled'" />
+          <template slot="label">
+            搜索数据库的标签和值
+            <b-link
+                v-text="special_tags.value.search === 'disabled' ? '启用' : '禁用'"
+                @click="special_tags.value.search === 'disabled' ? (special_tags.value.search = '') : (special_tags.value.search = 'disabled')" />
+          </template>
+          <template slot="description" v-if="special_tags.value.search !== 'disabled'">
             使用方法：请求获取标签“<span v-text="special_search" />#搜索关键词”<br />
             返回：一个json编码的文本，格式如<code>{ "count": 总共多少项, "result": [ 搜索结果列表 ] }</code>，其中每个列表项为<code>{ key: '标签', value: '值' }</code><br />
             例子：搜索"john"：“<span v-text="special_search" />#john”
@@ -146,7 +186,7 @@ export default {
       all_category: { value: '', variant: undefined, text: undefined },
       allow_browser: { value: true, variant: undefined, text: undefined },
       special_tags: {
-        value: { count: '', getall: '', listget: '', search: '' },
+        value: { count: 'disabled', getall: 'disabled', listget: 'disabled', search: 'disabled' },
         variant: undefined,
         text: undefined
       }
@@ -185,10 +225,10 @@ export default {
           this.allow_browser.value = result.allow_browser !== 'false'
           if (result.special_tags) {
             result.special_tags = JSON.parse(result.special_tags)
-            this.special_tags.value.count = typeof result.special_tags.count === 'string' ? result.special_tags.count : ''
-            this.special_tags.value.getall = typeof result.special_tags.getall === 'string' ? result.special_tags.getall : ''
-            this.special_tags.value.listget = typeof result.special_tags.listget === 'string' ? result.special_tags.listget : ''
-            this.special_tags.value.search = typeof result.special_tags.search === 'string' ? result.special_tags.search : ''
+            this.special_tags.value.count = typeof result.special_tags.count === 'string' ? result.special_tags.count : 'disabled'
+            this.special_tags.value.getall = typeof result.special_tags.getall === 'string' ? result.special_tags.getall : 'disabled'
+            this.special_tags.value.listget = typeof result.special_tags.listget === 'string' ? result.special_tags.listget : 'disabled'
+            this.special_tags.value.search = typeof result.special_tags.search === 'string' ? result.special_tags.search : 'disabled'
           }
           this.loaded = true
           break

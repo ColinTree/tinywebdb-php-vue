@@ -17,10 +17,18 @@ class ApiGetvalue extends Api {
   private function handleSpecialTags($key) {
     $settings = json_decode(DbProvider::getDb()->get(DbBase::$KEY_MANAGE_SETTINGS), true);
     $special_tags = isset($settings['special_tags']) ? json_decode($settings['special_tags'], true) : [];
-    $tag_count   = isset($special_tags['count'])   && !empty($special_tags['count'])   ? $special_tags['count']   : 'special_count';
-    $tag_getall  = isset($special_tags['getall'])  && !empty($special_tags['getall'])  ? $special_tags['getall']  : 'special_getall';
-    $tag_listget = isset($special_tags['listget']) && !empty($special_tags['listget']) ? $special_tags['listget'] : 'special_listget';
-    $tag_search  = isset($special_tags['search'])  && !empty($special_tags['search'])  ? $special_tags['search']  : 'special_search';
+    $tag_count = !isset($special_tags['count'])
+        ? 'disabled'
+        : (empty($special_tags['count']) ? 'special_count' : $special_tags['count']);
+    $tag_getall = !isset($special_tags['getall'])
+        ? 'disabled'
+        : (empty($special_tags['getall']) ? 'special_getall' : $special_tags['getall']);
+    $tag_listget = !isset($special_tags['listget'])
+        ? 'disabled'
+        : (empty($special_tags['listget']) ? 'special_listget' : $special_tags['listget']);
+    $tag_search = !isset($special_tags['search'])
+        ? 'disabled'
+        : (empty($special_tags['search']) ? 'special_search' : $special_tags['search']);
     $tag = explode('#', $key, 2);
     while (count($tag) < 2) {
       $tag[] = '';
@@ -29,10 +37,16 @@ class ApiGetvalue extends Api {
     $tag = $tag[0];
     switch ($tag) {
       case $tag_count: {
+        if ($tag_count === 'disabled') {
+          break;
+        }
         $count = DbProvider::getDb()->count($params[0]);
         die(json_encode([ 'VALUE', $key, (string) $count ]));
       }
       case $tag_getall: {
+        if ($tag_getall === 'disabled') {
+          break;
+        }
         $offset = count($params) >= 2 ? (int) $params[1] : 0;
         $limit = count($params) >= 3 ? (int) $params[2] : 0;
         $result = [];
@@ -53,6 +67,9 @@ class ApiGetvalue extends Api {
         die(json_encode([ 'VALUE', $key, json_encode($result) ]));
       }
       case $tag_listget: {
+        if ($tag_listget === 'disabled') {
+          break;
+        }
         $result = [];
         foreach ($params as $index => $key) {
           $result[] = [ 'key' => $key, 'value' => DbProvider::getDb()->get($key) ];
@@ -60,6 +77,9 @@ class ApiGetvalue extends Api {
         die(json_encode([ 'VALUE', $key, json_encode($result) ]));
       }
       case $tag_search: {
+        if ($tag_search === 'disabled') {
+          break;
+        }
         $result = DbProvider::getDb()->search($params[0], 1, false, ['key']);
         die(json_encode([ 'VALUE', $key, json_encode($result) ]));
       }
