@@ -3,12 +3,25 @@
 abstract class DbBase {
 
   public static $KEY_RESERVED_PREFIX = '___RESERVED_';
-  public static $KEY_MANAGE_SETTINGS = '___RESERVED_MANAGE_SETTINGS';
-  public static $KEY_MANAGE_PASSWORD = '___RESERVED_MANAGE_PASSWORD';
+  public static $KEY_MANAGE_SETTINGS = 'MANAGE_SETTINGS';
+  public static $KEY_MANAGE_PASSWORD = 'MANAGE_PASSWORD';
 
   public static function keyReserved ($key) {
     $len = strlen(self::$KEY_RESERVED_PREFIX);
     return strlen($key) >= $len && substr($key, 0, $len) == self::$KEY_RESERVED_PREFIX;
+  }
+
+  function hasReserved(string $key) {
+    return $this->has(self::$KEY_RESERVED_PREFIX . $key);
+  }
+  function getReserved(string $key) {
+    return $this->get(self::$KEY_RESERVED_PREFIX . $key);
+  }
+  function setReserved(string $key, string $value) {
+    return $this->set(self::$KEY_RESERVED_PREFIX . $key, $value);
+  }
+  function deleteReserved(string $key) {
+    return $this->delete(self::$KEY_RESERVED_PREFIX . $key);
   }
 
   public static $SEARCH_RESULT_PER_PAGE = 20;

@@ -3,7 +3,7 @@
 class ApiGetvalue extends Api {
 
   static function checkAllowBrowser() {
-    if (json_decode(DbProvider::getDb()->get(DbBase::$KEY_MANAGE_SETTINGS), true)['allow_browser'] === 'false'
+    if (json_decode(DbProvider::getDb()->getReserved(DbBase::$KEY_MANAGE_SETTINGS), true)['allow_browser'] === 'false'
         && (isset($_SERVER['HTTP_ORIGIN'])
          || isset($_SERVER['HTTP_REFERER'])
          || isset($_SERVER['HTTP_USER_AGENT'])
@@ -15,7 +15,7 @@ class ApiGetvalue extends Api {
   }
 
   private function handleSpecialTags($key) {
-    $settings = json_decode(DbProvider::getDb()->get(DbBase::$KEY_MANAGE_SETTINGS), true);
+    $settings = json_decode(DbProvider::getDb()->getReserved(DbBase::$KEY_MANAGE_SETTINGS), true);
     $special_tags = isset($settings['special_tags']) ? json_decode($settings['special_tags'], true) : [];
     $tag_count = !isset($special_tags['count'])
         ? 'disabled'

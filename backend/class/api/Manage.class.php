@@ -3,7 +3,7 @@
 class ApiManage extends Api {
 
   private static function password() {
-    return DbProvider::getDb()->get(DbBase::$KEY_MANAGE_PASSWORD);
+    return DbProvider::getDb()->getReserved(DbBase::$KEY_MANAGE_PASSWORD);
   }
   private static function initialized() {
     return self::password() !== false;
@@ -29,12 +29,12 @@ class ApiManage extends Api {
   }
 
   private static function settings() {
-    return json_decode(DbProvider::getDb()->get(DbBase::$KEY_MANAGE_SETTINGS), true);
+    return json_decode(DbProvider::getDb()->getReserved(DbBase::$KEY_MANAGE_SETTINGS), true);
   }
   private static function updateSetting($settingId, $value) {
     $settings = self::settings();
     $settings[$settingId] = $value;
-    DbProvider::getDb()->set(DbBase::$KEY_MANAGE_SETTINGS, json_encode($settings));
+    DbProvider::getDb()->setReserved(DbBase::$KEY_MANAGE_SETTINGS, json_encode($settings));
   }
 
   function handle() {
@@ -78,7 +78,7 @@ class ApiManage extends Api {
             return [ 'status' => STATUS_PASSWORD_INVALID, 'result' => 'Password should contains at least two of [0-9] [a-z] [!@#$%^&*]' ];
           }
           $pwd = self::saltPassword($pwd);
-          DbProvider::getDb()->set(DbBase::$KEY_MANAGE_PASSWORD, $pwd);
+          DbProvider::getDb()->setReserved(DbBase::$KEY_MANAGE_PASSWORD, $pwd);
           return [ 'result' => $generateSession($pwd) ];
         }
       }
@@ -144,7 +144,7 @@ class ApiManage extends Api {
         return [ 'result' => 'All data erased (except for reserved keys)' ];
       }
       case 'erase_pwd': {
-        DbProvider::getDb()->delete(DbBase::$KEY_MANAGE_PASSWORD);
+        DbProvider::getDb()->deleteReserved(DbBase::$KEY_MANAGE_PASSWORD);
         return [ 'result' => 'Password deleted, please set a new one ASAP' ];
       }
       case 'export': {
