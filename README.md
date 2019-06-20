@@ -1,6 +1,31 @@
 # Tinywebdb (php-vue)
 
-## 下载&构建
+## 直接下载使用
+
+[下载页](https://github.com/ColinTree/tinywebdb-php-vue/releases/latest)
+
+一般会有四个下载选项
+
+* `dist.tar.gz` - 自动构建结果
+* `dist.zip` - 自动构建结果
+* `Source code (zip)` - 源码
+* `Source code (tar.gz)` - 源码
+
+### 使用例子
+
+#### 新浪云SAE
+
+首次使用：
+
+1. 下载`dist.zip`
+2. 前往[新浪云SAE](http://sae.sina.com.cn)，创建`php, 标准环境, 7.0, git`应用
+3. 前往`应用->代码管理`，选择`上传代码包`，上传刚下载的`dist.zip`
+4. 上传完成后，选择`上传代码包`旁边的`编辑代码`（编辑界面有时候是弹窗，会被浏览器拦截，请注意放行）
+5. 根据[生产环境的配置](#生产环境的配置)和代码中的`config.sample.php`配置`config.php`
+6. 前往你的app网址如`http://{app-id}.applinzi.com/#/manage/init`，设置后台密码
+7. 开始正常使用！（AI2中填写的网络微数据库地址是`http://{app-id}.applinzi.com`）
+
+## 从源码构建
 
 （需要提前安装docker）
 
