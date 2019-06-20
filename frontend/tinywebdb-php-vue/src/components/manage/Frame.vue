@@ -6,10 +6,15 @@
         <b-navbar-toggle target="nav_collapse" />
         <b-collapse is-nav id="nav_collapse" v-if="$route.path !== '/manage/init'">
           <b-navbar-nav v-if="token !== null">
-            <b-nav-item  to="/manage/all">全部标签</b-nav-item>
+            <b-nav-item to="/manage/all">全部标签</b-nav-item>
             <b-nav-item to="/manage/backup">备份/恢复</b-nav-item>
             <b-nav-item to="/manage/setting">设置</b-nav-item>
-            <b-nav-item v-if="update_available" :href="update_pageUrl" target="_blank">管理系统有更新！</b-nav-item>
+            <b-nav-item
+                v-if="update_available"
+                :href="$root.REPO_URL + '/releases/latest'"
+                target="_blank">
+              <span style="color:red">管理系统有更新！</span>
+            </b-nav-item>
           </b-navbar-nav>
           <b-navbar-nav class="ml-auto">
             <b-nav-item v-if="token !== null" @click.stop.prevent="onLogout">登出后台</b-nav-item>
@@ -53,7 +58,6 @@ export default {
     return {
       pingDone: false,
       update_available: false,
-      update_pageUrl: null,
       service: null,
       token: null
     }
@@ -95,6 +99,7 @@ export default {
     })
     this.service = service
     this.ping()
+    this.checkUpdate()
   },
   methods: {
     onLogout () {
@@ -130,6 +135,25 @@ export default {
       } catch (e) {
         this.$root.showInfo('无法连接服务器，详细信息见console')
         console.error(e)
+      }
+    },
+    async checkUpdate () {
+      try {
+        let { data } = await axios.get(this.$root.REPO_API_URL + '/releases/latest')
+        let tagName = data.tag_name
+        let match = tagName.match(/v(\d+)\.(\d+)\.(\d+)/)
+        let currentVersionCode = this.$root.VERSION_CODE
+        if (match) {
+          if ((match[1] > currentVersionCode[0]) ||
+              (match[1] === currentVersionCode[0] && match[2] > currentVersionCode[1]) ||
+              (match[1] === currentVersionCode[0] && match[2] === currentVersionCode[1] && match[3] > currentVersionCode[2])) {
+            this.update_available = true
+          }
+        } else {
+          console.log(`latest tag is invalid: ${tagName}`)
+        }
+      } catch (e) {
+        console.error('Can\'t load latest release info', e)
       }
     }
   }
