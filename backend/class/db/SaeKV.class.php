@@ -40,18 +40,6 @@ class DbSaeKV extends DbBase {
     return $this->kv->delete($key);
   }
 
-  function mDelete(array $keys) {
-    $retarr = [];
-    foreach ($keys as $index => $key) {
-      if (!is_string($key)) {
-        $retarr[$key] = false;
-        continue;
-      }
-      $retarr[$key] = $this->delete($key);
-    }
-    return $retarr;
-  }
-
   function set(string $key, string $value) {
     return $this->kv->set($key, $value);
   }
@@ -115,6 +103,20 @@ class DbSaeKV extends DbBase {
     return [ 'count' => $count, 'result' => $result ];
   }
 
+  function eraseData() {
+    foreach ($this->getAll() as $index => $key_value_pair) {
+      if (!DbBase::keyReserved($key_value_pair['key'])) {
+        $this->delete($key_value_pair['key']);
+      }
+    }
+  }
+
+  function eraseAll() {
+    foreach ($this->getAll() as $index => $key_value_pair) {
+      $this->delete($key_value_pair['key']);
+    }
+  }
+
   static function obj2arr($obj) {
     $ret = [];
     foreach ($obj as $key => $value) {
@@ -125,51 +127,24 @@ class DbSaeKV extends DbBase {
 
 }
 
-class DbSaeKVIterator implements Iterator {
+class DbSaeKVIterator extends DbBaseIterator {
 
-  private $prefix = '';
   private $kv;
-
   private $startKey = '';
-  // one-based
-  private $page = 0;
-  private $currentValue = [];
-  // zero-based
-  private $position = -1;
 
   function __construct(string $prefix, SaeKV $kv) {
-    $this->prefix = $prefix;
     $this->kv = $kv;
-    $this->rewind();
+    parent::__construct($prefix);
   }
 
-  public function current() {
-    return $this->currentValue[$this->position];
-  }
-  public function key() {
-    return ($this->page - 1) * 100 + $this->position;
-  }
-  public function next() {
-    if ($this->position >= 0 && $this->position + 1 < count($this->currentValue)) {
-      $this->position ++;
-    } else {
-      $this->page ++;
-      $this->position = 0;
-      $this->currentValue = $this->kv->pkrget($this->prefix, 100, $this->startKey);
-      end($this->currentValue);
-      $this->startKey = key($this->currentValue);
-      $this->currentValue = DbSaeKV::obj2arr($this->currentValue);
+  public function getNextPage() {
+    if ($this->page === 1 && $this->position === 0) {
+      $this->startKey = '';
     }
-  }
-  public function rewind() {
-    $this->startKey = '';
-    $this->page = 0;
-    $this->position = -1;
-    $this->next();
-  }
-  public function valid() {
-    return count($this->currentValue) > 0
-        && $this->position < count($this->currentValue);
+    $this->currentValue = $this->kv->pkrget($this->prefix, DbBaseIterator::$PERPAGE, $this->startKey);
+    end($this->currentValue);
+    $this->startKey = key($this->currentValue);
+    $this->currentValue = DbSaeKV::obj2arr($this->currentValue);
   }
 
 }

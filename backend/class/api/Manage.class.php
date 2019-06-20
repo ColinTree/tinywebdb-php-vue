@@ -131,17 +131,11 @@ class ApiManage extends Api {
             : [ 'status' => STATUS_API_FAILED, 'result' => "Failed deleting key: $key" ];
       }
       case 'erase_all': {
-        foreach (DbProvider::getDb()->getAll() as $index => $key_value_pair) {
-          DbProvider::getDb()->delete($key_value_pair['key']);
-        }
+        DbProvider::getDb()->eraseAll();
         return [ 'result' => 'All data erased' ];
       }
       case 'erase_data': {
-        foreach (DbProvider::getDb()->getAll() as $index => $key_value_pair) {
-          if (!DbBase::keyReserved($key_value_pair['key'])) {
-            DbProvider::getDb()->delete($key_value_pair['key']);
-          }
-        }
+        DbProvider::getDb()->eraseData();
         return [ 'result' => 'All data erased (except for reserved keys)' ];
       }
       case 'erase_pwd': {

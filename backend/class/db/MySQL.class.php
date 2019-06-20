@@ -34,95 +34,152 @@ class DbMySQL extends DbBase {
     $this->timeout = $timeout;
   }
 
-  private function mysqli() {
-    $link = mysqli_init();
-    $link->options(11 /*MYSQL_OPT_READ_TIMEOUT*/, $this->timeout);
-    $ret = $link->real_connect($this->host, $this->user, $this->password, $this->database, $this->port, $this->socket);
+  private function runMysql(string $statment, $paramTypes = null, &...$params) {
+    $mysqli = mysqli_init();
+    $mysqli->options(11 /*MYSQL_OPT_READ_TIMEOUT*/, $this->timeout);
+    $ret = $mysqli->real_connect($this->host, $this->user, $this->password, $this->database, $this->port, $this->socket);
     if ($ret === false) {
-      throw new Exception('Cannot connect to mysql server: ' . mysqli_error($link));
+      throw new Exception('Cannot connect to mysql server: ' . mysqli_error($mysqli));
     }
-    return $link;
+    $stmt = $mysqli->prepare($statment);
+    if ($stmt === false) {
+      throw new Exception('Cannot prepare stmt: ' . mysqli_error($mysqli));
+    }
+    if ($paramTypes !== null && !$stmt->bind_param($paramTypes, ...$params)) {
+      throw new Exception("Cannot bind param($stmt->errno): $stmt->error");
+    }
+    if (!$stmt->execute()) {
+      throw new Exception("Cannot execute query: $stmt->error");
+    }
+    $result = $stmt->get_result();
+    $stmt->close();
+    $mysqli->close();
+    return $result;
+  }
+
+  function has(string $key) {
+    $result = $this->runMysql("SELECT EXISTS(SELECT `value` FROM `$this->table` WHERE `key` = ? LIMIT 1)", 's', $key);
+    return $result->fetch_array(MYSQLI_NUM)[0] > 0;
+  }
+
+  function count(string $prefix = '') {
+    $prefix .= '%';
+    $result = $this->runMysql("SELECT COUNT(`value`) FROM `$this->table` WHERE `key` LIKE ?", 's', $prefix);
+    return $result->fetch_array(MYSQLI_NUM)[0];
   }
 
   function delete(string $key) {
-    $mysqli = $this->mysqli();
-    $stmt = $mysqli->prepare("DELETE FROM `$this->table` WHERE `key` = ?");
-    if ($stmt === false) {
-      throw new Exception('Cannot prepare stmt: ' . mysqli_error($mysqli));
+    if (!$this->has($key)) {
+      return true;
     }
-    if (!$stmt->bind_param('s', $key)) {
-      throw new Exception("Cannot bind param: $stmt->error");
+    try {
+      $this->runMysql("DELETE FROM `$this->table` WHERE `key` = ?", 's', $key);
+    } catch (Exception $e) {
+      return false;
     }
-    if (!($result = $stmt->execute())) {
-      throw new Exception("Cannot execute query: $stmt->error");
-    }
-    $stmt->close();
-    $mysqli->close();
-    return $result;
+    return true;
   }
 
   function set(string $key, string $value) {
-    $mysqli = $this->mysqli();
-    $stmt = $mysqli->prepare("INSERT INTO `$this->table` (`key`,`value`) VALUES (?, ?)");
-    if ($stmt === false) {
-      throw new Exception('Cannot prepare stmt: ' . mysqli_error($mysqli));
+    return $this->has($key) ? $this->update($key, $value) : $this->add($key, $value);
+  }
+
+  function add(string $key, string $value) {
+    if ($this->has($key)) {
+      return false;
     }
-    if (!$stmt->bind_param('ss', $key, $value)) {
-      throw new Exception("Cannot bind param: $stmt->error");
+    try {
+      $this->runMysql("INSERT INTO `$this->table` (`key`,`value`) VALUES (?, ?)", 'ss', $key, $value);
+    } catch (Exception $e) {
+      return false;
     }
-    if (!($result = $stmt->execute())) {
-      throw new Exception("Cannot execute query: $stmt->error");
+    return true;
+  }
+
+  function update(string $key, string $value) {
+    try {
+      $this->runMysql("UPDATE `$this->table` SET `value` = ? WHERE `key` = ?", 'ss', $value, $key);
+    } catch (Exception $e) {
+      return false;
     }
-    $stmt->close();
-    $mysqli->close();
-    return $result;
+    return true;
   }
 
   function get(string $key) {
-    $mysqli = $this->mysqli();
-    $stmt = $mysqli->prepare("SELECT `value` FROM `$this->table` WHERE `key` = ? LIMIT 1");
-    if ($stmt === false) {
-      throw new Exception('Cannot prepare stmt: ' . mysqli_error($mysqli));
-    }
-    if (!$stmt->bind_param('s', $key)) {
-      throw new Exception("Cannot bind param: $stmt->error");
-    }
-    if (!$stmt->execute()) {
-      throw new Exception("Cannot execute query: $stmt->error");
-    }
-    $result = $stmt->get_result();
-    $rtn = false;
+    $result = $this->runMysql("SELECT `value` FROM `$this->table` WHERE `key` = ? LIMIT 1", 's', $key);
     $row = $result->fetch_array(MYSQLI_ASSOC);
-    if (isset($row['value'])) {
-      $rtn = $row['value'];
-    }
-    $stmt->close();
-    $mysqli->close();
-    return $rtn;
+    return isset($row['value']) ? $row['value'] : false;
   }
 
   function getPage(int $page = 1, int $perPage = 100, string $prefix = '') {
-    $mysqli = $this->mysqli();
-    $stmt = $mysqli->prepare("SELECT * FROM `$this->table` WHERE `key` LIKE ? LIMIT ?, ?");
-    if ($stmt === false) {
-      throw new Exception('Cannot prepare stmt: ' . mysqli_error($mysqli));
-    }
     $prefix .= '%';
     $start = ($page - 1) * $perPage;
-    if (!$stmt->bind_param('sii', $prefix, $start, $perPage)) {
-      throw new Exception("Cannot bind param: $stmt->error");
-    }
-    if (!$stmt->execute()) {
-      throw new Exception("Cannot execute query: $stmt->error");
-    }
-    $result = $stmt->get_result();
+    $result = $this->runMysql("SELECT * FROM `$this->table` WHERE `key` LIKE ? LIMIT ?, ?", 'sii', $prefix, $start, $perPage);
     $rtn = [];
     while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
       $rtn[] = $row;
     }
-    $stmt->close();
-    $mysqli->close();
     return $rtn;
+  }
+
+  function getAll(string $prefix = '') {
+    return new DbMySQLIterator($prefix, $this);
+  }
+
+  function search(string $text, int $page, bool $ignoreCase, array $range) {
+    $text = '%' . $text . '%';
+    if ($text === '%%') {
+      $text = '%';
+    }
+    $caseProcessing = $ignoreCase ? 'UPPER' : '';
+    $start = ($page - 1) * DbBase::$SEARCH_RESULT_PER_PAGE;
+    $sql = "SELECT * FROM `$this->table` WHERE ";
+    $sqlParamTypes = '';
+    $sqlParams = [];
+    foreach ($range as $index => $field) {
+      $range[$index] = "$caseProcessing(`$field`) LIKE $caseProcessing(?)";
+      $sqlParamTypes .= 's';
+      $sqlParams[] = $text;
+    }
+    $sql .= implode(' OR ', $range);
+
+    $countResult = $this->runMysql(str_replace('SELECT *', 'SELECT COUNT(`value`)', $sql), $sqlParamTypes, ...$sqlParams);
+    $count = $countResult->fetch_array(MYSQLI_NUM)[0];
+
+    $sql .= " LIMIT ?, ?";
+    $sqlParamTypes .= 'ii';
+    $sqlParams[] = $start;
+    $sqlParams[] = DbBase::$SEARCH_RESULT_PER_PAGE;
+    $result = $this->runMysql($sql, $sqlParamTypes, ...$sqlParams);
+    $rtn = [];
+    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+      $rtn[] = $row;
+    }
+    return [ 'count' => $count, 'result' => $rtn ];
+  }
+
+  function eraseData() {
+    $reservedPrefix = DbBase::$KEY_RESERVED_PREFIX . '%';
+    $this->runMysql("DELETE FROM `$this->table` WHERE `key` NOT LIKE ?", 's', $reservedPrefix);
+  }
+
+  function eraseAll() {
+    $this->runMysql("DELETE FROM `$this->table`");
+  }
+
+}
+
+class DbMySQLIterator extends DbBaseIterator {
+
+  private $dbMySQL;
+
+  function __construct(string $prefix, DbMySQL $dbMySQL) {
+    $this->dbMySQL = $dbMySQL;
+    parent::__construct($prefix);
+  }
+
+  public function getNextPage() {
+    $this->currentValue = $this->dbMySQL->getPage($this->page, DbBaseIterator::$PERPAGE, $this->prefix);
   }
 
 }

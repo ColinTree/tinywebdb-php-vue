@@ -55,7 +55,17 @@ abstract class DbBase {
    * @param array<string> $keys
    * @return array<string=>bool> array of succeed or not, with keys paired
    */
-  abstract function mDelete(array $keys);
+  function mDelete(array $keys) {
+    $retarr = [];
+    foreach ($keys as $index => $key) {
+      if (!is_string($key)) {
+        $retarr[$key] = false;
+        continue;
+      }
+      $retarr[$key] = $this->delete($key);
+    }
+    return $retarr;
+  }
 
   /**
    * add / update value of the key
@@ -117,5 +127,64 @@ abstract class DbBase {
    * @return Iterator each iterator value should be a key-value object array (e.g. `['key'=>'key1', 'value'=>'val1']`)
    */
   abstract function search(string $text, int $page, bool $ignoreCase, array $range);
+
+  /**
+   * erase all keys that is not reserved
+   */
+  abstract function eraseData();
+
+  /**
+   * erase all keys (include reserved keys)
+   */
+  abstract function eraseAll();
+
+}
+
+abstract class DbBaseIterator implements Iterator {
+
+  public static $PERPAGE = 100;
+
+  protected $prefix = '';
+
+  // one-based
+  protected $page = 0;
+  protected $currentValue = [];
+  // zero-based
+  protected $position = -1;
+
+  function __construct(string $prefix) {
+    $this->prefix = $prefix;
+    $this->rewind();
+  }
+
+  /**
+   * Called in next(), should load next page into $currentValue
+   */
+  abstract function getNextPage();
+
+  public function current() {
+    return $this->currentValue[$this->position];
+  }
+  public function key() {
+    return ($this->page - 1) * 100 + $this->position;
+  }
+  public function next() {
+    if ($this->position >= 0 && $this->position + 1 < count($this->currentValue)) {
+      $this->position ++;
+    } else {
+      $this->page ++;
+      $this->position = 0;
+      $this->getNextPage();
+    }
+  }
+  public function rewind() {
+    $this->page = 0;
+    $this->position = -1;
+    $this->next();
+  }
+  public function valid() {
+    return count($this->currentValue) > 0
+        && $this->position < count($this->currentValue);
+  }
 
 }
