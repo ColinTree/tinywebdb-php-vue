@@ -54,7 +54,6 @@ new Vue({
       REPO_API_URL: 'https://api.github.com/repos/ColinTree/tinywebdb-php-vue',
       SERVICE_BASE_URL: '/',
       VERSION_NAME: '1.0.0',
-      VERSION_CODE: [ 1, 0, 0 ],
 
       service: null
     }

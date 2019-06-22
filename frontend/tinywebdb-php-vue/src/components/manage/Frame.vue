@@ -51,6 +51,7 @@
 <script>
 import axios from 'axios'
 import qs from 'qs'
+import semver from 'semver'
 
 export default {
   name: 'ManageFrame',
@@ -141,16 +142,16 @@ export default {
       try {
         let { data } = await axios.get(this.$root.REPO_API_URL + '/releases/latest')
         let tagName = data.tag_name
-        let match = tagName.match(/v(\d+)\.(\d+)\.(\d+)/)
-        let currentVersionCode = this.$root.VERSION_CODE
-        if (match) {
-          if ((match[1] > currentVersionCode[0]) ||
-              (match[1] === currentVersionCode[0] && match[2] > currentVersionCode[1]) ||
-              (match[1] === currentVersionCode[0] && match[2] === currentVersionCode[1] && match[3] > currentVersionCode[2])) {
-            this.update_available = true
-          }
-        } else {
+        if (!tagName.startsWith('v')) {
+          console.log(`latest tag not a formal release: ${tagName}`)
+          return
+        }
+        if (!semver.valid(tagName)) {
           console.log(`latest tag is invalid: ${tagName}`)
+          return
+        }
+        if (semver.gt(tagName, this.$root.VERSION_NAME)) {
+          this.update_available = true
         }
       } catch (e) {
         console.error('Can\'t load latest release info', e)

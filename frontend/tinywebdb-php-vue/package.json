@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@types/qs": "^6.5.3",
+    "@types/semver": "^6.0.1",
     "autoprefixer": "^7.1.2",
     "babel-core": "^6.22.1",
     "babel-eslint": "^8.2.1",
