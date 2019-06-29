@@ -3,7 +3,7 @@ name: 请求增加新功能 / Feature request
 about: 提出对TPV的改进 / Suggest an idea for this project
 title: "[Suggestion]"
 labels: ''
-assignees: ColinTree
+assignees: ''
 
 ---
 

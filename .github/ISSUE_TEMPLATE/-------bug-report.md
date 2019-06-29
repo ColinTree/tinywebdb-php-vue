@@ -3,7 +3,7 @@ name: 提交问题 / Bug Report
 about: 提交您发现的问题或者错误 / Report an bug or issue you found
 title: "[Bug]"
 labels: ''
-assignees: ColinTree
+assignees: ''
 
 ---
 
