@@ -1,6 +1,9 @@
 <?php
 
 function loadClass($className) {
+  if (class_exists($className)) {
+    return;
+  }
   $possible = [];
   if (substr($className, 0, 3) == 'Api') {
     $apiName = substr($className, 3);
@@ -36,13 +39,41 @@ try {
     $a = substr($a, 1);
   }
   $a = explode('/', $a, 2);
-  $a[0] = ucfirst(strtolower($a[0]));
-  $api = "Api$a[0]";
+  $apiName = ucfirst(strtolower($a[0]));
+  $api = "Api$apiName";
   if ($api == 'Api') {
     $api .= 'Index';
   }
   $args = isset($a[1]) ? (string) $a[1] : '';
   unset($a);
+} catch (Throwable $t) {
+  new ApiError(Api::throwable2string($t));
+  exit;
+}
+
+// Plugin files in dist are like
+// |- plugins/
+//    |- {folders for each plugin}/
+//       |- index.php
+// |- index.php
+// |- plugins.json
+try {
+  if (file_exists('plugins.json')) {
+    $PLUGINS_JSON = json_decode(file_get_contents('plugins.json'), true);
+    $PLUGINS = [];
+    foreach ($PLUGINS_JSON as $pluginName => $pluginConfigs) {
+      if ($pluginConfigs['enabled'] !== true) {
+        continue;
+      }
+      $pluginPath = 'plugins/' . $pluginName . '/';
+      $PLUGINS[$pluginName] = json_decode(file_get_contents($pluginPath . '/plugin.json'), true);
+      $apiFile = $PLUGINS[$pluginName]['php'][$apiName];
+      if (isset($apiFile) && file_exists($pluginPath . $apiFile)) {
+        require_once $pluginPath . $apiFile;
+      }
+    }
+    define('PLUGINS', $PLUGINS);
+  }
 } catch (Throwable $t) {
   new ApiError(Api::throwable2string($t));
   exit;

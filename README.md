@@ -1,48 +1,30 @@
 # Tinywebdb (php-vue)
 
-## 直接下载使用
+TPV是一个数据库管理系统，默认支持 App Inventor 的 Tinywebdb，并以此得名。
 
 [下载页](https://github.com/ColinTree/tinywebdb-php-vue/releases/latest)
 
 一般会有四个下载选项
 
-* `dist.tar.gz` - 自动构建结果
-* `dist.zip` - 自动构建结果
+* `dist.tar.gz` - 自动构建结果（仅包含Tinywebdb插件）
+* `dist.zip` - 自动构建结果（仅包含Tinywebdb插件）
 * `Source code (zip)` - 源码
 * `Source code (tar.gz)` - 源码
 
-### 使用例子
+## 在新浪云SAE上部署
 
-#### 新浪云SAE
+### 首次部署
 
-首次使用：
+1. 在[新浪云(SAE)](http://sae.sina.com.cn)创建 `php, 标准环境, 7.0, git` 应用
+2. 前往左侧菜单`应用->代码管理`，创建版本，并选择`上传代码包`，将 [Release](https://github.com/ColinTree/tinywebdb-php-vue/releases/latest) 页面下载的 `dist.zip` 上传
+3. 选择`上传代码包`旁边的`编辑代码`（编辑界面有时候是弹窗，会被浏览器拦截，请注意放行）
+4. 根据[生产环境的配置](#%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E7%9A%84%E9%85%8D%E7%BD%AE)配置 `config.php`
+5. 前往你的app网址如 `http://{app-id}.applinzi.com/#/manage/init` ，设置后台密码
+6. 开始正常使用！（AI2中填写的网络微数据库地址是 `http://{app-id}.applinzi.com`）
 
-1. 下载`dist.zip`
-2. 前往[新浪云SAE](http://sae.sina.com.cn)，创建`php, 标准环境, 7.0, git`应用
-3. 前往`应用->代码管理`，选择`上传代码包`，上传刚下载的`dist.zip`
-4. 上传完成后，选择`上传代码包`旁边的`编辑代码`（编辑界面有时候是弹窗，会被浏览器拦截，请注意放行）
-5. 根据[生产环境的配置](#生产环境的配置)和代码中的`config.sample.php`配置`config.php`
-6. 前往你的app网址如`http://{app-id}.applinzi.com/#/manage/init`，设置后台密码
-7. 开始正常使用！（AI2中填写的网络微数据库地址是`http://{app-id}.applinzi.com`）
+### 更新已有应用
 
-## 从源码构建
-
-（需要提前安装docker）
-
-```
-git clone https://github.com/ColinTree/tinywebdb-php-vue.git
-cd tinywebdb-php-vue
-git submodule update --init
-docker build -t tpv .
-docker create --name tpv_temp_container tpv
-docker cp tpv_temp_container:/usr/app/dist.tar.gz .
-docker rm tpv_temp_container
-```
-
-执行完之后你就可以看到 `dist.tar.gz` 出现在你当前的文件夹中
-
-注：
-如果有需要可以通过`npm i -g tar-to-zip`安装tar.gz转换zip的模块，并运行`tar2zip dist.tar.gz`
+只需要前往`应用->代码管理`，选择`上传代码包`，上传 [Release](https://github.com/ColinTree/tinywebdb-php-vue/releases/latest) 中的 `dist.zip` 文件即可
 
 ## 生产环境的配置
 
@@ -59,30 +41,39 @@ MANAGE_LOGIN_TIMEOUT | 否 | 600 | 后台管理会话自动结束时长（秒）
 
 * DbProvider::setDb - **必须** - 提供数据库服务
 
-样例参见 `config.sample.php` 文件。（源码中的位置：`backend/config.sample.php`）
+样例参见 [config.sample.php](https://github.com/ColinTree/tinywebdb-php-vue/blob/master/backend/config.sample.php)
+
+## 插件
+
+TPV支持使用插件，目前内置插件有：
+
+* [网络微数据库 (tinywebdb)](./plugins/tinywebdb/README.md)（默认开启）
+* [排行榜 (leaderboard)](./plugins/leaderboard/README.md)
+
+如需调整插件启用情况，则需要自行[构建TPV](#%E4%BB%8E%E6%BA%90%E7%A0%81%E6%9E%84%E5%BB%BA)
+
+## 从源码构建
+
+1. 下载源码
+
+```
+git clone https://github.com/ColinTree/tinywebdb-php-vue.git
+cd tinywebdb-php-vue
+```
+
+2. 配置`plugins.json`，格式参照源码中的样例 [plugins.sample.json](https://github.com/ColinTree/tinywebdb-php-vue/blob/master/plugins.sample.json)
+3. 构建
+
+```
+git submodule update --init
+npm run build
+```
+
+执行完之后你就可以看到 `dist.tar.gz` 和 `dist.zip` 出现在你当前的文件夹中
 
 ## API文档
 
-### Tinywebdb API
-
-标准Tinywebdb API没有状态码
-
-* `/getvalue`
-  * 参数
-    * tag
-  * 返回值
-    * [ "VALUE", tag, value / 错误信息 ]
-
-* `/storeavalue`
-  * 参数
-    * tag
-    * value
-  * 返回值
-    * [ "STORED", tag, value / 错误信息 ]
-
-### 其他API
-
-#### `Api.class.php` 中定义的状态码
+### `Api.class.php` 中定义的状态码
 
 状态名 | 分类 | 状态码 | http状态码 | 描述
 -----------|----------|:----:|:---------:|------------
@@ -91,6 +82,7 @@ STATUS_API_NOT_FOUND | 全局 | 1 | 404 | 未能找到请求的API
 STATUS_API_FAILED | 全局 | 2 | 200 | API在运行过程中出现错误
 STATUS_INTERNAL_ERROR | 全局 | 3 | 500 | 服务器内部错误
 STATUS_UNAUTHORIZED | 全局 | 4 | 401 | 请求未提供token或者token已失效
+STATUS_PLUGIN_API_FAILED | 插件 | 5 | 200 | 插件通用错误码
 STATUS_KEY_NOT_FOUNT | 需要提供标签的地方 | 10 | 200 | 数据库中未能找到请求的标签
 STATUS_KEY_RESERVED | 需要提供标签的地方 | 11 | 200 | 请求了管理系统的保留标签
 STATUS_UNACCEPTED_LIMIT | 需要返回分页的地方 | 20 | 200 | 分页限制应该在1-100之间
@@ -101,7 +93,7 @@ STATUS_SETTING_NOT_RECOGNISED | 更新设置 | 50 | 200 | 服务器不支持指�
 STATUS_EXPORT_UNACCEPTED_TYPE | 导出数据 | 60 | 200 | 服务器不支持指定的导出格式
 STATUS_EXPORT_XLSX_UNSUPPORTED | 导出数据(仅限xlsx) | 61 | 200 | 服务器未安装xlsx相关的模块
 
-#### 后台管理：
+### 后台管理
 
 请求头 `X-TPV-Manage-Token` 大部分时候是必须的，是一串用于身份验证的token，只有token验证通过的操作才会被服务器执行
 
@@ -206,8 +198,8 @@ STATUS_EXPORT_XLSX_UNSUPPORTED | 导出数据(仅限xlsx) | 61 | 200 | 服务器
   * 请求头
     * `X-TPV-Manage-Token` - 必须
   * 参数
-    * `settingId` - 必需 - 设置Id，详见设置列表
-    * `value` - 必需 - 值，详见设置列表
+    * `settingId` - 必需 - 设置Id，详见[设置表](#%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E8%AE%BE%E7%BD%AE%E8%A1%A8)
+    * `value` - 必需 - 值，详见[设置表](#%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E8%AE%BE%E7%BD%AE%E8%A1%A8)
   * 返回值 - [ "status": 状态码, "result": 提示文本 ]
   * 可能返回的非全局状态码 - STATUS_SETTING_NOT_RECOGNISED
 * settings - 获取所有设置
@@ -223,7 +215,7 @@ STATUS_EXPORT_XLSX_UNSUPPORTED | 导出数据(仅限xlsx) | 61 | 200 | 服务器
   * 返回值 - [ "status": 状态码, "result": 提示文本 ]
   * 可能返回的非全局状态码 - STATUS_KEY_RESERVED, STATUS_KEY_NOT_FOUNT
 
-##### 后台管理设置表
+#### 后台管理设置表
 
 设置Id | 设置名 | 接受的值
 -|-|-

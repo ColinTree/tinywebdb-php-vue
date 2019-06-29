@@ -1,0 +1,9 @@
+{
+  "tinywebdb": {
+    "enabled": true,
+    "enabled.样例注释": "enabled设置插件是否开启"
+  },
+  "leaderboard": {
+    "enabled": false
+  }
+}

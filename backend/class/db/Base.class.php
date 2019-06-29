@@ -24,6 +24,15 @@ abstract class DbBase {
     return $this->delete(self::$KEY_RESERVED_PREFIX . $key);
   }
 
+  public static function getSettings() {
+    $settings = DbProvider::getDb()->getReserved(self::$KEY_MANAGE_SETTINGS);
+    return json_decode($settings === false ? '{}' : $settings, true);
+  }
+  public static function getSetting(string $settingId, $default = NULL) {
+    $settingValue = self::getSettings()[$settingId];
+    return isset($settingValue) ? $settingValue : $default;
+  }
+
   public static $SEARCH_RESULT_PER_PAGE = 20;
 
   /**

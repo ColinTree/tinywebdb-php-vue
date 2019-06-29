@@ -1,4 +1,3 @@
-# every server should have its own dbHandler
 config.php
 # for local test only, mocking some services that only exist on server
 class/mock/

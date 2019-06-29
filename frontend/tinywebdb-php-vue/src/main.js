@@ -6,6 +6,9 @@ import qs from 'qs'
 import Vue from 'vue'
 import router from './router'
 
+import package_ from '../../../package.json'
+import plugins from '../../../plugins.json'
+
 import BaseCard from '@/components/root/BaseCard'
 import LiningCode from '@/components/root/LiningCode'
 import SpinnerButton from '@/components/root/SpinnerButton'
@@ -53,12 +56,13 @@ new Vue({
       REPO_URL: 'https://github.com/ColinTree/tinywebdb-php-vue',
       REPO_API_URL: 'https://api.github.com/repos/ColinTree/tinywebdb-php-vue',
       SERVICE_BASE_URL: '/',
-      VERSION_NAME: '1.0.0',
+      VERSION_NAME: package_.version,
 
-      service: null
+      service: null,
+      plugins: {}
     }
   },
-  created () {
+  async created () {
     this.SERVICE_BASE_URL = window.location.origin + '/'
 
     let service = Axios.create({ baseURL: this.SERVICE_BASE_URL })
@@ -69,6 +73,21 @@ new Vue({
     // TODO: make only status === 0 resolve, and reject all other statuss
     service.interceptors.response.use(undefined, error => Promise.reject(error))
     this.service = service
+
+    let thisPlugins = {}
+    for (let pluginName in plugins) {
+      if (plugins[pluginName].enabled === true) {
+        let pluginJson = {}
+        try {
+          pluginJson = await import(`../../../plugins/${pluginName}/plugin.json`)
+        } catch (e) {
+          this.showInfo(`系统需要加载的插件${pluginName}加载失败`)
+          continue
+        }
+        thisPlugins[pluginName] = pluginJson || {}
+      }
+    }
+    this.plugins = thisPlugins
   },
   methods: {
     // use await this.$root.sleep(ms) in async functions

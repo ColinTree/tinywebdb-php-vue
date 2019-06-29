@@ -28,16 +28,6 @@ class ApiManage extends Api {
     return md5('tpv-salt' . $pwd);
   }
 
-  private static function settings() {
-    $settings = json_decode(DbProvider::getDb()->getReserved(DbBase::$KEY_MANAGE_SETTINGS), true);
-    return $settings === '' ? new stdClass : $settings;
-  }
-  private static function updateSetting($settingId, $value) {
-    $settings = self::settings();
-    $settings[$settingId] = $value;
-    DbProvider::getDb()->setReserved(DbBase::$KEY_MANAGE_SETTINGS, json_encode($settings));
-  }
-
   function handle() {
     $key = (string) $_REQUEST['key'];
     $value = (string) $_REQUEST['value'];
@@ -335,20 +325,24 @@ class ApiManage extends Api {
       }
       case 'setting_update': {
         $settingId = (string) $_REQUEST['settingId'];
-        switch ($settingId) {
-          case 'all_category':
-          case 'allow_browser':
-          case 'special_tags': {
-            self::updateSetting($settingId, $value);
-            return [ 'result' => 'Succeed' ];
+        $ACCEPTED_SETTING = [ 'all_category' ];
+        foreach (PLUGINS as $pluginName => $pluginConfigs) {
+          foreach ($pluginConfigs['settings'] as $name => $settingDetails) {
+            $ACCEPTED_SETTING[] = $pluginName . '_' . $name;
           }
-          default: {
-            return [ 'status' => STATUS_SETTING_NOT_RECOGNISED, 'result' => 'The settingId can not be recognised.' ];
-          }
+        }
+        if (in_array($settingId, $ACCEPTED_SETTING)) {
+          $settings = DbBase::getSettings();
+          $settings[$settingId] = $value;
+          DbProvider::getDb()->setReserved(DbBase::$KEY_MANAGE_SETTINGS, json_encode($settings));
+          return [ 'result' => 'Succeed' ];
+        } else {
+          return [ 'status' => STATUS_SETTING_NOT_RECOGNISED, 'result' => 'The settingId can not be recognised.' ];
         }
       }
       case 'settings': {
-        return [ 'result' => self::settings() ];
+        $settings = DbBase::getSettings();
+        return [ 'result' => is_array($settings) && count($settings) === 0 ? new stdClass : $settings ];
       }
       case 'update': {
         if (DbBase::keyReserved($key)) {

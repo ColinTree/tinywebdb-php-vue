@@ -6,18 +6,23 @@ RUN npm i -g @vue/cli \
 
 WORKDIR /usr/app/frontend_temp
 
-COPY frontend/tinywebdb-php-vue/package*.json ./
+COPY package*.json ./
 RUN npm i
 
-COPY frontend/tinywebdb-php-vue .
-RUN npm run build
+COPY frontend/tinywebdb-php-vue frontend/tinywebdb-php-vue
+COPY .postcssrc.js .
+COPY plugins plugins
+COPY plugins.json .
+RUN npm run vue-build
 
 WORKDIR /usr/app
 
-RUN mv frontend_temp/dist/* . && \
+RUN mv frontend_temp/frontend/tinywebdb-php-vue/dist/* . && \
     rm -rf frontend_temp
 
 COPY backend .
+COPY plugins plugins
+COPY plugins.json .
 COPY config.yaml .
 COPY .htaccess .
 

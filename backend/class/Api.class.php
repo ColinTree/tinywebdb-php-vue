@@ -5,6 +5,7 @@ const STATUS_API_NOT_FOUND = 1;  // with http code 404
 const STATUS_API_FAILED = 2;     // with http code 503
 const STATUS_INTERNAL_ERROR = 3; // with http code 500
 const STATUS_UNAUTHORIZED = 4;   // with http code 401
+const STATUS_PLUGIN_API_FAILED = 5;
 const STATUS_KEY_NOT_FOUNT = 10;
 const STATUS_KEY_RESERVED = 11;
 const STATUS_UNACCEPTED_LIMIT = 20;
@@ -87,7 +88,7 @@ abstract class Api {
 
   /**
    * All echo would be treated as default output result.
-   * Args from the get request can be found in $GLOBALS['args]
+   * Args from the get request can be found in $GLOBALS['args']
    * @return mixed null, array for [ 'status': status, 'result': result ] or any other for result message
    */
   abstract function handle();

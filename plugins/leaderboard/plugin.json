@@ -1,0 +1,14 @@
+{
+  "php": {
+    "Leaderboard": "ApiLeaderboard.class.php"
+  },
+  "settings": {
+    "allow_create": {
+      "header": "排行榜相关",
+      "type": "checkbox",
+      "default": false,
+      "checkbox-label": "允许客户端创建排行榜",
+      "description": "除非有特殊需要，建议禁止限制此设置"
+    }
+  }
+}

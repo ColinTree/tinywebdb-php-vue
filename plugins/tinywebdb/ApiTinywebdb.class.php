@@ -1,9 +1,9 @@
 <?php
 
-class ApiGetvalue extends Api {
+class ApiTinywebdb extends Api {
 
   static function checkAllowBrowser() {
-    if (json_decode(DbProvider::getDb()->getReserved(DbBase::$KEY_MANAGE_SETTINGS), true)['allow_browser'] === 'false'
+    if (DbBase::getSetting('tinywebdb_allow_browser') === 'false'
         && (isset($_SERVER['HTTP_ORIGIN'])
          || isset($_SERVER['HTTP_REFERER'])
          || isset($_SERVER['HTTP_USER_AGENT'])
@@ -15,20 +15,20 @@ class ApiGetvalue extends Api {
   }
 
   private function handleSpecialTags($key) {
-    $settings = json_decode(DbProvider::getDb()->getReserved(DbBase::$KEY_MANAGE_SETTINGS), true);
-    $special_tags = isset($settings['special_tags']) ? json_decode($settings['special_tags'], true) : [];
+    $special_tags = json_decode(DbBase::getSetting('tinywebdb_special_tags', '{}'), true);
+    $PLUGIN_SETTINGS = PLUGINS['tinywebdb']['settings']['special_tags']['children'];
     $tag_count = !isset($special_tags['count'])
-        ? 'disabled'
-        : (empty($special_tags['count']) ? 'special_count' : $special_tags['count']);
+        ? $PLUGIN_SETTINGS['count']['default']
+        : (empty($special_tags['count']) ? $PLUGIN_SETTINGS['count']['placeholder'] : $special_tags['count']);
     $tag_getall = !isset($special_tags['getall'])
-        ? 'disabled'
-        : (empty($special_tags['getall']) ? 'special_getall' : $special_tags['getall']);
+        ? $PLUGIN_SETTINGS['getall']['default']
+        : (empty($special_tags['getall']) ? $PLUGIN_SETTINGS['getall']['placeholder'] : $special_tags['getall']);
     $tag_listget = !isset($special_tags['listget'])
-        ? 'disabled'
-        : (empty($special_tags['listget']) ? 'special_listget' : $special_tags['listget']);
+        ? $PLUGIN_SETTINGS['listget']['default']
+        : (empty($special_tags['listget']) ? $PLUGIN_SETTINGS['listget']['placeholder'] : $special_tags['listget']);
     $tag_search = !isset($special_tags['search'])
-        ? 'disabled'
-        : (empty($special_tags['search']) ? 'special_search' : $special_tags['search']);
+        ? $PLUGIN_SETTINGS['search']['default']
+        : (empty($special_tags['search']) ? $PLUGIN_SETTINGS['search']['placeholder'] : $special_tags['search']);
     $tag = explode('#', $key, 2);
     while (count($tag) < 2) {
       $tag[] = '';
@@ -89,12 +89,25 @@ class ApiGetvalue extends Api {
   function handle() {
     self::checkAllowBrowser();
     $key = (string) $_REQUEST['tag'];
+    $value = (string) $_REQUEST['value'];
     if (DbBase::keyReserved($key)) {
       http_response_code(403);
       die(json_encode([ 'KEY RESERVED', $key, '' ]));
     }
-    $this->handleSpecialTags($key);
-    die(json_encode([ 'VALUE', $key, (string) DbProvider::getDb()->get($key) ]));
+
+    $action = strtolower(explode('/', $GLOBALS['args'], 2)[0]);
+
+    switch ($action) {
+      case 'getvalue': {
+        $this->handleSpecialTags($key);
+        die(json_encode([ 'VALUE', $key, (string) DbProvider::getDb()->get($key) ]));
+      }
+      case 'storeavalue': {
+        DbProvider::getDb()->set($key, $value);
+        die(json_encode([ 'STORED', $key, $value ]));
+      }
+    }
+    return [ 'status' => STATUS_API_NOT_FOUND, 'result' => "Can not find `$action` in Tinywebdb api" ];
   }
 
 }

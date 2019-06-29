@@ -92,7 +92,7 @@ export default {
     switch (status) {
       case 0: {
         this.categories = Array.from(
-          new Set((result.hasOwnProperty('all_category') ? result.all_category : '').split('#')))
+          new Set((result.all_category || '').split('#')))
           .map(value => value === '' ? ({ value: '', text: '显示所有' }) : { value, text: `前缀\`${value}\`` })
         break
       }

@@ -1,43 +1,45 @@
 <template>
   <div id="content">
-    <b-card title="TinyWebDB 可视化操作页面">
-      <b-card-text style="display:flex; flex-wrap:wrap">
-        <span>您的网络微数据库地址是：</span>
-        <b-input ref="service_url" style="box-shadow:none; border:0" readonly size="sm"
-            :value="$root.SERVICE_BASE_URL" @click="selectServiceUrl" />
-      </b-card-text>
+    <b-card :title="tinywebdbEnabled ? 'TinyWebDB 可视化操作页面' : 'Tinywebdb 功能未启用'">
+      <div v-if="tinywebdbEnabled">
+        <b-card-text style="display:flex; flex-wrap:wrap">
+          <span>您的网络微数据库地址是：</span>
+          <b-input ref="service_url" style="box-shadow:none; border:0" readonly size="sm"
+              :value="$root.SERVICE_BASE_URL + 'tinywebdb'" @click="selectServiceUrl" />
+        </b-card-text>
 
-      <hr>
+        <hr>
 
-      <b-form @submit.prevent="$refs.get_btn.onClick()">
-        <h5>获取标签</h5>
-        <b-form-group label="标签" label-for="get_key" label-cols="1">
-          <b-input id="get_key" v-model="get_key" autocomplete="off" />
-        </b-form-group>
-        <b-form-group label="值" label-for="get_value" label-cols="1">
-          <b-input id="get_value" ref="get_value" v-model="get_value" readonly @click="selectGetValue" />
-        </b-form-group>
-        <SpinnerButton ref="get_btn" @click="onGet" :variant="get_succeed ? 'success' : 'primary'">
-          <span v-text="get_succeed ? '查询成功' : '查询'" />
-        </SpinnerButton>
-        <b-button type="submit" v-show="false" />
-      </b-form>
+        <b-form @submit.prevent="$refs.get_btn.onClick()">
+          <h5>获取标签</h5>
+          <b-form-group label="标签" label-for="get_key" label-cols="1">
+            <b-input id="get_key" v-model="get_key" autocomplete="off" />
+          </b-form-group>
+          <b-form-group label="值" label-for="get_value" label-cols="1">
+            <b-input id="get_value" ref="get_value" v-model="get_value" readonly @click="selectGetValue" />
+          </b-form-group>
+          <SpinnerButton ref="get_btn" @click="onGet" :variant="get_succeed ? 'success' : 'primary'">
+            <span v-text="get_succeed ? '查询成功' : '查询'" />
+          </SpinnerButton>
+          <b-button type="submit" v-show="false" />
+        </b-form>
 
-      <hr>
+        <hr>
 
-      <b-form @submit.prevent="$refs.store_btn.onClick()">
-        <h5>储存标签</h5>
-        <b-form-group label="标签" label-for="store_key" label-cols="1">
-          <b-input id="store_key" v-model="store_key" autocomplete="off" />
-        </b-form-group>
-        <b-form-group label="值" label-for="store_value" label-cols="1">
-          <b-input id="store_value" v-model="store_value" autocomplete="off" />
-        </b-form-group>
-        <SpinnerButton ref="store_btn" @click="onStore" :variant="store_succeed ? 'success' : 'primary'">
-          <span v-text="store_succeed ? '保存成功' : '保存'" />
-        </SpinnerButton>
-        <b-button type="submit" v-show="false" />
-      </b-form>
+        <b-form @submit.prevent="$refs.store_btn.onClick()">
+          <h5>储存标签</h5>
+          <b-form-group label="标签" label-for="store_key" label-cols="1">
+            <b-input id="store_key" v-model="store_key" autocomplete="off" />
+          </b-form-group>
+          <b-form-group label="值" label-for="store_value" label-cols="1">
+            <b-input id="store_value" v-model="store_value" autocomplete="off" />
+          </b-form-group>
+          <SpinnerButton ref="store_btn" @click="onStore" :variant="store_succeed ? 'success' : 'primary'">
+            <span v-text="store_succeed ? '保存成功' : '保存'" />
+          </SpinnerButton>
+          <b-button type="submit" v-show="false" />
+        </b-form>
+      </div>
 
       <hr>
 
@@ -67,10 +69,15 @@ export default {
       store_succeed: false
     }
   },
+  computed: {
+    tinywebdbEnabled () {
+      return 'tinywebdb' in this.$root.plugins
+    }
+  },
   methods: {
     async onGet (onDone) {
       try {
-        this.get_value = (await this.$root.service.get('/getvalue', { params: { tag: this.get_key } })).data[2]
+        this.get_value = (await this.$root.service.get('/tinywebdb/getvalue', { params: { tag: this.get_key } })).data[2]
         this.get_succeed = true
         setTimeout(() => (this.get_succeed = false), 800)
       } catch (e) {
@@ -86,7 +93,7 @@ export default {
     },
     async onStore (onDone) {
       try {
-        await this.$root.service.post('/storeavalue', { tag: this.store_key, value: this.store_value })
+        await this.$root.service.post('/tinywebdb/storeavalue', { tag: this.store_key, value: this.store_value })
         this.store_succeed = true
         setTimeout(() => (this.store_succeed = false), 800)
       } catch (e) {

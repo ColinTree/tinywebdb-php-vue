@@ -1,14 +1,15 @@
 {
   "name": "tinywebdb-php-vue",
-  "version": "1.0.0-alpha",
+  "version": "1.0.0",
   "description": "",
   "author": "ColinTree <502470184@qq.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "webpack-dev-server --inline --progress --config frontend/tinywebdb-php-vue/build/webpack.dev.conf.js",
     "start": "npm run dev",
-    "lint": "eslint --ext .js,.vue src",
-    "build": "node build/build.js"
+    "lint": "eslint --ext .js,.vue frontend/tinywebdb-php-vue/src",
+    "build": "docker build -t tpv . && docker create --name tpv_temp_container tpv && docker cp tpv_temp_container:/usr/app/dist.tar.gz . && docker rm tpv_temp_container && tar2zip dist.tar.gz",
+    "vue-build": "node frontend/tinywebdb-php-vue/build/build.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.19",
@@ -62,6 +63,7 @@
     "rimraf": "^2.6.0",
     "semver": "^5.7.0",
     "shelljs": "^0.7.6",
+    "tar-to-zip": "^2.0.0",
     "uglifyjs-webpack-plugin": "^1.1.1",
     "url-loader": "^0.5.8",
     "vue-loader": "^13.3.0",

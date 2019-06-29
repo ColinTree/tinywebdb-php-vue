@@ -1,0 +1,60 @@
+{
+  "php": {
+    "Tinywebdb": "ApiTinywebdb.class.php"
+  },
+  "settings": {
+    "allow_browser": {
+      "header": "数据安全",
+      "type": "checkbox",
+      "default": true,
+      "checkbox-label": "允许来自浏览器的读写",
+      "description": "说明：本功能对于数据防修改能力较弱，仅做简单的浏览器级别防御，请不要过度依赖"
+    },
+    "special_tags": {
+      "header": "特殊标签",
+      "type": "group",
+      "children": {
+        "count": {
+          "type": "input",
+          "default": "disabled",
+          "placeholder": "special_count",
+          "validator": "^[^# ]*$",
+          "invalid-feedback": "不能包含#，空格",
+          "disable-via-value": true,
+          "label": "返回总标签数量",
+          "description": "使用方法：请求获取标签“{{value}}[#计数前缀]”。如果不包含前缀，默认为空<br/>返回：一个文本形式的数字<br/>例子：<ul><li>统计所有标签数量：“{{value}}”</li><li>统计所有以a开头的标签的数量：“{{value}}#a”</li></ul>"
+        },
+        "getall": {
+          "type": "input",
+          "default": "disabled",
+          "placeholder": "special_getall",
+          "validator": "^[^# ]*$",
+          "invalid-feedback": "不能包含#，空格",
+          "disable-via-value": true,
+          "label": "获取指定前缀的所有标签和值",
+          "description": "使用方法：请求获取标签“{{value}}#获取前缀[#起始偏移][#数量限制]”。 <b>***如数据库内的数据数量较大，请慎重使用***</b><br /> <ul> <li>如果不包含前缀，默认为空</li> <li>如果不包含起始偏移，默认为0</li> <li>如果不包含数量限制，默认为无限制</li> </ul> 返回：一个json编码的文本，格式如<code>[ 结果列表 ]</code>，每个列表项为<code>{ key: '标签', value: '值' }</code><br /> 例子： <ul> <li>获取所有标签：“{{value}}”</li> <li>获取所有以a开头的标签：“{{value}}#a”</li> <li>获取所有标签中的前100个：“{{value}}#a#0#100”</li> <li>获取所有标签中的第101-150个：“{{value}}#a#100#50”</li> </ul>"
+        },
+        "listget": {
+          "type": "input",
+          "default": "disabled",
+          "placeholder": "special_listget",
+          "validator": "^[^# ]*$",
+          "invalid-feedback": "不能包含#，空格",
+          "disable-via-value": true,
+          "label": "一次性获取多个标签的值",
+          "description": "使用方法：请求获取标签“{{value}}[#标签1][#标签2][……]”<br /> 返回：一个json编码的文本，格式如<code>[ 结果列表 ]</code>，每个列表项为<code>{ key: '标签', value: '值' }</code><br /> 例子：获取\"id_2455_pwd\"和\"id_2455_money\"：“{{value}}#id_2455_pwd#id_2455_money”"
+        },
+        "search": {
+          "type": "input",
+          "default": "disabled",
+          "placeholder": "special_search",
+          "validator": "^[^# ]*$",
+          "invalid-feedback": "不能包含#，空格",
+          "disable-via-value": true,
+          "label": "搜索数据库的标签和值",
+          "description": "使用方法：请求获取标签“{{value}}#搜索关键词”<br /> 返回：一个json编码的文本，格式如<code>{ \"count\": 总共多少项, \"result\": [ 搜索结果列表 ] }</code>，其中每个列表项为<code>{ key: '标签', value: '值' }</code><br /> 例子：搜索\"john\"：“{{value}}#john”"
+        }
+      }
+    }
+  }
+}
