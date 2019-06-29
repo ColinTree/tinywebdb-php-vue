@@ -25,3 +25,10 @@
     * value
   * 返回值
     * [ "STORED", tag, value / 错误信息 ]
+
+## 设置表
+
+设置Id | 设置名 | 接受的值
+-|-|-
+tinywebdb_allow_browser | 允许来自浏览器的读写 | `true` 或 `false`，默认为`true`
+tinywebdb_special_tags | 特殊标签设置 | JSON格式文本，如 `{"count":"disabled", "getall":"disabled", "listget":"disabled", "search":"disabled"}`，默认都是disabled

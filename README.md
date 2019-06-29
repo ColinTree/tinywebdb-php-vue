@@ -59,13 +59,13 @@ TPV支持使用插件，目前内置插件有：
 ```
 git clone https://github.com/ColinTree/tinywebdb-php-vue.git
 cd tinywebdb-php-vue
+git submodule update --init
 ```
 
 2. 配置`plugins.json`，格式参照源码中的样例 [plugins.sample.json](https://github.com/ColinTree/tinywebdb-php-vue/blob/master/plugins.sample.json)
 3. 构建
 
 ```
-git submodule update --init
 npm run build
 ```
 
@@ -220,4 +220,3 @@ STATUS_EXPORT_XLSX_UNSUPPORTED | 导出数据(仅限xlsx) | 61 | 200 | 服务器
 设置Id | 设置名 | 接受的值
 -|-|-
 all_category | 标签浏览页·分类列表 | 使用井号#分隔的文本
-allow_browser | 允许来自浏览器的读写 | 不是`false`默认为`true`

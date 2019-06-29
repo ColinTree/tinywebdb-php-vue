@@ -22,3 +22,9 @@
     * board - 排行榜id
   * 返回值
     * `[ { "name": "分数得主", "score": "分数" }, ... ]`
+
+## 设置表
+
+设置Id | 设置名 | 接受的值
+-|-|-
+leaderboard_allow_create | 允许客户端创建排行榜 | `true` 或 `false`，默认为`false`
