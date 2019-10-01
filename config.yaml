@@ -1,3 +1,0 @@
-handle:
-- rewrite: if (%{REQUEST_URI} ~ "^/$") goto "index.html" [L]
-- rewrite: if (%{REQUEST_URI} != "/index.html" && %{REQUEST_URI} !~ "^/static" && %{REQUEST_URI} != "/index.php") goto "/index.php?a=%{REQUEST_URI}&%{QUERY_STRING}" [L]
