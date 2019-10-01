@@ -1,7 +1,10 @@
 <IfModule mod_rewrite.c>
+  Options +FollowSymlinks
   RewriteEngine On
   RewriteBase /
-  RewriteRule ^index\.html$ /index.html [NC, L]
-  RewriteRule ^static/(.*)$ /static/$1 [NC, L]
-  RewriteRule ^((?!index\.php).*)$  /index.php?a=$1 [L]
+  RewriteCond %{REQUEST_URI} !^/$
+  RewriteCond %{REQUEST_URI} !^/index.html$
+  RewriteCond %{REQUEST_URI} !^/index.php$
+  RewriteCond %{REQUEST_URI} !^/static/(.*)$
+  RewriteRule ^(.*)$ index.php?a=$1 [QSA,L]
 </IfModule>
