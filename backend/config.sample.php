@@ -15,3 +15,8 @@
 
 // MySQL with port specified
 // DbProvider::setDb(new DbMySQL('host', 'user', 'password', 'database', 3306));
+
+// MySQL with table specified
+// $dbMySql = new DbMySQL(...); // see above
+// DbProvider::setDb($dbMySql);
+// $dbMySql->setTable('TABLE NAME'); // table defaults to 'tpv'
