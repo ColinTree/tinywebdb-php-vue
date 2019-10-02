@@ -138,6 +138,9 @@ export default {
           submitButton.variant = undefined
           break
         }
+        case 50: {
+          this.$root.showInfo(`保存设置'${settingId}'失败，服务器无法识别该设置项，可能是由于服务器版本过老引起的`)
+        }
         default: {
           this.$root.showInfo(`保存设置'${settingId}'失败，错误码${status}`)
         }

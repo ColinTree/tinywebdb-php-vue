@@ -65,6 +65,19 @@ export default {
           this.$router.push('/manage/all')
           break
         }
+        case 4: {
+          this.$router.push('/manage/login')
+          this.$root.showInfo(`系统已经被初始化过了`)
+          break
+        }
+        case 40: {
+          this.$root.showInfo(`密码太短`)
+          break
+        }
+        case 41: {
+          this.$root.showInfo(`密码太简单，至少要包含数字，字母，符号（!@#$%^&*）中的两种`)
+          break
+        }
         default: {
           this.$root.showInfo(`系统初始化失败，错误码${status}`)
         }

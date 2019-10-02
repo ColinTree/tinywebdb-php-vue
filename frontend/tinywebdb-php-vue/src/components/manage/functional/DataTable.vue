@@ -312,6 +312,10 @@ export default {
           this.editModal.isCreate = true
           break
         }
+        case 11: {
+          this.$root.showInfo(`${this.editModal.isCreate ? '创建' : '编辑'}失败，目标标签是系统保留标签`)
+          break
+        }
         case 30: {
           this.$root.showInfo('创建失败，目标标签已存在，自动切换为编辑标签模式', () => this.$refs.editModal_value.focus())
           this.editModal.isCreate = false
@@ -329,6 +333,10 @@ export default {
         switch (status) {
           case 0: {
             item.deleted = true
+            break
+          }
+          case 11: {
+            this.$root.showInfo('删除失败，目标标签是系统保留标签')
             break
           }
           default: {
