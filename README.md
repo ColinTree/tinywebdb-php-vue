@@ -84,6 +84,7 @@ STATUS_API_FAILED | 全局 | 2 | 200 | API在运行过程中出现错误
 STATUS_INTERNAL_ERROR | 全局 | 3 | 500 | 服务器内部错误
 STATUS_UNAUTHORIZED | 全局 | 4 | 401 | 请求未提供token或者token已失效
 STATUS_PLUGIN_API_FAILED | 插件 | 5 | 200 | 插件通用错误码
+STATUS_SYSTEM_NOT_CONFIGURED | 全局 | 6 | 200 | 系统尚未初始化（需要配置config.php）
 STATUS_KEY_NOT_FOUNT | 需要提供标签的地方 | 10 | 200 | 数据库中未能找到请求的标签
 STATUS_KEY_RESERVED | 需要提供标签的地方 | 11 | 200 | 请求了管理系统的保留标签
 STATUS_UNACCEPTED_LIMIT | 需要返回分页的地方 | 20 | 200 | 分页限制应该在1-100之间
