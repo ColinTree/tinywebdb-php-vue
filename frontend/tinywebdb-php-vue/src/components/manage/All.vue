@@ -1,6 +1,6 @@
 <template>
   <BaseCard>
-    <template slot="header">
+    <template #header>
       <div>
         <b-input-group>
           <div class="vertical-auto-margin">标签 -</div>

@@ -4,7 +4,7 @@
       <slot name="header" />
     </h6>
     <slot/>
-    <template slot="footer">
+    <template #footer>
       <slot name="footer" />
     </template>
   </b-card>

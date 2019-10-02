@@ -1,8 +1,8 @@
 <template>
   <b-jumbotron bg-variant="light">
-    <template slot="header">欢迎使用TPV</template>
+    <template #header>欢迎使用TPV</template>
 
-    <template slot="lead">
+    <template #lead>
       TPV（Tinywebdb-PHP-Vue），是一个高度可拓展的tinywebdb开源管理系统，由ColinTree主要负责开发和维护，具体见<b-link target="_blank" :href="$root.REPO_URL">TPV源码</b-link>
     </template>
 
@@ -13,7 +13,7 @@
     <b-form @submit.prevent="$refs.submit_btn.onClick()">
       <b-form-group label-cols="2" label="后台密码" label-for="pwd">
         <b-input id="pwd" type="password" autocomplete="new-password" v-model="pass" :state="pwdState" />
-        <template slot="description">
+        <template #description>
           <span :style="{ color: pwdTooShort ? 'red' : 'green' }">长度大于8位</span>
           <span :style="{ color: pwdInvalid ? 'red' : 'green' }">由数字、字母（区分大小写）、标点符号组成，且至少包含数字，字母，标点符号中的两种</span>
         </template>
@@ -51,7 +51,7 @@ export default {
     },
     pwd2State () {
       if (this.pass === '') {
-        return undefined
+        return null
       }
       return this.pass === this.pass2
     }

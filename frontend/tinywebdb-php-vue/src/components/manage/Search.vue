@@ -7,7 +7,7 @@
       </b-input-group-append>
     </b-input-group>
     <b-card style="display:flex">
-      <template slot="header">
+      <template #header>
         <b-form-group>
           <b-checkbox v-model="ignoreCase">忽略大小写</b-checkbox>
         </b-form-group>

@@ -37,19 +37,19 @@
         <strong>加载中……</strong>
       </div>
 
-      <template slot="HEAD_checkbox">
+      <template #head(checkbox)>
         <b-checkbox @change="onSelectAll" v-model="selectAll" /><!-- don't use @input ! -->
       </template>
 
-      <template slot="checkbox" slot-scope="row">
+      <template #cell(checkbox)="row">
         <b-checkbox v-if="!row.item.deleted" v-model="row.item.selected" />
       </template>
 
-      <template slot="keyNVal" slot-scope="row">
+      <template #cell(keyNVal)="row">
         <span v-html="itemToHtml(row.index)" />
       </template>
 
-      <template slot="operations" slot-scope="row">
+      <template #cell(operations)="row">
         <b-button
             v-if="!row.item.deleted"
             variant="primary"

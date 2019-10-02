@@ -1,6 +1,6 @@
 <template>
   <BaseCard>
-    <template slot="header">备份/恢复</template>
+    <template #header>备份/恢复</template>
     <div>
       <span style="font-size:15.5px"><b>数据导出</b></span>
       <hr />

@@ -1,6 +1,6 @@
 <template>
   <BaseCard>
-    <template slot="header" v-text="'登录后台'" />
+    <template #header v-text="'登录后台'" />
     <b-form @submit.prevent="$refs.login_button.onClick()">
       <b-form-group :state="state" :valid-feedback="feedback" :invalid-feedback="feedback">
         <b-input-group prepend="后台密码" class="mt-2">

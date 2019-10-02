@@ -11,7 +11,7 @@
         :valid-feedback="childConfig['valid-feedback'] || null"
         :invalid-feedback="childConfig['invalid-feedback'] || null">
 
-      <template slot="label">
+      <template #label>
         <span v-text="childConfig.label || ''" />
         <b-link
             v-if="childConfig['disable-via-value'] === true"
@@ -35,7 +35,7 @@
           :placeholder="childConfig.placeholder || ''"
           :disabled="childConfig['disable-via-value'] === true && value[childName] === 'disabled'" />
 
-      <template slot="description">
+      <template #description>
         <div
             v-show="childConfig['disable-via-value'] !== true || value[childName] !== 'disabled'"
             v-html="replaceAll(childConfig.description || '', '{{value}}', value[childName] || childConfig.placeholder || '')" />

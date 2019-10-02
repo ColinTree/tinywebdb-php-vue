@@ -1,13 +1,13 @@
 <template>
   <BaseCard>
-    <template slot="header">设置</template>
+    <template #header>设置</template>
 
     <div v-if="loaded === true">
       <div class="setting-header">标签浏览页·分类列表</div>
       <b-form @submit.prevent="$refs.all_category_button.onClick()">
         <b-form-group>
           <b-input v-model="all_category.value" />
-          <template slot="description">
+          <template #description>
             使用井号#分隔每一项（重复项会被隐藏）<br>
             例如：默认显示全部，可选显示“student_”或者“teacher_”开头的标签，则应当这么填：
             <b-link @click="all_category.value = '#student_#teacher_'">#student_#teacher_（点击预览）</b-link>
