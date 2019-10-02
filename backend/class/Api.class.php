@@ -6,6 +6,7 @@ const STATUS_API_FAILED = 2;     // with http code 503
 const STATUS_INTERNAL_ERROR = 3; // with http code 500
 const STATUS_UNAUTHORIZED = 4;   // with http code 401
 const STATUS_PLUGIN_API_FAILED = 5;
+const STATUS_SYSTEM_NOT_CONFIGURED = 6;
 const STATUS_KEY_NOT_FOUNT = 10;
 const STATUS_KEY_RESERVED = 11;
 const STATUS_UNACCEPTED_LIMIT = 20;

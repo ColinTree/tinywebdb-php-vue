@@ -27,7 +27,7 @@ spl_autoload_register('loadClass');
 require_once 'class/Api.class.php';
 
 if (!file_exists('config.php')) {
-  new ApiError('Server is not configured yet.');
+  new ApiError('Server is not configured yet.', STATUS_SYSTEM_NOT_CONFIGURED);
   exit;
 }
 

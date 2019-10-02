@@ -30,6 +30,9 @@
           <b-spinner />
           连接服务器中
         </div>
+        <div v-else-if="typeof pingMessage === 'string'">
+          <span v-text="pingMessage" />
+        </div>
         <router-view v-else />
       </div>
 
@@ -58,6 +61,7 @@ export default {
   data () {
     return {
       pingDone: false,
+      pingMessage: null,
       update_available: false,
       service: null,
       token: null
@@ -121,8 +125,13 @@ export default {
     },
     async ping () {
       try {
-        let { initialized, login } = (await this.service.get('ping')).data.result
+        let { status, result } = (await this.service.get('ping')).data
         this.pingDone = true
+        if (status === 6) {
+          this.pingMessage = '系统配置文件尚未被创建！请参阅帮助文档中的“生产环境的配置”部分配置config.php文件'
+          return
+        }
+        let { initialized, login } = result
         if (initialized === false) {
           this.$router.push('/manage/init')
           return
