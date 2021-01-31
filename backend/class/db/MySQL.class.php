@@ -23,6 +23,9 @@ class DbMySQL extends DbBase {
     
     $this->table = 'tpv';
     $this->timeout = 3;
+
+    // ensure table exists
+    $this->runMysql("CREATE TABLE IF NOT EXISTS `$this->table` (`key` varchar(200) NOT NULL, `value` varchar(4096) DEFAULT NULL, UNIQUE KEY `key` (`key`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
   }
   function setTable(string $table) {
     $this->table = $table;
