@@ -26,6 +26,23 @@ TPV是一个数据库管理系统，默认支持 App Inventor 的 Tinywebdb，�
 
 只需要前往`应用->代码管理`，选择`上传代码包`，上传 [Release](https://github.com/ColinTree/tinywebdb-php-vue/releases/latest) 中的 `dist.zip` 文件即可
 
+## 使用[宝塔服务器面板](https://bt.cn)
+
+### 首次部署
+
+1. 安装php7.0插件（其他php7版本没有测试，安装完有问题建议回退到7.0）
+2. 安装mysql插件
+3. 在网站一栏中选择添加站点，输入域名或公网ip，选择php7.0，并创建mysql数据库
+4. 创建完毕记下数据库信息，或者稍后在数据库一栏中查询
+5. 下载 [Release](https://github.com/ColinTree/tinywebdb-php-vue/releases/latest) 页面的 `dist.zip` 或者 `dist.tar.gz`
+6. 点击站点列表中的根目录，前往文件管理页面，上传并解压dist包
+7. 根据[生产环境的配置](#%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E7%9A%84%E9%85%8D%E7%BD%AE)配置 `config.php`
+8. 如果是nginx环境
+  - 双击文件列表中解压出来的.htaccess，复制文件内容
+  - 然后回到站点列表，点击站点名（打开设置），找到“伪静态”一栏，前往上面的[“Apache转Nginx”](https://www.bt.cn/Tools)链接（或者[这个](https://winginx.com/en/htaccess))
+  - 将转换完的 Nginx rewrite 保存到宝塔的伪静态设置
+9. 修改站点设置“默认文档”，将index.html移动到index.php上面，保存（按钮文字有可能是“添加”）
+
 ## 生产环境的配置
 
 上线生产环境之前请确保负责提供配置的 `config.php` 已经被创建并设置
