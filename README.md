@@ -42,6 +42,8 @@ TPV是一个数据库管理系统，默认支持 App Inventor 的 Tinywebdb，�
   - 然后回到站点列表，点击站点名（打开设置），找到“伪静态”一栏，前往上面的[“Apache转Nginx”](https://www.bt.cn/Tools)链接（或者[这个](https://winginx.com/en/htaccess))
   - 将转换完的 Nginx rewrite 保存到宝塔的伪静态设置
 9. 修改站点设置“默认文档”，将index.html移动到index.php上面，保存（按钮文字有可能是“添加”）
+10. 前往你的服务器公网ip或者绑定域名，设置后台密码
+11. 开始正常使用！（AI2中网络微数据库的地址直接填服务器ip即可）
 
 ### 更新已有站点
 
