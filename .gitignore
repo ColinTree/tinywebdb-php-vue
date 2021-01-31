@@ -3,3 +3,4 @@ dist.tar.gz
 dist.zip
 plugins.json
 node_modules
+.idea
