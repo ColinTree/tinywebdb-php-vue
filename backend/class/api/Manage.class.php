@@ -37,7 +37,8 @@ class ApiManage extends Api {
     unset($args);
 
     $generateSession = function($pwd = null) {
-      $sessionid = uniqid('manage_', true);
+      $sessionid = uniqid('manage-', true);
+      $sessionid = preg_replace('/[^a-zA-Z0-9\-]+/', '-', $sessionid);
       session_id($sessionid);
       session_start();
       if ($pwd !== null) {
